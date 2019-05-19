@@ -54,7 +54,7 @@ export default {
     }
   },
   components: {
-    AddContact,
+    AddContact
   },
   methods: {
     closePhoneBook () {
@@ -136,4 +136,3 @@ export default {
   }
 }
 </style>
-

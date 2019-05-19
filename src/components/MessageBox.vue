@@ -39,7 +39,6 @@ export default {
   .wrapper {
     font-size: .26rem;
     position: absolute;
-    width: 5rem;
     padding: 10px;
     background: white;
     top: 50%;

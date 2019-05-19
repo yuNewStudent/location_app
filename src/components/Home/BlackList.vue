@@ -44,7 +44,7 @@
 </template>
 
 <script>
-import { Switch, DatetimePicker  } from 'mint-ui'
+import { Switch, DatetimePicker } from 'mint-ui'
 import MessageBox from '@/components/MessageBox'
 export default {
   data () {
@@ -177,4 +177,3 @@ export default {
   }
 }
 </style>
-

@@ -13,7 +13,7 @@
               <img src="@/assets/icon/home/SOS联系人IC.png" alt="">
               <p>SOS号码</p>
             </li>
-            <li class="setting_item">
+            <li class="setting_item" @click='showAlarmSeting'>
               <img src="@/assets/icon/home/闹钟IC.png" alt="">
               <p>闹钟设置</p>
             </li>
@@ -108,15 +108,18 @@
     <black-list
       v-if='isShowBlackList'
       @closeBlackList='closeBlackList'></black-list>
+    <alarm-seting
+      v-if='isShowAlarmSeting'
+      @closeAlarmSeting='closeAlarmSeting'></alarm-seting>
   </div>
 </template>
 
 <script>
 import Slider from '@/components/scroll'
-import AddDevice from '@/components/Home/AddDevice'
 import PhoneBook from '@/components/Home/PhoneBook'
 import EmergencyContact from '@/components/Home/EmergencyContact'
 import BlackList from '@/components/Home/BlackList'
+import AlarmSeting from '@/components/Home/AlarmSeting'
 import HeaderPage from '@/components/Header'
 export default {
   data () {
@@ -124,6 +127,7 @@ export default {
       isShowPhoneBook: false,
       isShowEmergencyContact: false,
       isShowBlackList: false,
+      isShowAlarmSeting: false,
       head_title: '首页'
     }
   },
@@ -132,13 +136,13 @@ export default {
     HeaderPage,
     PhoneBook,
     EmergencyContact,
-    BlackList
+    BlackList,
+    AlarmSeting
   },
   methods: {
     // 电话本
     showPhoneBook () {
       this.isShowPhoneBook = true
-      console.log(1)
     },
     closePhoneBook () {
       this.isShowPhoneBook = false
@@ -157,6 +161,13 @@ export default {
     },
     closeBlackList () {
       this.isShowBlackList = false
+    },
+    // 闹钟
+    showAlarmSeting () {
+      this.isShowAlarmSeting = true
+    },
+    closeAlarmSeting () {
+      this.isShowAlarmSeting = false
     }
   }
 }
