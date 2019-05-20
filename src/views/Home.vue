@@ -9,8 +9,9 @@
         <li
           v-for='(item, index) in navs'
           :key='index'
-          @click='handleRoute(item.name)'>
-          <img :src="item.icon" alt="">
+          @click='handleRoute(item.name, index)'>
+          <img v-if='index==active' :src="actives[index].icon" alt="">
+          <img v-else :src="item.icon" alt="">
           <span>{{item.title}}</span>
         </li>
       </ul>
@@ -24,10 +25,22 @@ export default {
   name: 'home',
   data () {
     return {
+      active: 0,
+      actives: [
+        {
+          icon: require('@/assets/icon/home/主页IC--高亮.png')
+        },
+        {
+          icon: require('@/assets/icon/home/定位IC--高亮.png')
+        },
+        {
+          icon: require('@/assets/icon/home/我的IC--高亮.png')
+        }
+      ],
       navs: [
         {
           title: '主页',
-          icon: require('@/assets/icon/home/主页IC--高亮.png'),
+          icon: require('@/assets/icon/home/主页IC—灰.png'),
           name: 'HomePage'
         },
         {
@@ -69,7 +82,8 @@ export default {
   },
   methods: {
     // 路由跳转
-    handleRoute (name) {
+    handleRoute (name, index) {
+      this.active = index
       this.$router.push({
         name
       })

@@ -36,6 +36,7 @@ export default {
   width: 100vw;
   bottom: 0;
   background: rgba(0,0,0,.3);
+  z-index: 6;
   .wrapper {
     font-size: .26rem;
     position: absolute;
