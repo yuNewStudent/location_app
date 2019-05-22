@@ -110,7 +110,7 @@ export default {
       align-items: center;
       justify-content: space-between;
       background: white;
-      margin-bottom: 2px;
+      margin-bottom: 5px;
       .info {
         font-size: .26rem;
         display: flex;

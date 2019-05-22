@@ -18,7 +18,7 @@
     </div>
     <div class="footer">
       <p class="center">
-        <label for="">请输入中心位置</label><input type="text">
+        <label for="">请输入中心位置</label><input id='tipinput' type="text" v-model="centerAddress" @focus="writeAddress">
       </p>
       <div class="range">
         <div class="range_wraper">
@@ -43,20 +43,27 @@
       :title="title"
       @closeAddContact='addFence'
       class="add_fence">
-      <input type="text"></message-box>
+      <input type="text" v-model='rangeQuery'></message-box>
   </div>
 </template>
 
 <script>
 import AMap from 'AMap'
 import MessageBox from '@/components/MessageBox'
+import { Toast } from 'mint-ui'
 export default {
   data () {
     return {
       map: null,
       defaultRange: 200,
       isShowAddFence: false,
-      title: '请输入围栏半径距离'
+      title: '请输入围栏半径距离',
+      centerAddress: '',
+      centerLngLat: [],
+      geocoder: null,
+      marker: null,
+      rangeQuery: '',
+      circle: null
     }
   },
   components: {
@@ -65,7 +72,7 @@ export default {
   mounted () {
     this.$nextTick(() => {
       this.initMap()
-      this.drawMarker(104.06406, 30.54311)
+      this.drawMarker([104.06406, 30.54311])
       // this.openInfo()
       const touchX = parseFloat(this.defaultRange * (this.$refs.progressBar.offsetWidth / 5000))
       // 设置按钮位置
@@ -85,25 +92,83 @@ export default {
         // 地图显示范围
         zoom: 15
       })
-      // 添加缩放标尺控件
-      // AMap.plugin(['AMap.Scale'], () => {
-      //   this.map.addControl(new AMap.Scale())
-      // })
-      // AMap.plugin(['AMap.Geocoder'], () => {
-      //   this.geocoder = new AMap.Geocoder({
-      //     radius: 1000,
-      //     extensions: 'all'
-      //   })
-      // })
+      this.drawCircle(104.06406, 30.54311, this.defaultRange)
+      this.map.on('click', (e) => {
+        this.map.remove(this.circle)
+        const location = [e.lnglat.lng, e.lnglat.lat]
+        this.centerLngLat = location
+        this.getCenterAddress(location)
+        this.map.setZoomAndCenter(15, location)
+        this.map.remove(this.marker)
+        this.drawMarker(location)
+        this.drawCircle(e.lnglat.lng, e.lnglat.lat, this.defaultRange)
+      })
+      AMap.plugin(['AMap.Geocoder'], () => {
+        this.geocoder = new AMap.Geocoder({
+          radius: 1000,
+          extensions: 'all'
+        })
+      })
+      AMap.plugin('AMap.Autocomplete', () => {
+        // 实例化Autocomplete
+        var autoOptions = {
+          // input 为绑定输入提示功能的input的DOM ID
+          input: 'tipinput'
+        }
+        var autoComplete = new AMap.Autocomplete(autoOptions)
+        AMap.event.addListener(autoComplete, 'select', (e) => {
+          this.centerLngLat = [e.poi.location.lng, e.poi.location.lat]
+          this.map.remove(this.circle)
+          this.map.remove(this.marker)
+          this.drawCircle(e.poi.location.lng, e.poi.location.lat, this.defaultRange)
+          this.drawMarker([e.poi.location.lng, e.poi.location.lat])
+        })
+        // 无需再手动执行search方法，autoComplete会根据传入input对应的DOM动态触发search
+      })
+    },
+    // 根据经纬度获取地址
+    getCenterAddress (lnglat) {
+      this.geocoder.getAddress(lnglat, (status, result) => {
+        if (status === 'complete' && result.regeocode) {
+          // address = result.regeocode.formattedAddress
+          this.centerAddress = result.regeocode.formattedAddress
+        } else {
+          alert(JSON.stringify(result))
+        }
+      })
     },
     // 绘制icon
-    drawMarker (longitude, latitude) {
-      let marker
-      marker = new AMap.Marker({
+    drawMarker (lnglat) {
+      this.marker = new AMap.Marker({
         icon: require('@/assets/icon/location/定位IC.png'),
-        position: [longitude, latitude]
+        position: lnglat
       })
-      this.map.add(marker)
+      this.map.add(this.marker)
+    },
+    // 绘制圆形范围
+    drawCircle (longitude, latitude, radius) {
+      this.circle = new AMap.Circle({
+        center: [longitude, latitude],
+        radius: radius, // 半径
+        strokeOpacity: 0,
+        fillOpacity: 0.3,
+        // 线样式还支持 'dashed'
+        fillColor: '#1791fc',
+        zIndex: 50
+      })
+      this.circle.setMap(this.map)
+      this.circle.on('click', (e) => {
+        this.map.remove(this.circle)
+        const location = [e.lnglat.lng, e.lnglat.lat]
+        this.centerLngLat = location
+        this.getCenterAddress(location)
+        this.map.setZoomAndCenter(15, location)
+        this.map.remove(this.marker)
+        this.drawMarker(location)
+        this.drawCircle(e.lnglat.lng, e.lnglat.lat, this.defaultRange)
+      })
+      // 缩放至合适位置
+      this.map.setFitView([this.circle])
     },
     // 信息窗体
     openInfo () {
@@ -121,14 +186,40 @@ export default {
     closeFence () {
       this.$emit('closeFence')
     },
-    handleSave () {},
+    handleSave () {
+      if (!this.defaultRange || !this.centerLngLat.length) {
+        return Toast({
+          message: '信息不能为空',
+          iconClass: 'icon icon-error'
+        })
+      }
+      this.$http.get(`${config.httpBaseUrl}/appPosition/Appelectricfence`, {
+        params: {
+          userId: 9512494668,
+          wem: this.defaultRange / 1000,
+          longitud: this.centerLngLat[0],
+          latind: this.centerLngLat[1]
+        }
+      }).then(res => {
+        if (res.code === 200) {
+          Toast({
+            message: '操作成功',
+            iconClass: 'icon icon-success'
+          })
+        }
+      })
+    },
     rangeStart (e) {
       let moveStartX = e.touches[0].pageX
       let touchX = moveStartX - this.$refs.progressBar.offsetLeft
       // 设置按钮位置
       this.$refs.control.style.left = touchX - 3 + 'px'
       // 设置active宽度
-      this.$refs.active.style.width = touchX + 'px'
+      this.$refs.active.style.width = touchX + 'px'// 设置距离
+      this.defaultRange = parseInt(touchX / (this.$refs.progressBar.offsetWidth / 5000))
+      this.circle.setRadius(this.defaultRange)
+      // 缩放至合适位置
+      this.map.setFitView([this.circle])
     },
     rangeEnd (e) {
 
@@ -149,6 +240,9 @@ export default {
       this.$refs.active.style.width = touchX + 'px'
       // 设置距离
       this.defaultRange = parseInt(touchX / (this.$refs.progressBar.offsetWidth / 5000))
+      this.circle.setRadius(this.defaultRange)
+      // 缩放至合适位置
+      this.map.setFitView([this.circle])
     },
     handleReduce () {
       this.defaultRange = this.defaultRange - 100
@@ -174,6 +268,16 @@ export default {
     },
     addFence () {
       this.isShowAddFence = false
+      if (this.rangeQuery < 200 || this.rangeQuery > 5000) { return }
+      this.defaultRange = this.rangeQuery
+      const touchX = parseFloat(this.defaultRange * (this.$refs.progressBar.offsetWidth / 5000))
+      // 设置按钮位置
+      this.$refs.control.style.left = touchX - 3 + 'px'
+      // 设置active宽度
+      this.$refs.active.style.width = touchX + 'px'
+    },
+    writeAddress () {
+      console.log(1)
     }
   }
 }
@@ -183,7 +287,7 @@ export default {
 .fence_page {
   position: fixed;
   top: .48rem;
-  bottom: -1rem;
+  bottom: 0;
   width: 100vw;
   .home_header {
     background: #15BF86;
@@ -212,12 +316,11 @@ export default {
       width: 100vw;
       position: absolute;
       top: .96rem;
-      bottom: 0;
+      bottom: 2.4rem;
     }
     .control {
       position: fixed;
       top: 1.44rem;
-      bottom: 1rem;
       right: 5px;
       display: flex;
       flex-direction: column;
@@ -274,6 +377,7 @@ export default {
       .range_wraper {
         display: flex;
         align-items: center;
+        margin-top: 5px;
         .start {}
         .health {
           position: relative;
@@ -281,6 +385,8 @@ export default {
           height: 1px;
           width: 4.2rem;
           margin: 0 5px;
+          border-top: 10px solid white;
+          border-bottom: 10px solid white;
           position: relative;
           .text {
             position: absolute;
@@ -306,6 +412,9 @@ export default {
         }
         .end {}
       }
+      .more {
+        margin-top: 5px;
+      }
     }
   }
   .add_fence {
@@ -317,6 +426,7 @@ export default {
       border: 1px solid rgba(148,235,206,1);
       border-radius: 3px;
       margin: 10px 10px;
+      padding: 0 5px;
     }
   }
 }

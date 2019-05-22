@@ -3,6 +3,7 @@
     <div class="home_header">
       <img src='@/assets/icon/home/箭头.png' class="back" @click='closeRoute'/>
       <span class="title">行走轨迹</span>
+      <span></span>
     </div>
     <div class="content">
       <div id="map"></div>
@@ -16,7 +17,7 @@
       </div>
       <div class="slect_date">
         <div class="date">
-          <img src="" alt="">
+          <img src="@/assets/icon/location/日历IC.png" alt="">
           <input @focus="selectDate" type="text" v-model="pickerVisible.date">
         </div>
         <div class="time_start">
@@ -56,16 +57,19 @@
 
 <script>
 import AMap from 'AMap'
-import { DatetimePicker } from 'mint-ui'
+import { DatetimePicker, Toast } from 'mint-ui'
 export default {
   data () {
     return {
       map: null,
+      timer: null,
       pickerVisible: {
-        date: '',
+        date: '2019-05-20',
         startTime: '',
         endTime: ''
       },
+      polyline: null,
+      routes: [],
       currentOpera: '回放'
     }
   },
@@ -75,7 +79,6 @@ export default {
   mounted () {
     this.$nextTick(() => {
       this.initMap()
-      this.drawMarker(104.06406, 30.54311)
     })
   },
   methods: {
@@ -85,57 +88,208 @@ export default {
         // 调整窗口大小
         resizeEnable: true,
         // 设置中心点
-        center: [104.06406, 30.54311],
+        center: [104.0574050, 30.540512],
         // 地图显示范围
-        zoom: 15
+        zoom: 14
       })
-      // 添加缩放标尺控件
-      // AMap.plugin(['AMap.Scale'], () => {
-      //   this.map.addControl(new AMap.Scale())
-      // })
-      // AMap.plugin(['AMap.Geocoder'], () => {
-      //   this.geocoder = new AMap.Geocoder({
-      //     radius: 1000,
-      //     extensions: 'all'
-      //   })
-      // })
-    },
-    // 绘制icon
-    drawMarker (longitude, latitude) {
-      let marker
-      marker = new AMap.Marker({
-        icon: require('@/assets/icon/location/定位IC.png'),
-        position: [longitude, latitude]
-      })
-      this.map.add(marker)
     },
     closeRoute () {
       this.$emit('closeRoute')
     },
     selectDate () {
+      document.activeElement.blur()
       this.$refs.datepicker.open()
     },
     confirmDate (value) {
-      console.log(value)
-      this.pickerVisible.date = value
+      this.pickerVisible.date = this.moment(value).format('YYYY-MM-DD')
     },
     selectStartTime () {
+      document.activeElement.blur()
       this.$refs.startTime.open()
     },
     confirmStartTime (value) {
       this.pickerVisible.startTime = value
     },
     selectEndTime () {
+      document.activeElement.blur()
       this.$refs.endTime.open()
     },
     confirmEndTime (value) {
+      console.log(value)
       this.pickerVisible.endTime = value
     },
     handleplayback () {
       this.currentOpera = '回放'
+      this.map && this.map.remove(this.polyline)
+      if (!this.routes.length) {
+        for (var k in this.pickerVisible) {
+          if (!this.pickerVisible[k]) {
+            return Toast({
+              message: '查询条件不能有空',
+              iconClass: 'icon icon-error'
+            })
+          }
+        }
+        const data = {
+          startTime: this.pickerVisible.startTime.slice(0, 2),
+          endTime: this.pickerVisible.endTime.slice(0, 2),
+          date: this.pickerVisible.date,
+          userId: 9512494668
+        }
+        this.$http.get(`${config.httpBaseUrl}/appPosition/getAPPtracks`, {
+          params: data
+        }).then(res => {
+          if (res.code === 200 && res.date.maplocations) {
+            this.routes = res.date.maplocations
+          } else {
+            Toast({
+              message: '没有查询到数据',
+              iconClass: 'icon icon-error'
+            })
+          }
+        })
+      }
+      
+      let  i = 0
+      this.timer = setInterval(() => {
+        if (i > this.routes.length - 2) {
+          return clearInterval(this.timer)
+        }
+        var path = []
+        console.log(i)
+        this.map.setZoomAndCenter(15, [this.routes[i].longitude, this.routes[i].latitude])
+        this.translateGps(this.routes[i].longitude, this.routes[i].latitude).then(data => {
+          path.push(new AMap.LngLat(data[0].lng, data[0].lat))
+          this.translateGps(this.routes[i + 1].longitude, this.routes[i + 1].latitude).then(data => {
+            path.push(new AMap.LngLat(data[0].lng, data[0].lat))
+            this.polyline = new AMap.Polyline({
+              path: path,
+              strokeColor: '#15BF86',
+              strokeWeight: 2,
+              lineJoin: 'round',
+              lineCap: 'round'
+            })
+            this.map.add(this.polyline)
+            i += 1
+          })
+        })
+      }, 1000)
+      // for (let i = 0; i < this.routes.length - 2; i++) {
+      //   this.timer = setTimeout(() => {
+      //     var path = []
+      //     this.map.setZoomAndCenter(15, [this.routes[i].longitude, this.routes[i].latitude])
+      //     this.translateGps(this.routes[i].longitude, this.routes[i].latitude).then(data => {
+      //       // this.drawMarker(data[0].lng, data[0].lat, 'person', index)
+      //       path.push(new AMap.LngLat(data[0].lng, data[0].lat))
+      //       this.translateGps(this.routes[i + 1].longitude, this.routes[i + 1].latitude).then(data => {
+      //         // this.drawMarker(data[0].lng, data[0].lat, 'person', index)
+      //         path.push(new AMap.LngLat(data[0].lng, data[0].lat))
+      //         this.polyline = new AMap.Polyline({
+      //           path: path,
+      //           strokeColor: '#15BF86',
+      //           strokeWeight: 2,
+      //           lineJoin: 'round',
+      //           lineCap: 'round'
+      //         })
+      //         this.map.add(this.polyline)
+      //       })
+      //     })
+      //   }, i * 1000)
+      // }
     },
+    // 绘制起点坐标
+    drawStartMark () {
+      var marker
+      const longitude = this.routes[0].longitude
+      const latitude = this.routes[0].latitude
+      this.translateGps(longitude, latitude).then(data => {
+        marker = new AMap.Marker({
+          icon: require('@/assets/icon/location/起点IC.png'),
+          position: [data[0].lng, data[0].lat]
+        })
+        this.map.add(marker)
+      })
+    },
+    // 绘制终点坐标
+    drawEndMark () {
+      var marker
+      const longitude = this.routes.slice(-1)[0].longitude
+      const latitude = this.routes.slice(-1)[0].latitude
+      this.translateGps(longitude, latitude).then(data => {
+        marker = new AMap.Marker({
+          icon: require('@/assets/icon/location/终点IC.png'),
+          position: [data[0].lng, data[0].lat]
+        })
+        this.map.add(marker)
+      })
+    },
+    // 绘制路径
+    drawLine () {
+      var path = []
+      this.routes.forEach(item => {
+        this.translateGps(item.longitude, item.latitude).then(data => {
+          path.push(new AMap.LngLat(data[0].lng, data[0].lat))
+        })
+      })
+      setTimeout(() => {
+        this.polyline = new AMap.Polyline({
+          path: path,
+          strokeColor: '#15BF86',
+          strokeWeight: 2,
+          lineJoin: 'round',
+          lineCap: 'round'
+        })
+        this.map.add(this.polyline)
+      }, 4000)
+    },
+    // 获取所有点位
     handletrajectory () {
       this.currentOpera = '轨迹'
+      if (this.timer) {
+        clearInterval(this.timer)
+      }
+      for (var k in this.pickerVisible) {
+        if (!this.pickerVisible[k]) {
+          return Toast({
+            message: '查询条件不能有空',
+            iconClass: 'icon icon-error'
+          })
+        }
+      }
+      this.map && this.map.clearMap()
+      this.polyline && this.map.remove(this.polyline)
+      const data = {
+        startTime: this.pickerVisible.startTime.slice(0, 2),
+        endTime: this.pickerVisible.endTime.slice(0, 2),
+        date: this.pickerVisible.date,
+        userId: 9512494668
+      }
+      this.$http.get(`${config.httpBaseUrl}/appPosition/getAPPtracks`, {
+        params: data
+      }).then(res => {
+        if (res.code === 200 && res.date.maplocations) {
+          this.routes = res.date.maplocations
+          this.drawStartMark()
+          this.drawLine()
+          this.drawEndMark()
+        } else {
+          Toast({
+            message: '没有查询到数据',
+            iconClass: 'icon icon-error'
+          })
+        }
+      })
+    },
+    // gps转高德坐标
+    translateGps (lng, lat) {
+      const gps = [lng, lat]
+      return new Promise((resolve, reject) => {
+        AMap.convertFrom(gps, 'gps', (status, result) => {
+          if (result.info === 'ok') {
+            resolve(result.locations)
+          }
+        })
+      })
     }
   }
 }
@@ -208,7 +362,6 @@ export default {
       width: 100vw;
       padding: 10px 20px;
       box-sizing: border-box;
-      justify-content: space-between;
       >div {
         display: flex;
         align-items: center;
@@ -217,7 +370,6 @@ export default {
         box-sizing: border-box;
         padding: .1rem 5px;
         background: white;
-        margin: 0 5px;
         img {
           width: .33rem;
           height: .34rem;
@@ -228,18 +380,20 @@ export default {
         }
       }
       .date {
+        margin-right: 50px;
         input {
-          width: 1.2rem;
+          width: 1.5rem;
         }
       }
       .time_start {
+        margin-right: 10px;
         input {
-          width: 1rem;
+          width: .8rem;
         }
       }
       .time_end {
         input {
-          width: 1rem;
+          width: .8rem;
         }
       }
     }

@@ -1,7 +1,9 @@
 <template>
   <div class="black_list">
     <div class="home_header">
-      <img src='@/assets/icon/home/箭头.png' class="back" @click='closeBlackList'/>
+      <span class="back">
+        <img src='@/assets/icon/home/箭头.png' @click='closeBlackList'/>
+      </span>
       <span class="title">免打扰</span>
       <span @click='handleAddBlackList' class="comfirm">自定义</span>
     </div>
@@ -112,13 +114,19 @@ export default {
     align-items: center;
     justify-content: space-between;
     .back {
-      width: .18rem;
-      height: .25rem;
+      width: 60px;
+      img {
+        width: .18rem;
+        height: .25rem;
+      }
     }
     .title {
       text-align: center;
+      flex: 1;
     }
     .comfirm {
+      width: 60px;
+      text-align: right;
       font-size: .28rem;
     }
   }

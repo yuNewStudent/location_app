@@ -1,7 +1,9 @@
 <template>
   <div class="home_header">
-    <img class="headIcon" src="@/assets/icon/home/userImg.png" alt="">
-    <span>{{title}}</span>
+    <span class="headIcon">
+      <img src="@/assets/icon/home/userImg.png" alt="">
+    </span>
+    <span class="title">{{title}}</span>
     <div class="device" @click='handleShowDeviceManage'>
       <img class="log" src="@/assets/icon/home/手表IC.png" alt="">
       <div class="deviceManage" v-if='isShowDeviceManage'>
@@ -13,7 +15,7 @@
           <img src="" alt="">
           <span>真相的手表</span>
         </p>
-        <p @click.stop="handleAddDevice">
+        <p class="addBtn" @click.stop="handleAddDevice">
           <img src="" alt="">
           <span>新增设备</span>
         </p>
@@ -71,10 +73,19 @@ export default {
   padding: 0 0.36rem;
   .headIcon {
     width: 0.64rem;
-    height: 0.64rem;
-    border-radius: 50%;
+    img {
+      width: 0.64rem;
+      height: 0.64rem;
+      border-radius: 50%;
+    }
+  }
+  .title {
+    flex: 1;
+    text-align: center;
   }
   .device {
+    width: 0.64rem;
+    text-align: right;
     position: relative;
     .log {
       width: 0.22rem;
@@ -83,8 +94,13 @@ export default {
     .deviceManage {
       position: absolute;
       right: -0.2rem;
-      z-index: 2;
       background: white;
+      z-index: 2;
+      padding-bottom: 10px;
+      .addBtn {
+        margin-top: 2px;
+        background: #D9FBEF;
+      }
       p {
         color: black;
         font-size: .22rem;

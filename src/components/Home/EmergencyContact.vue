@@ -1,7 +1,9 @@
 <template>
   <div class="emergency_contact">
     <div class="home_header">
-      <img src='@/assets/icon/home/箭头.png' class="back" @click='closeEmergencyContact'/>
+      <span class="back">
+        <img src='@/assets/icon/home/箭头.png' @click='closeEmergencyContact'/>
+      </span>
       <span class="title">SOS联系人</span>
       <span @click='handleEditor' class="comfirm">{{type}}</span>
     </div>
@@ -86,13 +88,19 @@ export default {
     align-items: center;
     justify-content: space-between;
     .back {
-      width: .18rem;
-      height: .25rem;
+      width: 60px;
+      img {
+        width: .18rem;
+        height: .25rem;
+      }
     }
     .title {
       text-align: center;
+      flex: 1;
     }
     .comfirm {
+      width: 60px;
+      text-align: right;
       font-size: .28rem;
     }
   }

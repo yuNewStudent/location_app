@@ -32,7 +32,8 @@ export default {
       head_title: '定位',
       isShowFencePage: false,
       isShowRoutePage: false,
-      map: null
+      map: null,
+      DeviceInfo: {}
     }
   },
   components: {
@@ -41,10 +42,12 @@ export default {
     RoutePage
   },
   created () {
+    this.getDeviceInfo()
+    this.timer = setInterval(() => {
+      this.getDeviceInfo()
+    }, 60000)
     this.$nextTick(() => {
       this.initMap()
-      this.drawMarker(104.06406, 30.54311)
-      this.openInfo()
     })
   },
   methods: {
@@ -54,20 +57,20 @@ export default {
         // 调整窗口大小
         resizeEnable: true,
         // 设置中心点
-        center: [104.06406, 30.54311],
+        center: [104.0574050, 30.540512],
         // 地图显示范围
-        zoom: 15
+        zoom: 17
       })
       // 添加缩放标尺控件
       // AMap.plugin(['AMap.Scale'], () => {
       //   this.map.addControl(new AMap.Scale())
       // })
-      // AMap.plugin(['AMap.Geocoder'], () => {
-      //   this.geocoder = new AMap.Geocoder({
-      //     radius: 1000,
-      //     extensions: 'all'
-      //   })
-      // })
+      AMap.plugin(['AMap.Geocoder'], () => {
+        this.geocoder = new AMap.Geocoder({
+          radius: 1000,
+          extensions: 'all'
+        })
+      })
     },
     // 绘制icon
     drawMarker (longitude, latitude) {
@@ -79,18 +82,67 @@ export default {
       this.map.add(marker)
     },
     // 信息窗体
-    openInfo () {
-      // 构建信息窗体中显示的内容
-      let info = `
-        <div style='font-size:.24rem; width: 5rem'>
-          当前位置：<span>成都市高新区天府四街吉泰路5号OCG大厦B座</span>
-        <div>`
-      let infoWindow = new AMap.InfoWindow({
-        // 使用默认信息窗体框样式，显示信息内容
-        content: info
+    openInfo (lng, lat) {
+      this.getAddress(lng, lat).then(data => {
+        // 构建信息窗体中显示的内容
+        let info = `
+          <div style='font-size:.24rem; width: 5rem'>
+            当前位置：<span>${data}</span>
+          <div>`
+        let infoWindow = new AMap.InfoWindow({
+          // 使用默认信息窗体框样式，显示信息内容
+          content: info,
+          offset: new AMap.Pixel(5, -30)
+        })
+        infoWindow.open(this.map, this.map.getCenter())
       })
-      infoWindow.open(this.map, this.map.getCenter())
+    },
+    // 获取设备信息
+    getDeviceInfo () {
+      this.$http.get(`${config.httpBaseUrl}/appPosition/getAppposition`, {
+        params: {
+          userId: 9512494668
+        }
+      }).then(res => {
+        if (res.code === 200) {
+          this.DeviceInfo = res.date.pos
+          // 绘制当前人
+          this.translateGps(this.DeviceInfo.locationBean.longitude, this.DeviceInfo.locationBean.latitude).then(data => {
+            this.map.setZoomAndCenter(14, [data[0].lng, data[0].lat])
+            this.drawMarker(data[0].lng, data[0].lat)
+            this.openInfo(data[0].lng, data[0].lat)
+          })
+        }
+      })
+    },
+    // 根据经纬度获取地址
+    getAddress (lng, lat) {
+      const lnglat = [lng, lat]
+      return new Promise((resolve, reject) => {
+        this.geocoder.getAddress(lnglat, (status, result) => {
+          if (status === 'complete' && result.regeocode) {
+            // address = result.regeocode.formattedAddress
+            resolve(result.regeocode.formattedAddress)
+          } else {
+            alert(JSON.stringify(result))
+          }
+        })
+      })
+    },
+    // gps转高德坐标
+    translateGps (lng, lat) {
+      const gps = [lng, lat]
+      return new Promise((resolve, reject) => {
+        AMap.convertFrom(gps, 'gps', (status, result) => {
+          if (result.info === 'ok') {
+            resolve(result.locations)
+          }
+        })
+      })
     }
+  },
+  destroyed () {
+    clearInterval(this.timer)
   }
 }
 </script>

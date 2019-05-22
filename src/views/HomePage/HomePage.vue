@@ -27,7 +27,7 @@
           <img src="@/assets/icon/home/定位IC.png" alt="">成都市武侯区桂溪街道基泰路112OCG国际中心
         </div>
         <ul class="information">
-          <li class="information_item">
+          <li class="information_item" @click='isShowNoteStep=!isShowNoteStep'>
             <div class="information_title">
               <span class="text">计步</span>
               <img src="@/assets/icon/home/箭头 拷贝.png" alt="">
@@ -45,7 +45,7 @@
               </div>
             </div>
           </li>
-          <li class="information_item">
+          <li class="information_item" @click='isShowHeartRate=!isShowHeartRate'>
             <div class="information_title">
               <span class="text">心率</span>
               <img src="@/assets/icon/home/箭头 拷贝.png" alt="">
@@ -62,7 +62,7 @@
               </div>
             </div>
           </li>
-          <li class="information_item">
+          <li class="information_item" @click='isShowSleepPage=!isShowSleepPage'>
             <div class="information_title">
               <span class="text">睡眠</span>
               <img src="@/assets/icon/home/箭头 拷贝.png" alt="">
@@ -79,7 +79,7 @@
               </div>
             </div>
           </li>
-          <li class="information_item">
+          <li class="information_item" @click='isShowBloodPressure=!isShowBloodPressure'>
             <div class="information_title">
               <span class="text">血压</span>
               <img src="@/assets/icon/home/箭头 拷贝.png" alt="">
@@ -111,6 +111,18 @@
     <alarm-seting
       v-if='isShowAlarmSeting'
       @closeAlarmSeting='closeAlarmSeting'></alarm-seting>
+    <note-step
+      v-if='isShowNoteStep'
+      @closeNoteStep='isShowNoteStep=!isShowNoteStep'></note-step>
+    <heart-rate
+      v-if='isShowHeartRate'
+      @closeHeartRate='isShowHeartRate=!isShowHeartRate'></heart-rate>
+    <sleep-page
+      v-if='isShowSleepPage'
+      @closeSleep='isShowSleepPage=!isShowSleepPage'></sleep-page>
+    <blood-pressure
+      v-if='isShowBloodPressure'
+      @closeBloodPressure='isShowBloodPressure=!isShowBloodPressure'></blood-pressure>
   </div>
 </template>
 
@@ -121,6 +133,10 @@ import EmergencyContact from '@/components/Home/EmergencyContact'
 import BlackList from '@/components/Home/BlackList'
 import AlarmSeting from '@/components/Home/AlarmSeting'
 import HeaderPage from '@/components/Header'
+import NoteStep from '@/components/Home/NoteStep'
+import HeartRate from '@/components/Home/HeartRate'
+import SleepPage from '@/components/Home/Sleep'
+import BloodPressure from '@/components/Home/BloodPressure'
 export default {
   data () {
     return {
@@ -128,6 +144,10 @@ export default {
       isShowEmergencyContact: false,
       isShowBlackList: false,
       isShowAlarmSeting: false,
+      isShowBloodPressure: false,
+      isShowSleepPage: false,
+      isShowHeartRate: false,
+      isShowNoteStep: false,
       head_title: '首页'
     }
   },
@@ -137,7 +157,11 @@ export default {
     PhoneBook,
     EmergencyContact,
     BlackList,
-    AlarmSeting
+    AlarmSeting,
+    NoteStep,
+    HeartRate,
+    SleepPage,
+    BloodPressure
   },
   methods: {
     // 电话本
@@ -168,7 +192,14 @@ export default {
     },
     closeAlarmSeting () {
       this.isShowAlarmSeting = false
-    }
+    },
+    // 计步
+    // closeNoteStep () {
+    //   this.isShowNoteStep = false
+    // },
+    // 心率
+    // 睡眠
+    // 血压
   }
 }
 </script>
