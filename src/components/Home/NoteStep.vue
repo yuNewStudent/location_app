@@ -14,9 +14,10 @@
           <span class="date">2019-05-16</span>
           <span class="next">后一天</span>
         </p>
-        <canvas id="canvas"></canvas>
+        <div class="canvas_wrapper"><canvas id="canvas"></canvas></div>
         <div class="desc">
-          
+          <p class="step_title">今日步数</p>
+          <p class="step_num">3444</p>
         </div>
       </div>
       <div class="all_day">
@@ -42,28 +43,28 @@ export default {
     closeNoteStep () {
       this.$emit('closeNoteStep')
     },
-    drawChart () {
-      let c = document.getElementById('canvas')
-      let ctx = c.getContext('2d')
+    drawBg (ctx) {
       ctx.beginPath()
       ctx.lineWidth = 7
       ctx.strokeStyle = '#CCCCCC'
-      ctx.arc(150, 75, 55, 0, 1*Math.PI)
+      ctx.arc(150, 75, 55, 0, 1 * Math.PI)
       ctx.stroke()
+    },
+    drawChart () {
+      let c = document.getElementById('canvas')
+      let ctx = c.getContext('2d')
+      this.drawBg(ctx)
       ctx.beginPath()
-      var gr = ctx.createRadialGradient(50, 50, 25, 100, 100, 100)
-      //添加颜色端点
-      gr.addColorStop(0,'#15BF86')
-      gr.addColorStop(1,'#5FD3AC')
-      ctx.lineWidth = 7
-      ctx.strokeStyle = gr
       ctx.lineCap = 'round'
-      ctx.arc(150, 75, 55, 1*Math.PI, 2*Math.PI)
+      ctx.lineWidth = 7
+      ctx.strokeStyle = '#5FD3AC'
+      ctx.arc(150, 75, 55, 1 * Math.PI, 2 * Math.PI)
       ctx.stroke()
     },
     initChart () {
       let chart = echarts.init(document.getElementById('chart'))
       const option = {
+        grid: {left: '13%'},
         xAxis: {
           type: 'category',
           data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
@@ -72,14 +73,25 @@ export default {
           type: 'value'
         },
         series: [{
-          barWidth : 15,
           itemStyle: {
             normal: {
               color: '#56E4B4',
+              label: {
+                // 开启显示
+                show: true,
+                // 在上方显示
+                position: 'top',
+                // 数值样式
+                textStyle: {
+                  color: '#15BF86',
+                  fontSize: 11
+                }
+              }
             }
           },
-          data: [2000, 4000, 30000, 5000, 12000, 6000, 9000],
-          type: 'bar'
+          data: [820, 932, 901, 934, 1290, 1330, 1320],
+          type: 'bar',
+          barWidth: 15
         }]
       }
       chart.setOption(option)
@@ -127,6 +139,9 @@ export default {
     .one_day {
       padding: .36rem;
       background: white;
+      position: relative;
+      height: 4.4rem;
+      box-sizing: border-box;
       .title {
         display: flex;
         align-items: center;
@@ -150,12 +165,37 @@ export default {
           border: 1px solid #B9B9B9;
         }
       }
-      #canvas {
+      .desc {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -25%);
+        .step_title {
+           font-size: .24rem;
+           color: #888888;
+           line-height: .4rem;
+           text-align: center;
+        }
+        .step_num {
+          font-size: .56rem;
+          color: #15BF86;
+        }
+      }
+      .canvas_wrapper {
         width: 300px;
+        margin: 0 auto;
         height: 150px;
+        #canvas {
+          width: 300px;
+          height: 150px;
+        }
       }
     }
     .all_day {
+      position: fixed;
+      top: 5.84rem;
+      bottom: 0;
+      width: 100vw;
       background: white;
       margin-top: 10px;
       padding: 10px 10px 0;
@@ -163,7 +203,8 @@ export default {
         font-size: .28rem;
       }
       #chart {
-        height: 250px;
+        height: 90%;
+        width: 100%;
       }
     }
   }

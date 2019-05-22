@@ -1,7 +1,7 @@
 <template>
-  <div class="login">
+  <div class="register">
     <div class="bglayer"></div>
-    <div class="home_header">登录</div>
+    <div class="home_header">注册</div>
     <div class="content">
       <span class="head_img">
         <img src="@/assets/icon/home/userImg.png" alt="">
@@ -15,19 +15,20 @@
         <input type="text" ref='password' placeholder="请输入登陆密码">
         <img @clcik='changeType' class="eye" src="@/assets/icon/login/eye—close.png" alt="">
       </p>
-      <p class="info">
-        <span>自动登陆</span>
-        <span>忘记密码？</span>
+      <p class="resetpassword">
+        <img class="pass" src="@/assets/icon/login/密码IC.png" alt="">
+        <input type="text" ref='password' placeholder="请再次确认密码">
+        <img @clcik='changeType' class="eye" src="@/assets/icon/login/eye—close.png" alt="">
       </p>
-      <div class="login_btn">登录</div>
-      <div class="register_btn">注册</div>
+      <div class="login_btn">注册</div>
+      <div class="register_btn">已有账号？马上登录</div>
     </div>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'login',
+  name: 'register',
   data () {
     return {
     }
@@ -41,7 +42,7 @@ export default {
 </script>
 
 <style lang='scss' scoped>
-.login {
+.register {
   width: 100vw;
   height: 100vh;
   background: #49BA94;
@@ -116,6 +117,30 @@ export default {
 
       }
     }
+    .resetpassword {
+      background:rgba(255,255,255,0.6);
+      display: flex;
+      border-radius: .45rem;
+      height: .9rem;
+      padding: 0 .45rem;
+      margin-top: 20px;
+      align-items: center;
+      input {
+        width: 100%;
+        background: transparent;
+        height: .32rem;
+        margin-left: 10px;
+      }
+      img.pass {
+        width: .3rem;
+        height: .32rem;
+      }
+      img.eye {
+        width: .36rem;
+        height: .16rem;
+
+      }
+    }
     .info {
       color: #FFFFFF;
       font-size: .24rem;
@@ -135,28 +160,7 @@ export default {
       margin: 50px 0 20px;
     }
     .register_btn {
-      color: white;
-      position: relative;
-      &:after {
-        position: absolute;
-        right: 0;
-        top: 50%;
-        content: '';
-        display: inline-block;
-        width: 2.1rem;
-        height: 1px;
-        background:rgba(255,255,255,1);
-      }
-      &:before {
-        position: absolute;
-        left: 0;
-        top: 50%;
-        content: '';
-        display: inline-block;
-        width: 2.1rem;
-        height: 1px;
-        background:rgba(255,255,255,1);
-      }
+      color: black;
     }
   }
 }

@@ -7,7 +7,7 @@ import Axios from 'axios'
 import App from './App'
 import router from './router'
 import Moment from 'moment'
-import './assets/js/appback.js'
+// import './assets/js/appback.js'
 
 Vue.config.productionTip = false
 Vue.prototype.moment = Moment

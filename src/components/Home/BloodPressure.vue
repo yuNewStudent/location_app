@@ -7,6 +7,25 @@
       <span class="title">血压</span>
       <span class="comfirm"></span>
     </div>
+    <div class="content">
+      <div class="one_day">
+        <p class="title">
+          <span class="back">前一天</span>
+          <span class="date">2019-05-16</span>
+          <span class="next">后一天</span>
+        </p>
+        <p class="text">当前血压</p>
+        <div class="blood">
+          <div class="high">高压:<span>129mmHg</span></div>
+          <div class="low">低压<span>78mmHg</span></div>
+        </div>
+        <p class="long_range">远程测量</p>
+      </div>
+      <div class="all_day">
+        <div class="title">本周血压</div>
+        <div id="chart"></div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -15,9 +34,67 @@ export default {
   data () {
     return {}
   },
+  mounted () {
+    console.log(1)
+    this.initChart()
+  },
   methods: {
     closeBloodPressure () {
       this.$emit('closeBloodPressure')
+    },
+    initChart () {
+      let chart = echarts.init(document.getElementById('chart'))
+      const option = {
+        xAxis: {
+          type: 'category',
+          data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
+        },
+        yAxis: {
+          type: 'value'
+        },
+        series: [{
+          itemStyle: {
+            normal: {
+              color: '#15BF86',
+              label: {
+                // 开启显示
+                show: true,
+                // 在上方显示
+                position: 'top',
+                // 数值样式
+                textStyle: {
+                  fontSize: 12,
+                  fontWeight: 500
+                }
+              }
+            }
+          },
+          data: [89, 98, 79, 87, 93, 110, 77],
+          type: 'line'
+        },
+        {
+          itemStyle: {
+            normal: {
+              color: '#E19C35',
+              label: {
+                // 开启显示
+                show: true,
+                // 在上方显示
+                position: 'bottom',
+                // 数值样式
+                textStyle: {
+                  color: '#E19C35',
+                  fontSize: 12,
+                  fontWeight: 500
+                }
+              }
+            }
+          },
+          data: [80, 89, 73, 80, 76, 100, 75],
+          type: 'line'
+        }]
+      }
+      chart.setOption(option)
     }
   }
 }
@@ -25,7 +102,6 @@ export default {
 
 <style lang="scss" scoped>
 .blood_pressure {
-  
   position: fixed;
   top: .48rem;
   bottom: 0;
@@ -57,6 +133,85 @@ export default {
       width: 60px;
       text-align: right;
       font-size: .28rem;
+    }
+  }
+  .content {
+    .one_day {
+      padding: .36rem;
+      background: white;
+      height: 4.4rem;
+      box-sizing: border-box;
+      .title {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: .24rem;
+        .back {
+          width: 1rem;
+          height: .5rem;
+          text-align: center;
+          line-height: .5rem;
+          color: #15BF86;
+          border: 1px solid #15BF86;
+        }
+        .date {}
+        .next {
+          width: 1rem;
+          height: .5rem;
+          text-align: center;
+          line-height: .5rem;
+          color: #B9B9B9;
+          border: 1px solid #B9B9B9;
+        }
+      }
+      .text {
+        text-align: center;
+        font-size: .28rem;
+        margin: .5rem 0;
+      }
+      .blood {
+        text-align: center;
+        font-size: .26rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: .7rem 0;
+        .high {
+          margin-right: 20px;
+        }
+        span {
+          font-size: .36rem;
+          margin-left: 5px;
+          color: #15BF86;
+        }
+      }
+      .long_range {
+        width: 4rem;
+        height: .6rem;
+        line-height: .6rem;
+        background: linear-gradient(-90deg,rgba(21,191,134,1),rgba(51,221,164,1));
+        border-radius: .30rem;
+        font-size: .28rem;
+        text-align: center;
+        margin: 0 auto;
+        color: white;
+      }
+    }
+    .all_day {
+      position: fixed;
+      top: 5.84rem;
+      bottom: 0;
+      width: 100vw;
+      background: white;
+      margin-top: 10px;
+      padding: 10px 10px 0;
+      .title {
+        font-size: .28rem;
+      }
+      #chart {
+        height: 90%;
+        width: 100%;
+      }
     }
   }
 }
