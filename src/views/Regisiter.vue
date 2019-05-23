@@ -25,13 +25,14 @@
         <img
           @click='changeReType' class="eye" :src="reImg" alt="">
       </p>
-      <div class="login_btn">注册</div>
-      <div @click='goLogin' class="register_btn">已有账号？马上登录</div>
+      <div @click="goLogin" class="login_btn">注册</div>
+      <div @click='immediatelylogin' class="register_btn">已有账号？马上登录</div>
     </div>
   </div>
 </template>
 
 <script>
+import { Switch, Toast, DatetimePicker } from 'mint-ui'
 export default {
   name: 'register',
   data () {
@@ -67,9 +68,26 @@ export default {
       }
     },
     goLogin () {
+      const data = {
+          appuserNumber:this.userInfo.name,
+          appuserPassword:this.userInfo.password,
+        }
+        this.$http.post(`${config.httpBaseUrl}/appuser/insertAppuser`, data).then(res => {
+          if (res.code === 200) {
+             this.$router.push({
+                name: 'Login'
+              })
+            Toast({
+              message: '注册成功',
+              iconClass: 'icon icon-success'
+            })
+           }
+        });
+    },
+    immediatelylogin(){
       this.$router.push({
-        name: 'Login'
-      })
+                name: 'Login'
+              })
     }
   }
 }
