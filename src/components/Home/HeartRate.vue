@@ -10,14 +10,14 @@
     <div class="content">
       <div class="one_day">
         <p class="title">
-          <span class="back">前一天</span>
+          <span class="back" @click="handleBack">前一天</span>
           <span class="date">2019-05-16</span>
-          <span class="next">后一天</span>
+          <span class="next" @click="handleNext">后一天</span>
         </p>
         <div class="current">
           <div class="current_wrapper">
             <p class="text">当前心率</p>
-            <p class="num">99<span>bpm</span></p>
+            <p class="num">199<span>bpm</span></p>
             <p class="active">远程测量</p>
           </div>
         </div>
@@ -28,7 +28,7 @@
         </p>
       </div>
       <div class="all_day">
-        <div class="title">本周血压</div>
+        <div class="title">本周心率</div>
         <div id="chart"></div>
       </div>
     </div>
@@ -46,11 +46,14 @@ export default {
   },
   methods: {
     closeHeartRate () {
-      this.$emit('closeHeartRate')
+      this.$router.go(-1)
     },
     initChart () {
       let chart = echarts.init(document.getElementById('chart'))
       const option = {
+        grid: {
+          top: 30
+        },
         xAxis: {
           type: 'category',
           data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
@@ -80,7 +83,11 @@ export default {
         }]
       }
       chart.setOption(option)
-    }
+    },
+    // 展示前一天
+    handleBack () {},
+    // 展示后一天
+    handleNext () {}
   }
 }
 </script>
@@ -124,7 +131,7 @@ export default {
     .one_day {
       padding: .36rem;
       background: white;
-      height: 5.8rem;
+      height: 5rem;
       box-sizing: border-box;
       .title {
         display: flex;
@@ -152,15 +159,14 @@ export default {
       .current {
         border: .15rem solid #C5EDDC;
         border-radius: 50%;
-        width: 3.5rem;
-        height: 3.5rem;
+        width: 3rem;
+        height: 3rem;
         margin: .3rem auto 0;
         box-sizing: border-box;
         .current_wrapper {
           border: .15rem solid #4CD3A2;
           border-radius: 50%;
-          // width: 3.4rem;
-          height: 2.9rem;
+          height: 2.4rem;
           text-align: center;
           .text {
             color: #888888;
@@ -169,7 +175,7 @@ export default {
           }
           .num {
             color: #15BF86;
-            font-size: 1.2rem;
+            font-size: .7rem;
             margin: 5px 0;
             span {
               color: #15BF86;
@@ -184,8 +190,9 @@ export default {
       }
       .desc {
         font-size: .26rem;
-        margin-top: 20px;
+        margin-top: 10px;
         text-align: center;
+        line-height: .3rem;
         span {
           margin: 0 10px;
         }
@@ -197,13 +204,15 @@ export default {
       padding: 10px 10px 0;
       position: fixed;
       bottom: 0;
-      top: 7.28rem;
+      top: 6.5rem;
       width: 100vw;
       .title {
         font-size: .28rem;
+        border-left: 2px solid #15BF86;
+        padding-left: 5px;
       }
       #chart {
-        height: 200px;
+        height: 100%;
         width: 300px;
       }
     }

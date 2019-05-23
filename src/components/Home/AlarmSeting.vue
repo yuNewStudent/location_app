@@ -14,16 +14,22 @@
           @touchstart='touchstart(item, index)'
           @touchend='touchend'>
           <div class="info">
-            <p class="head">{{item.alarmTime}}</p>
+            <p class="head">{{item.alarmlockDate}}</p>
             <p class="desc">
-              <span class="title">{{item.alarmName}}:</span>
-              <span
-                class="time"
-                v-for='(date, i) in item.date'
-                :key='i'>{{date.name}}</span>
+              <span>{{item.alarmclockRemarks|| '无'}}:</span>
+              <template v-if='item.date.length>1'>
+                <span v-if='item.date[0]=="1"' class="time">周日</span>
+                <span v-if='item.date[1]=="1"' class="time">周一</span>
+                <span v-if='item.date[2]=="1"' class="time">周二</span>
+                <span v-if='item.date[3]=="1"' class="time">周三</span>
+                <span v-if='item.date[4]=="1"' class="time">周四</span>
+                <span v-if='item.date[5]=="1"' class="time">周五</span>
+                <span v-if='item.date[6]=="1"' class="time">周六</span>
+              </template>
+              <span v-else class="title">{{item.date[0]}}</span>
             </p>
           </div>
-          <mt-switch size='mini' v-model="item.open"></mt-switch>
+          <mt-switch size='mini' v-model="item.alarmclockStatus"></mt-switch>
         </li>
       </ul>
       <div class="action" ref='action'>
@@ -76,76 +82,33 @@ export default {
       alarmTime: '',
       alarmName: '',
       alarms: [
-        {
-          alarmName: '起床',
-          alarmTime: '07:50',
-          date: [
-            {
-              label: '周一',
-              name: 'one',
-              active: true
-            },
-            {
-              label: '周二',
-              name: 'two',
-              active: true
-            }
-          ],
-          id: 1,
-          open: false
-        },
-        {
-          alarmName: '起床',
-          alarmTime: '07:50',
-          date: [
-            {
-              label: '周一',
-              name: 'one',
-              active: true
-            },
-            {
-              label: '周二',
-              name: 'two',
-              active: true
-            }
-          ],
-          id: 1,
-          open: true
-        }
       ],
       date: [
         {
-          id: 1,
           label: '周一',
           active: false
         },
         {
-          id: 2,
           label: '周二',
           active: false
         },
         {
-          id: 3,
           label: '周三',
           active: false
         },
         {
-          id: 4,
           label: '周四',
           active: false
         },
         {
-          id: 5,
           label: '周五',
           active: false
         },
         {
-          id: 6,
           label: '周六',
           active: false
         },
         {
-          id: 7,
           label: '周天',
           active: false
         }
@@ -162,9 +125,26 @@ export default {
     MessageBox,
     DatetimePicker
   },
+  created () {
+    this.$http.get(`${config.httpBaseUrl}/alar/getAll?wearerDeviceId=9611812844`).then(res => {
+      if (res.code === 200) {
+        res.date.alarmclock.forEach(item => {
+          // item.alarmclockStatus = item.alarmclockStatus && true
+          if (item.alarmclockWeek == 1) {
+            item.date = ['不重复']
+          } else if (item.alarmclockWeek == 2) {
+            item.date = ['每天']
+          } else {
+            item.date = item.alarmclockWeek.split('')
+          }
+          this.alarms.push(item)
+        })
+      }
+    })
+  },
   methods: {
     closeAlarmSeting () {
-      this.$emit('closeAlarmSeting')
+      this.$router.go(-1)
     },
     // 新增闹钟
     handleAddAlarm () {
@@ -173,21 +153,44 @@ export default {
     addAlarm (bol) {
       this.isShowAddAlarm = false
       if (bol) {
-        const repeatDate = this.date.filter(item => {
-          return item.active
-        })
-        if (!(repeatDate.length && this.alarmTime && this.alarmName)) {
+        if (!(this.alarmTime && this.alarmName)) {
           return Toast({
             message: '闹钟信息不能为空',
             iconClass: 'icon icon-error'
           })
         }
-        this.alarms.push({
-          alarmTime: this.alarmTime,
-          alarmName: this.alarmName,
-          date: repeatDate
+        let alarmclockWeek = ''
+        let num = 0
+        this.date.forEach(item => {
+          if (item.active) {
+            alarmclockWeek += '1'
+            num += 1
+          } else {
+            alarmclockWeek += '0'
+          }
         })
-        console.log(this.alarms)
+        if (!num) {
+          alarmclockWeek = '1'
+        } else if (num === 7) {
+          alarmclockWeek = '2'
+        }
+        console.log(alarmclockWeek)
+        const data = {
+          alarmlockDate: this.alarmTime,
+          alarmclockWeek: alarmclockWeek,
+          alarmclockWearerId: 9611812844,
+          alarmclockRemarks: this.alarmName,
+          alarmclockStatus: 1,
+          key: 'REMIND'
+        }
+        this.$http.post(`${config.httpBaseUrl}/alar/insert`, data).then(res => {
+          console.log(res)
+          this.alarms.push(data)
+        })
+        Toast({
+          message: '操作成功',
+          iconClass: 'icon icon-success'
+        })
       }
     },
     // 时间选择期确认
@@ -210,7 +213,7 @@ export default {
     },
     // 展示操作窗口
     showAction(item, index) {
-      this.selectAlarm.alarm = item
+      this.selectAlarm.alarm = Object.assign({}, item)
       this.selectAlarm.index = index
       this.$refs.action.style.display = 'block'
       this.$refs.action.style.top = 90 + (index * 90) + 'px'

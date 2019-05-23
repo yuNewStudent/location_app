@@ -83,7 +83,7 @@ export default {
   },
   methods: {
     closePhoneBook () {
-      this.$emit('closePhoneBook')
+      this.$router.go(-1)
     },
     // 新增电话本
     handleAddContact () {
@@ -100,12 +100,12 @@ export default {
             })
           }
         }
+        this.contacts.push(personInfo)
+        Toast({
+          message: '操作成功',
+          iconClass: 'icon icon-success'
+        })
       }
-      this.contacts.push(personInfo)
-      Toast({
-        message: '操作成功',
-        iconClass: 'icon icon-success'
-      })
     },
     // 长按事件
     touchstart (item, index) {
