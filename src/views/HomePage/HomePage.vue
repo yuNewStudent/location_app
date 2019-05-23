@@ -62,7 +62,7 @@
               </div>
             </div>
           </li>
-          <li class="information_item" @click='isShowSleepPage=!isShowSleepPage'>
+          <!-- <li class="information_item" @click='isShowSleepPage=!isShowSleepPage'>
             <div class="information_title">
               <span class="text">睡眠</span>
               <img src="@/assets/icon/home/箭头 拷贝.png" alt="">
@@ -78,7 +78,7 @@
                 </p>
               </div>
             </div>
-          </li>
+          </li> -->
           <li class="information_item" @click='isShowBloodPressure=!isShowBloodPressure'>
             <div class="information_title">
               <span class="text">血压</span>
@@ -117,9 +117,9 @@
     <heart-rate
       v-if='isShowHeartRate'
       @closeHeartRate='isShowHeartRate=!isShowHeartRate'></heart-rate>
-    <sleep-page
+    <!-- <sleep-page
       v-if='isShowSleepPage'
-      @closeSleep='isShowSleepPage=!isShowSleepPage'></sleep-page>
+      @closeSleep='isShowSleepPage=!isShowSleepPage'></sleep-page> -->
     <blood-pressure
       v-if='isShowBloodPressure'
       @closeBloodPressure='isShowBloodPressure=!isShowBloodPressure'></blood-pressure>
@@ -145,7 +145,7 @@ export default {
       isShowBlackList: false,
       isShowAlarmSeting: false,
       isShowBloodPressure: false,
-      isShowSleepPage: false,
+      // isShowSleepPage: false,
       isShowHeartRate: false,
       isShowNoteStep: false,
       head_title: '首页'

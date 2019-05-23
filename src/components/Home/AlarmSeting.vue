@@ -1,5 +1,5 @@
 <template>
-  <div class="alarm_seting">
+  <div class="alarm_seting" @click='hideAction'>
     <div class="home_header">
       <img src='@/assets/icon/home/箭头.png' class="back" @click='closeAlarmSeting'/>
       <span class="title">闹钟设置</span>
@@ -7,40 +7,29 @@
     </div>
     <div class="content">
       <ul>
-        <li class="alarm_item">
+        <li
+          class="alarm_item"
+          v-for='(item, index) in alarms'
+          :key='index'
+          @touchstart='touchstart(item, index)'
+          @touchend='touchend'>
           <div class="info">
-            <p class="head">05:50</p>
+            <p class="head">{{item.alarmTime}}</p>
             <p class="desc">
-              <span class="title">起床:</span>
-              <span class="time">周一</span>
-              <span class="time">周二</span>
+              <span class="title">{{item.alarmName}}:</span>
+              <span
+                class="time"
+                v-for='(date, i) in item.date'
+                :key='i'>{{date.name}}</span>
             </p>
           </div>
-          <mt-switch size='mini' v-model="value"></mt-switch>
-        </li>
-        <li class="alarm_item">
-          <div class="info">
-            <p class="head">05:50</p>
-            <p class="desc">
-              <span class="title">起床:</span>
-              <span class="time">周一</span>
-              <span class="time">周二</span>
-            </p>
-          </div>
-          <mt-switch size='mini' v-model="value"></mt-switch>
-        </li>
-        <li class="alarm_item">
-          <div class="info">
-            <p class="head">05:50</p>
-            <p class="desc">
-              <span class="title">起床:</span>
-              <span class="time">周一</span>
-              <span class="time">周二</span>
-            </p>
-          </div>
-          <mt-switch size='mini' v-model="value"></mt-switch>
+          <mt-switch size='mini' v-model="item.open"></mt-switch>
         </li>
       </ul>
+      <div class="action" ref='action'>
+        <p class="editor" @click.stop='editorAlarm'>编辑</p>
+        <p @click.stop='delAlarm'>删除</p>
+      </div>
     </div>
     <message-box
       v-if='isShowAddAlarm'
@@ -55,7 +44,9 @@
           <div>
             <span
             v-for='(item, index) in date'
-            :key='index'>{{item.label}}</span>
+            :key='index'
+            :class='{active:item.active}'
+            @click='item.active=!item.active'>{{item.label}}</span>
           </div>
         </div>
       </div>
@@ -74,46 +65,95 @@
 <script>
 import AddAlarm from '@/components/Home/AddAlarm'
 import MessageBox from '@/components/MessageBox'
-import { Switch, DatetimePicker } from 'mint-ui'
+import { Switch, DatetimePicker, Toast } from 'mint-ui'
 export default {
   data () {
     return {
+      time: 0,
       isShowAddAlarm: false,
-      value: '',
       title: '添加闹钟',
       pickerVisible: '',
       alarmTime: '',
       alarmName: '',
+      alarms: [
+        {
+          alarmName: '起床',
+          alarmTime: '07:50',
+          date: [
+            {
+              label: '周一',
+              name: 'one',
+              active: true
+            },
+            {
+              label: '周二',
+              name: 'two',
+              active: true
+            }
+          ],
+          id: 1,
+          open: false
+        },
+        {
+          alarmName: '起床',
+          alarmTime: '07:50',
+          date: [
+            {
+              label: '周一',
+              name: 'one',
+              active: true
+            },
+            {
+              label: '周二',
+              name: 'two',
+              active: true
+            }
+          ],
+          id: 1,
+          open: true
+        }
+      ],
       date: [
         {
           id: 1,
-          label: '周一'
+          label: '周一',
+          active: false
         },
         {
           id: 2,
-          label: '周二'
+          label: '周二',
+          active: false
         },
         {
           id: 3,
-          label: '周三'
+          label: '周三',
+          active: false
         },
         {
           id: 4,
-          label: '周四'
+          label: '周四',
+          active: false
         },
         {
           id: 5,
-          label: '周五'
+          label: '周五',
+          active: false
         },
         {
           id: 6,
-          label: '周六'
+          label: '周六',
+          active: false
         },
         {
           id: 7,
-          label: '周天'
+          label: '周天',
+          active: false
         }
-      ]
+      ],
+      selectAlarm: {
+        index: '',
+        alarm: {}
+      }
     }
   },
   components: {
@@ -126,18 +166,72 @@ export default {
     closeAlarmSeting () {
       this.$emit('closeAlarmSeting')
     },
-    // 新增电话本
+    // 新增闹钟
     handleAddAlarm () {
       this.isShowAddAlarm = true
     },
-    addAlarm () {
+    addAlarm (bol) {
       this.isShowAddAlarm = false
+      if (bol) {
+        const repeatDate = this.date.filter(item => {
+          return item.active
+        })
+        if (!(repeatDate.length && this.alarmTime && this.alarmName)) {
+          return Toast({
+            message: '闹钟信息不能为空',
+            iconClass: 'icon icon-error'
+          })
+        }
+        this.alarms.push({
+          alarmTime: this.alarmTime,
+          alarmName: this.alarmName,
+          date: repeatDate
+        })
+        console.log(this.alarms)
+      }
     },
+    // 时间选择期确认
     handleConfirm (value) {
       this.alarmTime = value
     },
     selectTime () {
+      document.activeElement.blur()
       this.$refs.picker.open()
+    },
+    // 长按事件
+    touchstart (item, index) {
+      this.time = setTimeout(() => {
+        // 展示操作窗口
+        this.showAction(item, index)
+      }, 500)
+    },
+    touchend (e) {
+      clearTimeout(this.time)
+    },
+    // 展示操作窗口
+    showAction(item, index) {
+      this.selectAlarm.alarm = item
+      this.selectAlarm.index = index
+      this.$refs.action.style.display = 'block'
+      this.$refs.action.style.top = 90 + (index * 90) + 'px'
+    },
+    // 隐藏操作栏
+    hideAction () {
+      if (!this.$refs.action) { return }
+      this.$refs.action.style.display = 'none'
+    },
+    // 修改闹钟
+    editorAlarm () {
+      this.alarmTime = this.selectAlarm.alarm.alarmTime
+      this.alarmName = this.selectAlarm.alarm.alarmName
+    },
+    // 删除闹钟
+    delAlarm () {
+      this.alarms.splice(this.selectAlarm.index, 1)
+      Toast({
+        message: '操作成功',
+        iconClass: 'icon icon-success'
+      })
     }
   }
 }
@@ -199,6 +293,22 @@ export default {
         }
       }
     }
+    .action {
+      width: 1.6rem;
+      height: 1.3rem;
+      box-shadow: 0px 1px 4px 0px rgba(109,109,109,0.5);
+      font-size: .26rem;
+      text-align: center;
+      position: fixed;
+      display: none;
+      right: 100px;
+      p {
+        line-height: .65rem;
+        &.editor {
+          background: #D4F4EA;
+        }
+      }
+    }
   }
   .add_black_list {
     .add_black_list_wrapper {
@@ -238,11 +348,13 @@ export default {
           height: .6rem;
           text-align: center;
           line-height: .6rem;
-          background: #15BF86;
+          background: #C7C7C7;
           color: white;
           border-radius: 50%;
           margin: 0 2px;
-          font-size: .2rem;
+          &.active {
+            background: #15BF86;
+          }
         }
       }
     }

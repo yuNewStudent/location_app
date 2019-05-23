@@ -12,31 +12,31 @@
         <li class="contact_item" :class="{editor:type!=='编辑'}">
           <p>
             <span>号码1:</span>
-            <input placeholder="昵称" type="text" :disabled='type=="编辑"'>
+            <input v-model="contacts[0].name" placeholder="昵称" type="text" :disabled='type=="编辑"'>
           </p>
           <p>
             <span></span>
-            <input placeholder="请输入联系电话" type="text" :disabled='type=="编辑"'>
+            <input v-model="contacts[0].phone" placeholder="请输入联系电话" type="text" :disabled='type=="编辑"'>
           </p>
         </li>
         <li class="contact_item disabled" :class="{editor:type!=='编辑'}">
           <p>
             <span>号码2:</span>
-            <input placeholder="昵称" type="text" :disabled='type=="编辑"'>
+            <input v-model="contacts[1].name" placeholder="昵称" type="text" :disabled='type=="编辑"'>
           </p>
           <p>
             <span></span>
-            <input placeholder="请输入联系电话" type="text" :disabled='type=="编辑"'>
+            <input v-model="contacts[1].phone" placeholder="请输入联系电话" type="text" :disabled='type=="编辑"'>
           </p>
         </li>
         <li class="contact_item disabled" :class="{editor:type!=='编辑'}">
           <p>
-            <span>号码2:</span>
-            <input placeholder="昵称" type="text" :disabled='type!=="编辑"'>
+            <span>号码3:</span>
+            <input v-model="contacts[2].name" placeholder="昵称" type="text" :disabled='type=="编辑"'>
           </p>
           <p>
             <span></span>
-            <input placeholder="请输入联系电话" type="text" :disabled='type=="编辑"'>
+            <input v-model="contacts[2].phone" placeholder="请输入联系电话" type="text" :disabled='type=="编辑"'>
           </p>
         </li>
       </ul>
@@ -48,8 +48,21 @@
 export default {
   data () {
     return {
-      isShowAddPhoneBook: false,
-      type: '编辑'
+      type: '编辑',
+      contacts: [
+        {
+          name: 'yyy',
+          phone: 5555
+        },
+        {
+          name: 'xixix',
+          phone: 7899
+        },
+        {
+          name: 'ssss',
+          phone: 2345
+        }
+      ]
     }
   },
   components: {
