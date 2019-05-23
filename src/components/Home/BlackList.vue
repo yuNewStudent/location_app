@@ -1,5 +1,5 @@
 <template>
-  <div class="black_list">
+  <div class="black_list" @click='hideAction'>
     <div class="home_header">
       <span class="back">
         <img src='@/assets/icon/home/箭头.png' @click='closeBlackList'/>
@@ -11,29 +11,44 @@
       <div class="night">
         <div class="show">
           <span>夜间免打扰</span>
-          <mt-switch size='mini' v-model="value"></mt-switch>
+          <mt-switch size='mini' v-model="night.open"></mt-switch>
         </div>
         <div class="desc">开启夜间免打扰模式，默认状态下手表将在晚上22:00到次日早上06:00之间断开网络连接</div>
       </div>
       <div class="normal">
-        <div class="normal_item">
-          <span>23:00 - 7:00</span>
-          <mt-switch size='mini' v-model="value"></mt-switch>
+        <div
+          class="normal_item"
+          v-for='(item, index) in blackList'
+          :key='index'
+          @touchstart='touchstart(item, index)'
+          @touchend='touchend'>
+          <span>{{item.start_time}} - {{item.end_time}}</span>
+          <mt-switch size='mini' v-model="item.open"></mt-switch>
         </div>
-        <!-- <div class="normal_item">
-          <span>23:00 - 7:00</span>
-          <mt-switch size='mini' v-model="value"></mt-switch>
-        </div> -->
+        <div class="action" ref='action'>
+          <p class="editor" @click.stop='showEditorBlack'>编辑</p>
+          <p @click.stop='delBlack'>删除</p>
+        </div>
       </div>
     </div>
     <message-box
       v-if='isShowAddBlackList'
-      :title='title'
-      @closeAddContact='AddBlackList'
+      :title='title.add'
+      @closeAddContact='addBlackList'
       class="add_black_list">
       <div class="add_black_list_wrapper">
-        <input @focus="selectStartTime" v-model='start' class="start"/> ——
-        <input @focus="selectEndTime" v-model='end' class="end"/>
+        <input @focus="selectStartTime" v-model='newBlackList.start_time' class="start"/> ——
+        <input @focus="selectEndTime" v-model='newBlackList.end_time' class="end"/>
+      </div>
+    </message-box>
+    <message-box
+      v-if='isShowEditorBlackList'
+      :title='title.editor'
+      @closeAddContact='edoitorBlackList'
+      class="add_black_list">
+      <div class="add_black_list_wrapper">
+        <input @focus="selectStartTime" v-model='selectBlack.black.start_time' class="start"/> ——
+        <input @focus="selectEndTime" v-model='selectBlack.black.end_time' class="end"/>
       </div>
     </message-box>
     <mt-datetime-picker
@@ -46,18 +61,46 @@
 </template>
 
 <script>
-import { Switch, DatetimePicker } from 'mint-ui'
+import { Switch, Toast, DatetimePicker } from 'mint-ui'
 import MessageBox from '@/components/MessageBox'
 export default {
   data () {
     return {
-      value: '',
-      title: '新增免打扰',
+      time: 0,
+      title: {
+        add: '新增免打扰',
+        editor: '修改免打扰'
+      },
       isShowAddBlackList: false,
+      isShowEditorBlackList: false,
       pickerVisible: '',
       currentSelect: '',
-      start: '',
-      end: ''
+      newBlackList: {
+        start_time: '',
+        end_time: '',
+      },
+      night: {
+        open: false
+      },
+      selectBlack: {
+        index: '',
+        black: {}
+      },
+      blackList: [
+        {
+          start_time: '8:20',
+          end_time: '10:13',
+          open: false,
+          id: 1
+        },
+        {
+          start_time: '5:20',
+          end_time: '12:13',
+          open: false,
+          id: 1
+        }
+      ],
+      editor: false
     }
   },
   components: {
@@ -67,13 +110,41 @@ export default {
   },
   methods: {
     closeBlackList () {
-      this.$emit('closeBlackList')
+      this.$router.go(-1)
     },
     handleAddBlackList () {
       this.isShowAddBlackList = true
     },
-    AddBlackList () {
+    addBlackList (bol) {
       this.isShowAddBlackList = false
+      if (!bol) { return }
+      if (!(this.newBlackList.start_time && this.newBlackList.end_time)) {
+        return   Toast({
+          message: '闹钟信息不能为空',
+          iconClass: 'icon icon-error'
+        })
+      }
+      this.blackList.push(this.newBlackList)
+      Toast({
+        message: '新增成功',
+        iconClass: 'icon icon-success'
+      })
+    },
+    edoitorBlackList (bol) {
+      this.isShowEditorBlackList = false
+      if (!bol) { return }
+      this.editor = false
+      if (!(this.selectBlack.black.start_time && this.selectBlack.black.end_time)) {
+        return  Toast({
+          message: '闹钟信息不能为空',
+          iconClass: 'icon icon-error'
+        })
+      }
+      this.blackList.splice(this.selectBlack.index, 1, this.selectBlack.black)
+      Toast({
+        message: '修改成功',
+        iconClass: 'icon icon-success'
+      })
     },
     selectStartTime () {
       this.currentSelect = 'start'
@@ -84,12 +155,55 @@ export default {
       this.$refs.picker.open()
     },
     handleConfirm (value) {
-      console.log(this.currentSelect, value)
       if (this.currentSelect === 'start') {
-        this.start = value
+        if (this.editor) {
+          this.selectBlack.black.start_time = value
+        } else {
+          this.newBlackList.start_time = value
+        }
       } else {
-        this.end = value
+        if (this.editor) {
+          this.selectBlack.black.end_time = value
+        } else {
+          this.newBlackList.end_time = value
+        }
       }
+    },
+    // 长按事件
+    touchstart (item, index) {
+      this.time = setTimeout(() => {
+        // 展示操作窗口
+        this.showAction(item, index)
+      }, 500)
+    },
+    touchend (e) {
+      clearTimeout(this.time)
+    },
+    // 展示操作窗口
+    showAction(item, index) {
+      this.selectBlack.black = item
+      this.selectBlack.index = index
+      this.$refs.action.style.display = 'block'
+      this.$refs.action.style.top = 230 + (index * 50) + 'px'
+    },
+    // 隐藏操作栏
+    hideAction () {
+      if (!this.$refs.action) { return }
+      this.$refs.action.style.display = 'none'
+    },
+    // 显示修改免打扰
+    showEditorBlack () {
+      this.$refs.action.style.display = 'none'
+      this.editor = true
+      this.isShowEditorBlackList = true
+    },
+    // 删除免打扰
+    delBlack () {
+      this.blackList.splice(this.selectBlack.index, 1)
+      Toast({
+        message: '删除成功',
+        iconClass: 'icon icon-success'
+      })
     }
   }
 }
@@ -150,7 +264,25 @@ export default {
       }
     }
     .normal {
-      >div {
+      .action {
+        width: 1.6rem;
+        height: 1.3rem;
+        box-shadow: 0px 1px 4px 0px rgba(109,109,109,0.5);
+        font-size: .26rem;
+        text-align: center;
+        position: fixed;
+        // top: 90px;
+        display: none;
+        right: 100px;
+        background: white;
+        p {
+          line-height: .65rem;
+          &.editor {
+            background: #D4F4EA;
+          }
+        }
+      }
+      .normal_item {
         font-size: .26rem;
         display: flex;
         padding: 0 20px;
@@ -161,9 +293,6 @@ export default {
       }
       .normal_item:nth-child(odd) {
         background: white;
-      }
-      .normal_item:nth-child(even) {
-
       }
     }
   }

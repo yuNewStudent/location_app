@@ -69,7 +69,7 @@ export default {
   },
   methods: {
     closeEmergencyContact () {
-      this.$emit('closeEmergencyContact')
+      this.$router.go(-1)
     },
     handleEditor () {
       if (this.type === '编辑') {

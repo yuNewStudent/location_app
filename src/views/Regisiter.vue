@@ -8,20 +8,25 @@
       </span>
       <p class="user_name">
         <img src="@/assets/icon/login/手机IC.png" alt="">
-        <input placeholder="请输入登陆账号" type="text">
+        <input
+          v-model="userInfo.name" placeholder="请输入登陆账号" type="text">
       </p>
       <p class="password">
         <img class="pass" src="@/assets/icon/login/密码IC.png" alt="">
-        <input type="text" ref='password' placeholder="请输入登陆密码">
-        <img @clcik='changeType' class="eye" src="@/assets/icon/login/eye—close.png" alt="">
+        <input
+          v-model="userInfo.password" :type='passwordType' placeholder="请输入登陆密码">
+        <img
+          @click='changePasswordType' class="eye" :src="img" alt="">
       </p>
       <p class="resetpassword">
         <img class="pass" src="@/assets/icon/login/密码IC.png" alt="">
-        <input type="text" ref='password' placeholder="请再次确认密码">
-        <img @clcik='changeType' class="eye" src="@/assets/icon/login/eye—close.png" alt="">
+        <input
+          v-model="userInfo.repassword" :type="reType" placeholder="请再次确认密码">
+        <img
+          @click='changeReType' class="eye" :src="reImg" alt="">
       </p>
       <div class="login_btn">注册</div>
-      <div class="register_btn">已有账号？马上登录</div>
+      <div @click='goLogin' class="register_btn">已有账号？马上登录</div>
     </div>
   </div>
 </template>
@@ -31,11 +36,40 @@ export default {
   name: 'register',
   data () {
     return {
+      passwordType: 'password',
+      reType: 'password',
+      img: require('@/assets/icon/login/eye—open.png'),
+      reImg: require('@/assets/icon/login/eye—open.png'),
+      userInfo: {
+        name: '',
+        password: '',
+        repassword: ''
+      }
     }
   },
   methods: {
-    changeType () {
-      // this.$refs.password.
+    changePasswordType () {
+      if (this.passwordType === 'text') {
+        this.passwordType = 'password'
+        this.img = require('@/assets/icon/login/eye—open.png')
+      } else {
+        this.passwordType = 'text'
+        this.img = require('@/assets/icon/login/eye—close.png')
+      }
+    },
+    changeReType () {
+      if (this.reType === 'text') {
+        this.reType = 'password'
+        this.reImg = require('@/assets/icon/login/eye—open.png')
+      } else {
+        this.reType = 'text'
+        this.reImg = require('@/assets/icon/login/eye—close.png')
+      }
+    },
+    goLogin () {
+      this.$router.push({
+        name: 'Login'
+      })
     }
   }
 }

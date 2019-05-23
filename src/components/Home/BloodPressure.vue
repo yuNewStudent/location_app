@@ -10,9 +10,9 @@
     <div class="content">
       <div class="one_day">
         <p class="title">
-          <span class="back">前一天</span>
+          <span class="back" @click="handleBack">前一天</span>
           <span class="date">2019-05-16</span>
-          <span class="next">后一天</span>
+          <span class="next" @click="handleNext">后一天</span>
         </p>
         <p class="text">当前血压</p>
         <div class="blood">
@@ -35,16 +35,18 @@ export default {
     return {}
   },
   mounted () {
-    console.log(1)
     this.initChart()
   },
   methods: {
     closeBloodPressure () {
-      this.$emit('closeBloodPressure')
+      this.$router.go(-1)
     },
     initChart () {
       let chart = echarts.init(document.getElementById('chart'))
       const option = {
+        grid: {
+          top: 30
+        },
         xAxis: {
           type: 'category',
           data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
@@ -95,7 +97,11 @@ export default {
         }]
       }
       chart.setOption(option)
-    }
+    },
+    // 展示前一天
+    handleBack () {},
+    // 展示后一天
+    handleNext () {}
   }
 }
 </script>
@@ -139,7 +145,7 @@ export default {
     .one_day {
       padding: .36rem;
       background: white;
-      height: 4.4rem;
+      height: 4rem;
       box-sizing: border-box;
       .title {
         display: flex;
@@ -175,7 +181,7 @@ export default {
         display: flex;
         align-items: center;
         justify-content: center;
-        margin: .7rem 0;
+        margin: .5rem 0;
         .high {
           margin-right: 20px;
         }
@@ -199,7 +205,7 @@ export default {
     }
     .all_day {
       position: fixed;
-      top: 5.84rem;
+      top: 5.54rem;
       bottom: 0;
       width: 100vw;
       background: white;
@@ -207,6 +213,8 @@ export default {
       padding: 10px 10px 0;
       .title {
         font-size: .28rem;
+        border-left: 2px solid #15BF86;
+        padding-left: 5px;
       }
       #chart {
         height: 90%;

@@ -2,7 +2,8 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Home from '@/views/Home'
 import Login from '@/views/Login'
-import Regisiter from '@/views/Regisiter'
+import Register from '@/views/Regisiter'
+import ResetPassword from '@/views/ResetPassword'
 import HomePage from '@/views/HomePage/HomePage'
 import MyPage from '@/views/My/My'
 import LocationPage from '@/views/Location/Location'
@@ -11,6 +12,16 @@ import DeviceList from '@/views/My/DeviceList'
 import FindDevice from '@/views/My/FindDevice'
 import WarningSetting from '@/views/My/WarningSetting'
 import MessageCenter from '@/views/My/MessageCenter'
+
+import NoteStep from '@/components/Home/NoteStep'
+import HeartRate from '@/components/Home/HeartRate'
+import BloodPressure from '@/components/Home/BloodPressure'
+
+import PhoneBook from '@/components/Home/PhoneBook'
+import EmergencyContact from '@/components/Home/EmergencyContact'
+import AlarmSeting from '@/components/Home/AlarmSeting'
+import BlackList from '@/components/Home/BlackList'
+// const ProductExit = name => () => import('@/pages/ProductExit/' + name)
 
 Vue.use(Router)
 
@@ -25,7 +36,44 @@ export default new Router({
         {
           path: '/homepage',
           name: 'HomePage',
-          component: HomePage
+          component: HomePage,
+          children: [
+            {
+              path: '/homepage/notestep',
+              name: 'NoteStep',
+              component: NoteStep
+            },
+            {
+              path: '/homepage/heartrate',
+              name: 'HeartRate',
+              component: HeartRate
+            },
+            {
+              path: '/homepage/bloodpressure',
+              name: 'BloodPressure',
+              component: BloodPressure
+            },
+            {
+              path: '/homepage/phonebook',
+              name: 'PhoneBook',
+              component: PhoneBook
+            },
+            {
+              path: '/homepage/emergencycontact',
+              name: 'EmergencyContact',
+              component: EmergencyContact
+            },
+            {
+              path: '/homepage/alarmseting',
+              name: 'AlarmSeting',
+              component: AlarmSeting
+            },
+            {
+              path: '/homepage/blacklist',
+              name: 'BlackList',
+              component: BlackList
+            }
+          ]
         },
         {
           path: '/my',
@@ -72,9 +120,14 @@ export default new Router({
       component: Login
     },
     {
-      path: '/regisiter',
-      name: 'Regisiter',
-      component: Regisiter
+      path: '/register',
+      name: 'Register',
+      component: Register
+    },
+    {
+      path: '/restpassword',
+      name: 'ResetPassword',
+      component: ResetPassword
     }
   ]
 })

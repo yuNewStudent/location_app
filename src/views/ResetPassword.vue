@@ -1,74 +1,83 @@
 <template>
-  <div class="login">
+  <div class="register">
     <div class="bglayer"></div>
-    <div class="home_header">登录</div>
+    <div class="home_header">忘记密码</div>
     <div class="content">
-      <span class="head_img">
-        <img src="@/assets/icon/home/userImg.png" alt="">
-      </span>
       <p class="user_name">
         <img src="@/assets/icon/login/手机IC.png" alt="">
-        <input v-model="userInfo.name" placeholder="请输入登陆账号" type="text">
+        <input
+          v-model="userInfo.name"
+          placeholder="请输入账号"
+          type="text">
       </p>
       <p class="password">
         <img class="pass" src="@/assets/icon/login/密码IC.png" alt="">
-        <input v-model="userInfo.password" :type="type" placeholder="请输入登陆密码">
-        <img @click='changeType' class="eye" :src="img" alt="">
+        <input
+          v-model="userInfo.password"
+          :type="passwordType"
+          placeholder="请输入新密码">
+        <img
+          @click='changePasswordType'
+          class="eye"
+          :src="img">
       </p>
-      <p class="info">
-        <span>自动登陆</span>
-        <span @click='goRePassword'>忘记密码？</span>
+      <p class="resetpassword">
+        <img class="pass" src="@/assets/icon/login/密码IC.png" alt="">
+        <input
+          v-model="userInfo.repassword"
+          :type="reType"
+          placeholder="请确认新密码">
+        <img
+          @click='changeReType'
+          class="eye"
+          :src="reImg">
       </p>
-      <div @click='handleLogin' class="login_btn">登录</div>
-      <div @click='goRegister' class="register_btn">注册</div>
+      <div class="login_btn">确认</div>
     </div>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'login',
+  name: 'register',
   data () {
     return {
-      type: 'password',
+      passwordType: 'password',
+      reType: 'password',
       img: require('@/assets/icon/login/eye—open.png'),
+      reImg: require('@/assets/icon/login/eye—open.png'),
       userInfo: {
         name: '',
-        password: ''
+        password: '',
+        repassword: ''
       }
     }
   },
   methods: {
-    changeType () {
-      if (this.type === 'text') {
-        this.type = 'password'
+    changePasswordType () {
+      if (this.passwordType === 'text') {
+        this.passwordType = 'password'
         this.img = require('@/assets/icon/login/eye—open.png')
       } else {
-        this.type = 'text'
+        this.passwordType = 'text'
         this.img = require('@/assets/icon/login/eye—close.png')
       }
     },
-    handleLogin () {
-      this.$router.push({
-        name: 'Home'
-      })
-    },
-    goRePassword () {
-      this.$router.push({
-        name: 'ResetPassword'
-      })
-    },
-    goRegister () {
-      this.$router.push({
-        name: 'Register'
-      })
+    changeReType () {
+      if (this.reType === 'text') {
+        this.reType = 'password'
+        this.reImg = require('@/assets/icon/login/eye—open.png')
+      } else {
+        this.reType = 'text'
+        this.reImg = require('@/assets/icon/login/eye—close.png')
+      }
     }
   }
 }
 </script>
 
 <style lang='scss' scoped>
-.login {
+.register {
   width: 100vw;
   height: 100vh;
   background: #49BA94;
@@ -88,7 +97,7 @@ export default {
   .content {
     text-align: center;
     width: 5.5rem;
-    margin: 0 auto;
+    margin: 70px auto 0;
     font-size: .26rem;
     .head_img {
       display: inline-block;
@@ -140,6 +149,31 @@ export default {
       img.eye {
         width: .36rem;
         height: .16rem;
+
+      }
+    }
+    .resetpassword {
+      background:rgba(255,255,255,0.6);
+      display: flex;
+      border-radius: .45rem;
+      height: .9rem;
+      padding: 0 .45rem;
+      margin-top: 20px;
+      align-items: center;
+      input {
+        width: 100%;
+        background: transparent;
+        height: .32rem;
+        margin-left: 10px;
+      }
+      img.pass {
+        width: .3rem;
+        height: .32rem;
+      }
+      img.eye {
+        width: .36rem;
+        height: .16rem;
+
       }
     }
     .info {
@@ -161,28 +195,7 @@ export default {
       margin: 50px 0 20px;
     }
     .register_btn {
-      color: white;
-      position: relative;
-      &:after {
-        position: absolute;
-        right: 0;
-        top: 50%;
-        content: '';
-        display: inline-block;
-        width: 2.1rem;
-        height: 1px;
-        background:rgba(255,255,255,1);
-      }
-      &:before {
-        position: absolute;
-        left: 0;
-        top: 50%;
-        content: '';
-        display: inline-block;
-        width: 2.1rem;
-        height: 1px;
-        background:rgba(255,255,255,1);
-      }
+      color: black;
     }
   }
 }

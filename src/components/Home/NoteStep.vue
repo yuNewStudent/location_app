@@ -10,9 +10,9 @@
     <div class="content">
       <div class="one_day">
         <p class="title">
-          <span class="back">前一天</span>
+          <span class="back" @click="handleBack">前一天</span>
           <span class="date">2019-05-16</span>
-          <span class="next">后一天</span>
+          <span class="next" @click="handleNext">后一天</span>
         </p>
         <div class="canvas_wrapper"><canvas id="canvas"></canvas></div>
         <div class="desc">
@@ -31,7 +31,38 @@
 <script>
 export default {
   data () {
-    return {}
+    return {
+      steps: [
+        {
+          date: '2019-5-23',
+          stepNum: 3000
+        },
+        {
+          date: '2019-5-22',
+          stepNum: 3000
+        },
+        {
+          date: '2019-5-21',
+          stepNum: 3000
+        },
+        {
+          date: '2019-5-20',
+          stepNum: 3000
+        },
+        {
+          date: '2019-5-19',
+          stepNum: 3000
+        },
+        {
+          date: '2019-5-18',
+          stepNum: 3000
+        },
+        {
+          date: '2019-5-18',
+          stepNum: 3000
+        }
+      ]
+    }
   },
   mounted () {
     this.$nextTick(() => {
@@ -41,7 +72,7 @@ export default {
   },
   methods: {
     closeNoteStep () {
-      this.$emit('closeNoteStep')
+      this.$router.go(-1)
     },
     drawBg (ctx) {
       ctx.beginPath()
@@ -64,7 +95,10 @@ export default {
     initChart () {
       let chart = echarts.init(document.getElementById('chart'))
       const option = {
-        grid: {left: '13%'},
+        grid: {
+          left: '13%',
+          top: 30
+        },
         xAxis: {
           type: 'category',
           data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
@@ -95,7 +129,11 @@ export default {
         }]
       }
       chart.setOption(option)
-    }
+    },
+    // 展示前一天
+    handleBack () {},
+    // 展示后一天
+    handleNext () {}
   }
 }
 </script>
@@ -201,6 +239,8 @@ export default {
       padding: 10px 10px 0;
       .title {
         font-size: .28rem;
+        border-left: 2px solid #15BF86;
+        padding-left: 5px;
       }
       #chart {
         height: 90%;
