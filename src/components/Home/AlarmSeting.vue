@@ -11,8 +11,9 @@
             class="alarm_item"
             v-for='(item, index) in alarms'
             :key='index'
-            @touchstart='touchstart(item, index)'
-            @touchend='touchend'>
+            @touchstart='touchstart($event, item, index)'
+            @touchend='touchend'
+            @touchmove='touchmove'>
             <div class="info">
               <p class="head">{{item.alarmlockDate}}</p>
               <p class="desc">
@@ -207,7 +208,7 @@ export default {
         const data = {
           alarmlockDate: this.alarmTime,
           alarmclockWeek: alarmclockWeek,
-          alarmclockWearerId: 9611812844,
+          alarmclockWearerId: localStorage.getItem('deviceId'),
           alarmclockRemarks: this.alarmName,
           alarmclockStatus: 1,
           key: 'REMIND'
@@ -215,11 +216,11 @@ export default {
         this.$http.post(`${config.httpBaseUrl}/alar/insert`, data).then(res => {
           if (res.code === 200) {
             this.alarms.push(data)
+            Toast({
+              message: '操作成功',
+              iconClass: 'icon icon-success'
+            })
           }
-        })
-        Toast({
-          message: '操作成功',
-          iconClass: 'icon icon-success'
         })
       }
     },
@@ -232,7 +233,8 @@ export default {
       this.$refs.picker.open()
     },
     // 长按事件
-    touchstart (item, index) {
+    touchstart (e, item, index) {
+      console.log(e)
       this.time = setTimeout(() => {
         // 展示操作窗口
         this.showAction(item, index)
@@ -242,7 +244,7 @@ export default {
       clearTimeout(this.time)
     },
     touchmove () {
-      
+      console.log(1)
       clearTimeout(this.time)
     },
     // 展示操作窗口

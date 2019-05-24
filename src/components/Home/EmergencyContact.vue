@@ -12,31 +12,31 @@
         <li class="contact_item" :class="{editor:type!=='编辑'}">
           <p>
             <span>号码1:</span>
-            <input v-model="contacts[0].name" placeholder="昵称" type="text" :disabled='type=="编辑"'>
+            <input v-model="contacts[0].sosName" placeholder="昵称" type="text" :disabled='type=="编辑"'>
           </p>
           <p>
             <span></span>
-            <input v-model="contacts[0].phone" placeholder="请输入联系电话" type="text" :disabled='type=="编辑"'>
+            <input v-model="contacts[0].sosNumber" placeholder="请输入联系电话" type="text" :disabled='type=="编辑"'>
           </p>
         </li>
         <li class="contact_item disabled" :class="{editor:type!=='编辑'}">
           <p>
             <span>号码2:</span>
-            <input v-model="contacts[1].name" placeholder="昵称" type="text" :disabled='type=="编辑"'>
+            <input v-model="contacts[1].sosName" placeholder="昵称" type="text" :disabled='type=="编辑"'>
           </p>
           <p>
             <span></span>
-            <input v-model="contacts[1].phone" placeholder="请输入联系电话" type="text" :disabled='type=="编辑"'>
+            <input v-model="contacts[1].sosNumber" placeholder="请输入联系电话" type="text" :disabled='type=="编辑"'>
           </p>
         </li>
         <li class="contact_item disabled" :class="{editor:type!=='编辑'}">
           <p>
             <span>号码3:</span>
-            <input v-model="contacts[2].name" placeholder="昵称" type="text" :disabled='type=="编辑"'>
+            <input v-model="contacts[2].sosName" placeholder="昵称" type="text" :disabled='type=="编辑"'>
           </p>
           <p>
             <span></span>
-            <input v-model="contacts[2].phone" placeholder="请输入联系电话" type="text" :disabled='type=="编辑"'>
+            <input v-model="contacts[2].sosNumber" placeholder="请输入联系电话" type="text" :disabled='type=="编辑"'>
           </p>
         </li>
       </ul>
@@ -45,22 +45,23 @@
 </template>
 
 <script>
+import { Toast } from 'mint-ui'
 export default {
   data () {
     return {
       type: '编辑',
       contacts: [
         {
-          name: 'yyy',
-          phone: 5555
+          sosName: 'yyy',
+          sosNumber: 5555,
         },
         {
-          name: 'xixix',
-          phone: 7899
+          sosName: 'xixix',
+          sosNumber: 7899,
         },
         {
-          name: 'ssss',
-          phone: 2345
+          sosName: 'ssss',
+          sosNumber: 2345,
         }
       ]
     }
@@ -76,7 +77,34 @@ export default {
         this.type = '确认'
       } else {
         this.type = '编辑'
+        this.saveEmergency()
       }
+    },
+    // 设置SOS
+    saveEmergency () {
+      let data = []
+      this.contacts.forEach(item => {
+        // 单个sos不能有空
+        if ((item.sosName && item.sosNumber) || (!item.sosName && !item.sosNumber)) {
+          data.push({
+            sosWearerID: localStorage.getItem('deviceId'),
+            ...item
+          })
+        } else {
+          return Toast({
+            message: '单个免打扰信息不能有空',
+            iconClass: 'icon icon-error'
+          })
+        }
+      })
+      this.$http.post(`${config.httpBaseUrl}/sos/insert`, data).then(res => {
+        if (res.code === 200) {
+          Toast({
+            message: '操作成功',
+            iconClass: 'icon icon-success'
+          })
+        }
+      })
     }
   }
 }
