@@ -8,22 +8,22 @@
       <span class="comfirm"></span>
     </div>
     <div class="content">
-       <ul>
-        <li  class="item">
-           <img class="icont" :src="adatar?adatar:require('@/assets/icon/my/log.jpg')" alt="">
-           <input type="file" name="" style=" position: absolute;
-            top:42px;
-            right: 0;
-            width: 100%;
-            height:110px;
-            border-radius: 50%;
-            outline: none;
-            opacity: 0;
-            cursor: pointer;
-            " accept="image/gif,image/jpeg,image/jpg,image/png" @click="fileChange">
-          <span></span>
-          <img class="more" src="@/assets/icon/my/箭头.png" alt="">
-        </li>
+      <div class="title">
+        <img class="icont" :src="adatar?adatar:require('@/assets/icon/my/log.jpg')" alt="">
+          <input type="file" name="" style=" position: absolute;
+          top:42px;
+          right: 0;
+          width: 100%;
+          height:110px;
+          border-radius: 50%;
+          outline: none;
+          opacity: 0;
+          cursor: pointer;
+          " accept="image/gif,image/jpeg,image/jpg,image/png" @click="fileChange">
+        <span></span>
+        <img class="more" src="@/assets/icon/my/箭头.png" alt="">
+      </div>
+      <ul>
         <li  class="item" @click="username">
           <img class="icon" src="@/assets/icon/my/用户名IC.png" alt="">
           <span>用户名</span>
@@ -42,7 +42,8 @@
           <span class="itemc">15828658729</span>
           <img class="more" src="@/assets/icon/my/箭头.png" alt="">
         </li>
-       </ul>
+      </ul>
+      <div class="exit_btn" @click='handleExit'>退出登录</div>
     </div>
     <changenumber
       v-if='isShowAddPhoneBook'
@@ -76,33 +77,33 @@ export default {
     back () {
       this.$router.push({ name: 'MyPage'})
     },
-    username(){
+    username (){
       MessageBox.prompt('更改用户名', {
           inputValidator: (val) => {
             if (val === null) {
-              return true;//初始化的值为null，不做处理的话，刚打开MessageBox就会校验出错，影响用户体验
+              // 初始化的值为null，不做处理的话，刚打开MessageBox就会校验出错，影响用户体验
+              return true
             }
           }, inputErrorMessage: '输入不能为空'
         }).then((val) => {
           console.info(val.value)
         }, () => {
           console.info('cancel')
-      });
+      })
     },
-    passwordb(){
+    passwordb () {
       this.isShowAddPhoneBook = true
     },
-    fileChange(e) {
-            var that = this;
-            var file = e.target.files[0];
-            var reader = new FileReader();
-            reader.onload = function(e){
-                console.log(e);
-                that.adatar  = e.target.result;
-            }
-            reader.readAsDataURL(file);
-        },
-     AddContact (bol, personInfo) {
+    fileChange (e) {
+      var that = this;
+      var file = e.target.files[0]
+      var reader = new FileReader()
+      reader.onload = (e) => {
+        that.adatar  = e.target.result
+      }
+      reader.readAsDataURL(file)
+    },
+    AddContact (bol, personInfo) {
       this.isShowAddPhoneBook = false
       if (bol) {
         for (var k in personInfo) {
@@ -145,7 +146,13 @@ export default {
           console.info(val.value)
         }, () => {
           console.info('cancel')
-      });
+      })
+    },
+    // 退出登录
+    handleExit () {
+      this.$router.push({
+        name: 'Login'
+      })
     }
   }
 }
@@ -187,38 +194,59 @@ export default {
   }
   .content {
     padding: 0 .26rem;
+    .title {
+      display: flex;
+      align-items: center;
+      border-bottom: 1px solid #EFEFEF;
+      padding: 20px 0 10px;
+      justify-content: space-between;
+      .icont {
+        width: .9rem;
+        height:.9rem;
+        border-radius:50%;
+      }
+    }
+    .more {
+      text-align: right;
+      width: .18rem;
+      height: .24rem;
+    }
     .item {
       display: flex;
       align-items: center;
       border-bottom: 1px solid #EFEFEF;
-      padding: 10px 0 2px;
+      padding: 20px 0 5px;
       .icon {
-        width: .54rem;
-        height: .54rem;
+        width: .3rem;
+        height: .32rem;
       }
       span {
         font-size: .26rem;
         flex: 1;
         margin-left: 10px;
       }
-      .icont{
-        width: 90px;
-        margin-bottom: .2rem;
-        height:90px;
-        border-radius:50%;
-      }
-      .itemc{
+      .itemc {
         text-align: right;
         margin-right: .3rem;
       }
-      .more {
-        text-align: right;
-        width: .18rem;
-        height: .24rem;
-      }
-      .home_input{
+      .home_input {
         border: 1px solid;
       }
+    }
+    .exit_btn {
+      width: 5rem;
+      height: .8rem;
+      background: linear-gradient(90deg,rgba(32,197,141,1),rgba(43,213,156,1));
+      box-shadow: 0px 2px 4px 0px rgba(11,89,63,0.7);
+      border-radius: 40rem;
+      text-align: center;
+      line-height: .8rem;
+      font-size: .32rem;
+      color: white;
+      position: fixed;
+      top: 400px;
+      left: 50%;
+      margin-left: -2.5rem;
     }
   }
 }

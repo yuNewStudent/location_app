@@ -163,11 +163,12 @@ export default {
   color: #000;
 }
 .content_c{
-  padding:8px;
+  padding: 0 8px 8px;
 }
-.content_c p{
-font-size: 10px;
-color: rgba(185, 185, 185, 1);
-}
+.content_c p {
+  font-size: .2rem;
+  line-height: .4rem;
+  color: rgba(185, 185, 185, 1);
+  }
 }
 </style>

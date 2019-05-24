@@ -42,15 +42,15 @@ export default {
   },
   methods: {
      checkInputName(){ 
-      var regex =/^[\u4E00-\u9FA5]+$/;//判断是全为汉字
-      var name=this.userInfo.name;
-      if(!regex.test(name)){
-        this.NameStatus="error";
+      // 判断是全为汉字
+      var regex = /^[\u4E00-\u9FA5]+$/
+      var name = this.userInfo.name
+      if (!regex.test(name)) {
+        this.NameStatus="error"
+      } else {
+        this.NameStatus="success"
       }
-      else{
-        this.NameStatus="success";
-      }
-     },
+    },
     changeType () {
       if (this.type === 'text') {
         this.type = 'password'
@@ -62,30 +62,30 @@ export default {
     },
     handleLogin () {
       const data = {
-          appuserNumber:this.userInfo.name,
-          appuserPassword:this.userInfo.password
-        }
-        this.$http.post(`${config.httpBaseUrl}/appuser/login`, data).then(res => {
-          if (res.code === 200) {
-            this.$router.push({
-              name: 'Home'
-            })
-            this.$http.get(`${config.httpBaseUrl}/appuser/get`,{
-              params: {
-                  number: this.userInfo.name
-                }
-            }).then(res => {
-            if (res.code === 200) {
-                sessionStorage.setItem("user",JSON.stringify(res.date));
-                this.$cookie.set('user', JSON.stringify(res.date));
+        appuserNumber:this.userInfo.name,
+        appuserPassword:this.userInfo.password
+      }
+      this.$http.post(`${config.httpBaseUrl}/appuser/login`, data).then(res => {
+        if (res.code === 200) {
+          Toast({
+            message: '登陆成功',
+            iconClass: 'icon icon-success'
+          })
+          this.$router.push({
+            name: 'Home'
+          })
+          this.$http.get(`${config.httpBaseUrl}/appuser/get`, {
+            params: {
+              number: this.userInfo.name
             }
-           });
-            Toast({
-              message: '登陆成功',
-              iconClass: 'icon icon-success'
-            })
-           }
-        });
+          }).then(res => {
+            if (res.code === 200) {
+              sessionStorage.setItem("user", JSON.stringify(res.date))
+              this.$cookie.set('user', JSON.stringify(res.date))
+            }
+          })
+        }
+      })
     },
     goRePassword () {
       this.$router.push({

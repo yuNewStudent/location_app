@@ -237,7 +237,8 @@ export default {
       console.log(e)
       this.time = setTimeout(() => {
         // 展示操作窗口
-        this.showAction(item, index)
+        let top = e.touches[0].clientY
+        this.showAction(item, index, top)
       }, 500)
     },
     touchend (e) {
@@ -248,11 +249,11 @@ export default {
       clearTimeout(this.time)
     },
     // 展示操作窗口
-    showAction(item, index) {
+    showAction(item, index, top) {
       this.selectAlarm.alarm = Object.assign({}, item)
       this.selectAlarm.index = index
       this.$refs.action.style.display = 'block'
-      this.$refs.action.style.top = 90 + (index * 90) + 'px'
+      this.$refs.action.style.top = 15 + 90 * index + 'px'
     },
     // 隐藏操作栏
     hideAction () {
@@ -404,7 +405,7 @@ export default {
       box-shadow: 0px 1px 4px 0px rgba(109,109,109,0.5);
       font-size: .26rem;
       text-align: center;
-      position: fixed;
+      position: absolute;
       display: none;
       right: 100px;
       p {
