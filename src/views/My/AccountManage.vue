@@ -42,8 +42,8 @@
           <span class="itemc">15828658729</span>
           <img class="more" src="@/assets/icon/my/箭头.png" alt="">
         </li>
-      </ul>
-      <div class="exit_btn" @click='handleExit'>退出登录</div>
+       </ul>
+       <div @click='handleLogin' class="exitlogin">退出登陆</div>
     </div>
     <changenumber
       v-if='isShowAddPhoneBook'
@@ -53,7 +53,7 @@
 </template>
 
 <script>
-import { Actionsheet } from 'mint-ui';
+import { Actionsheet,Toast } from 'mint-ui';
 import { MessageBox } from 'mint-ui';
 import changenumber from '@/components/my/changenumber'
 export default {
@@ -77,7 +77,18 @@ export default {
     back () {
       this.$router.push({ name: 'MyPage'})
     },
-    username (){
+    handleLogin () {
+      var _this = this
+      Toast({
+        message: '退出登陆',
+        iconClass: 'icon icon-success'
+      })
+      this.$cookie.delete('user') 
+        _this.$router.push({
+          name: 'Login'
+      })
+    },
+    username(){
       MessageBox.prompt('更改用户名', {
           inputValidator: (val) => {
             if (val === null) {
@@ -94,12 +105,14 @@ export default {
     passwordb () {
       this.isShowAddPhoneBook = true
     },
-    fileChange (e) {
-      var that = this;
+    fileChange(e) {
+      var that = this
       var file = e.target.files[0]
+      console.log(file)
       var reader = new FileReader()
-      reader.onload = (e) => {
-        that.adatar  = e.target.result
+      reader.onload = function(e){
+          that.adatar  = e.target.result
+          console.log(that.adatar)
       }
       reader.readAsDataURL(file)
     },
@@ -121,7 +134,7 @@ export default {
         iconClass: 'icon icon-success'
       })
     },
-     homeTel(){                    // 整个方法没有被执行
+     homeTel () {                    // 整个方法没有被执行
         let telValue = this.$refs.homeTel.value;
         console.log(telValue)
         // 对比input内的值是否符合
@@ -135,7 +148,7 @@ export default {
             console.log('2')
         }
     },
-    changephone(){
+    changephone () {
       MessageBox.prompt('更改手机号码', {
           inputValidator: (val) => {
             if (val === null) {
@@ -146,12 +159,6 @@ export default {
           console.info(val.value)
         }, () => {
           console.info('cancel')
-      })
-    },
-    // 退出登录
-    handleExit () {
-      this.$router.push({
-        name: 'Login'
       })
     }
   }
@@ -233,20 +240,18 @@ export default {
         border: 1px solid;
       }
     }
-    .exit_btn {
+    .exitlogin {
       width: 5rem;
-      height: .8rem;
-      background: linear-gradient(90deg,rgba(32,197,141,1),rgba(43,213,156,1));
-      box-shadow: 0px 2px 4px 0px rgba(11,89,63,0.7);
-      border-radius: 40rem;
+      height: .80rem;
+      line-height: .80rem;
+      color: #ffffff;
+      font-size: .38rem;
       text-align: center;
-      line-height: .8rem;
-      font-size: .32rem;
-      color: white;
-      position: fixed;
-      top: 400px;
-      left: 50%;
-      margin-left: -2.5rem;
+      background:#15BF86;
+      margin: 0 auto;
+      box-shadow: 0px 2px 6px 0px rgba(20,146,104,0.8);
+      border-radius: .45rem;
+      margin: 100px auto 0;
     }
   }
 }

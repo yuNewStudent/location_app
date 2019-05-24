@@ -32,12 +32,13 @@
           class="eye"
           :src="reImg">
       </p>
-      <div class="login_btn">确认</div>
+      <div class="login_btn" @click="Modify">确认</div>
     </div>
   </div>
 </template>
 
 <script>
+import { Switch, Toast, DatetimePicker } from 'mint-ui'
 export default {
   name: 'register',
   data () {
@@ -54,6 +55,36 @@ export default {
     }
   },
   methods: {
+    Modify(){
+      if(this.userInfo.password==this.userInfo.repassword){
+        const data = {
+          appuserNumber:this.userInfo.name,
+          appuserPassword:this.userInfo.password
+        }
+        console.log(data)
+        this.$http.post(`${config.httpBaseUrl}/appuser/changePassword`, data).then(res => {
+          if (res.code === 200) {
+            this.$router.push({
+              name: 'Login'
+            })
+            Toast({
+              message: '修改密码成功',
+              iconClass: 'icon icon-success'
+            })
+           }else{
+             Toast({
+              message: '修改密码失败',
+              iconClass: 'icon icon-success'
+            })
+           }
+        });     
+      }else{
+         Toast({
+              message: '两次输入密码不一致',
+              iconClass: 'icon icon-success'
+            })
+      }
+    },
     changePasswordType () {
       if (this.passwordType === 'text') {
         this.passwordType = 'password'

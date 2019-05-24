@@ -71,18 +71,22 @@ export default {
             message: '登陆成功',
             iconClass: 'icon icon-success'
           })
-          this.$router.push({
-            name: 'Home'
-          })
           this.$http.get(`${config.httpBaseUrl}/appuser/get`, {
             params: {
               number: this.userInfo.name
             }
           }).then(res => {
             if (res.code === 200) {
-              sessionStorage.setItem("user", JSON.stringify(res.date))
               this.$cookie.set('user', JSON.stringify(res.date))
+              this.$router.push({
+                name: 'Home'
+              })
             }
+          })
+        } else {
+          Toast({
+            message: '登陆失败\n账号和密码输入错误',
+            iconClass: 'icon icon-success'
           })
         }
       })
