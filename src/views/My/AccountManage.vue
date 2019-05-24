@@ -20,7 +20,7 @@
             outline: none;
             opacity: 0;
             cursor: pointer;
-            " accept="image/gif,image/jpeg,image/jpg,image/png" @click="fileChange">
+            " accept="image/gif,image/jpeg,image/jpg,image/png" @change="fileChange">
           <span></span>
           <img class="more" src="@/assets/icon/my/箭头.png" alt="">
         </li>
@@ -43,6 +43,7 @@
           <img class="more" src="@/assets/icon/my/箭头.png" alt="">
         </li>
        </ul>
+       <div @click='handleLogin' class="exitlogin">退出登陆</div>
     </div>
     <changenumber
       v-if='isShowAddPhoneBook'
@@ -52,7 +53,7 @@
 </template>
 
 <script>
-import { Actionsheet } from 'mint-ui';
+import { Actionsheet,Toast } from 'mint-ui';
 import { MessageBox } from 'mint-ui';
 import changenumber from '@/components/my/changenumber'
 export default {
@@ -76,6 +77,15 @@ export default {
     back () {
       this.$router.push({ name: 'MyPage'})
     },
+    handleLogin(){
+       var _this = this;
+       Toast({
+              message: '退出登陆',
+              iconClass: 'icon icon-success'
+            })
+				this.$cookie.delete('user') 
+				_this.$router.push('/login');
+    },
     username(){
       MessageBox.prompt('更改用户名', {
           inputValidator: (val) => {
@@ -95,10 +105,11 @@ export default {
     fileChange(e) {
             var that = this;
             var file = e.target.files[0];
+            console.log(file)
             var reader = new FileReader();
             reader.onload = function(e){
-                console.log(e);
                 that.adatar  = e.target.result;
+                console.log(that.adatar)
             }
             reader.readAsDataURL(file);
         },
@@ -220,6 +231,19 @@ export default {
         border: 1px solid;
       }
     }
+    .exitlogin{
+      width:100%;
+      height: .90rem;
+      line-height: .90rem;
+      color: #ffffff;
+      font-size: .38rem;
+      text-align: center;
+      background:#15BF86;
+      margin: 0 auto;
+      box-shadow: 0px 2px 6px 0px rgba(20,146,104,0.8);
+      border-radius: .45rem;
+      margin: 50px 0 20px;
+      }
   }
 }
 </style>
