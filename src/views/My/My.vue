@@ -48,10 +48,13 @@ export default {
     }
   },
   created () {
-    var usernames=this.$cookie.get('user'); ;
-    var userx=JSON.parse(usernames);
-    this.username=userx.appuser.appuserNumber;
-    console.log(userx)
+    var usernames=this.$cookie.get(('user')||'{}'); ;
+    var userx=(JSON.parse(usernames)||'{}');
+    if(userx=='{}'){
+        this.username="";
+    }else{
+       this.username=userx.appuser.appuserNumber;
+    }
   },
 }
 </script>

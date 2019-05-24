@@ -6,39 +6,59 @@
     </div>
     <div class="content">
       <p class="title">
-        <img class='headImg' src="@/assets/icon/home/userImg.png" alt="">
+        <img class='headImg' :src="deviceInfo.wearerImage?deviceInfo.wearerImage:require('@/assets/icon/home/userImg.png')" alt="">
+       <input type="file" name="" style=" position: absolute;
+            top:55px;
+            right: 0;
+            width: 100%;
+            height:53px;
+            border-radius: 50%;
+            outline: none;
+            opacity: 0;
+            cursor: pointer;
+            " accept="image/gif,image/jpeg,image/jpg,image/png" @change="fileChange">
         <img class='more' src="@/assets/icon/home/箭头 拷贝.png" alt="">
       </p>
       <p>
         <img src="@/assets/icon/home/昵称IC.png" alt="">
         <span>昵称</span>
-        <input v-model="deviceInfo.name" type="text">
+        <input v-model="deviceInfo.wearerNickname" type="text">
       </p>
       <p>
         <img src="@/assets/icon/home/生日IC.png" alt="">
         <span>生日</span>
-        <input v-model="deviceInfo.name" type="text">
+          <mt-datetime-picker
+        @confirm="handleConfirm" 
+        v-model="deviceInfo.wearerBirthday"
+        :startDate="new Date('1900/1/1')"
+        ref="picker"
+        type="date"
+        year-format="{value}-"
+        month-format="{value}-"
+        date-format="{value}">
+      </mt-datetime-picker>
+        <input v-model="deviceInfo.wearerBirthday" @focus="openPicker" type="text">
       </p>
       <div class="sex">
         <img src="@/assets/icon/home/性别IC.png" alt="">
         <span>性别</span>
-        <div>男:<input name='sex' v-model="deviceInfo.name" type="radio"></div>
-        <div>女:<input name='sex' v-model="deviceInfo.name" type="radio"></div>
+        <div>男:<input name='sex' v-model="deviceInfo.wearerGender" value="1" type="radio"></div>
+        <div>女:<input name='sex' v-model="deviceInfo.wearerGender" value="2" type="radio"></div>
       </div>
       <p>
         <img src="@/assets/icon/home/身高IC.png" alt="">
         <span>身高</span>
-        <input v-model="deviceInfo.name" type="text">
+        <input v-model="deviceInfo.wearerHeight" type="text">
       </p>
       <p>
         <img src="@/assets/icon/home/体重IC.png" alt="">
         <span>体重</span>
-        <input v-model="deviceInfo.name" type="text">
+        <input v-model="deviceInfo.wearerWeight" type="text">
       </p>
       <p>
         <img src="@/assets/icon/home/家庭住址ic .png" alt="">
         <span>家庭住址</span>
-        <input v-model="deviceInfo.address" type="text">
+        <input v-model="deviceInfo.wearerAddress" type="text">
       </p>
       <div class="next">
         <button @click='handlecomfirm'>确定</button>
@@ -48,22 +68,66 @@
 </template>
 
 <script>
+import { Switch, Toast, DatetimePicker } from 'mint-ui'
 export default {
   name: 'add_device',
   data () {
     return {
       deviceInfo: {
-        name: '',
-        address: ''
+        wearerHeight: '',
+        wearerWeight: '',
+        wearerImage:'',
+        wearerAddress:"",
+        wearerGender:'',
+        wearerBirthday:'',
+        wearerNickname:'',
+        wearerAppuserId:'',
       }
     }
+  },
+  created () {
+    var usernames=this.$cookie.get(('user')||'{}'); ;
+    var userx=(JSON.parse(usernames)||'{}');
+    this.deviceInfo.wearerAppuserId=userx.appuser.appuserId;
   },
   methods: {
     handleClose () {
       this.$emit('closeDeviceInfo')
     },
+    openPicker() {
+        this.$refs.picker.open();
+        document.activeElement.blur();
+      },
+       fileChange(e) {
+            var that = this;
+            var file = e.target.files[0];
+            console.log(file)
+            var reader = new FileReader();
+            reader.onload = function(e){
+                that.deviceInfo.wearerImage  = e.target.result;
+            }
+            reader.readAsDataURL(file);
+        },
+    //日期选择
+    handleConfirm (data) {
+      this.deviceInfo.wearerBirthday = this.moment(data).format('YYYY-MM-DD')   //获取的时间为时间戳，getdata是自己写的一个转换时间的方法
+    },
     handlecomfirm () {
-      this.$emit('addDevice', this.deviceInfo)
+        this.$http.post(`${config.httpBaseUrl}/wearer/insert`, this.deviceInfo).then(res => {
+          if (res.code === 200) {
+            console.log(this.deviceInfo);
+            this.$emit('addDevice', this.deviceInfo)
+            Toast({
+              message: '信息添加成功',
+              iconClass: 'icon icon-success'
+            })
+           }else{
+             Toast({
+              message: '信息添加失败',
+              iconClass: 'icon icon-success'
+            })
+           }
+        });
     }
   }
 }

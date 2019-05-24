@@ -68,6 +68,7 @@ export default {
       }
     },
     goLogin () {
+      if(this.userInfo.password==this.userInfo.repassword){
       const data = {
           appuserNumber:this.userInfo.name,
           appuserPassword:this.userInfo.password,
@@ -83,6 +84,12 @@ export default {
             })
            }
         });
+        }else{
+         Toast({
+              message: '两次输入密码不一致',
+              iconClass: 'icon icon-success'
+            })
+      }
     },
     immediatelylogin(){
       this.$router.push({
