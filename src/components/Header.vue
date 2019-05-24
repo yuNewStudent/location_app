@@ -7,16 +7,17 @@
     <div class="device" @click='handleShowDeviceManage'>
       <img class="log" src="@/assets/icon/home/手表IC.png" alt="">
       <div class="deviceManage" v-if='isShowDeviceManage'>
-        <p @click.stop>
-          <img src="" alt="">
-          <span>张老大的手表</span>
-        </p>
-        <p @click.stop>
-          <img src="" alt="">
-          <span>真相的手表</span>
+        <p 
+          v-for='(item, index) in devices'
+          :key='index'
+          class="device_item"
+          :class="{active: isActive(item.deviceId)}"
+          @click.stop='selectDevice(item.deviceId, index)'>
+          <img src="@/assets/icon/header/手表IC.png" alt="">
+          <span>{{item.name}}的手表</span>
         </p>
         <p class="addBtn" @click.stop="handleAddDevice">
-          <img src="" alt="">
+          <img src="@/assets/icon/home/新增设备ic .png" alt="">
           <span>新增设备</span>
         </p>
       </div>
@@ -34,7 +35,21 @@ export default {
   data () {
     return {
       isShowDeviceManage: false,
-      isShowAddDevice: false
+      isShowAddDevice: false,
+      devices: [
+        {
+          deviceId: 9611812844,
+          name: '余老大'
+        },
+        {
+          deviceId: 44444,
+          name: '朱老三'
+        },
+        {
+          deviceId: 5666666,
+          name: '李老师'
+        }
+      ]
     }
   },
   components: {
@@ -55,6 +70,18 @@ export default {
         console.log('新增设备')
       }
       this.isShowAddDevice = false
+    },
+    // 选择手表
+    selectDevice (id, index) {
+      let devices = document.getElementsByClassName('device_item')
+      for (var i =  0; i < devices.length; i++) {
+        devices[i].classList.remove('active')
+      }
+      devices[index].classList.add('active')
+      localStorage.setItem('deviceId', JSON.stringify(id))
+    },
+    isActive (id) {
+      return id === JSON.parse(localStorage.getItem('deviceId'))
     }
   }
 }
@@ -96,10 +123,25 @@ export default {
       right: -0.2rem;
       background: white;
       z-index: 2;
-      padding-bottom: 10px;
+      border: 1px solid #EFEFEF;
       .addBtn {
-        margin-top: 2px;
+        border-top: 2px solid #EFEFEF;
+        img {
+          width: .26rem;
+          height: .26rem;
+          margin-right: 5px;
+        }
+      }
+      .active {
         background: #D9FBEF;
+      }
+      .device_item {
+        img {
+          width: .22rem;
+          height: .46rem;
+          margin-right: 5px;
+          margin-right: 5px;
+        }
       }
       p {
         color: black;
@@ -108,6 +150,7 @@ export default {
         line-height: .6rem;
         padding: 0 5px;
         display: flex;
+        align-items: center;
       }
     }
   }
