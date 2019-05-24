@@ -49,8 +49,9 @@ export default {
   },
   created () {
     var usernames=this.$cookie.get('user'); ;
-    this.username=usernames.appuser;
-    console.log(usernames)
+    var userx=JSON.parse(usernames);
+    this.username=userx.appuser.appuserNumber;
+    console.log(userx)
   },
 }
 </script>

@@ -12,15 +12,15 @@
         <li  class="item">
            <img class="icont" :src="adatar?adatar:require('@/assets/icon/my/log.jpg')" alt="">
            <input type="file" name="" style=" position: absolute;
-            top: 0;
+            top:42px;
             right: 0;
             width: 100%;
-            height: 100%;
+            height:110px;
             border-radius: 50%;
             outline: none;
             opacity: 0;
             cursor: pointer;
-            " accept="image/gif,image/jpeg,image/jpg,image/png" @change="fileChange">
+            " accept="image/gif,image/jpeg,image/jpg,image/png" @click="fileChange">
           <span></span>
           <img class="more" src="@/assets/icon/my/箭头.png" alt="">
         </li>
