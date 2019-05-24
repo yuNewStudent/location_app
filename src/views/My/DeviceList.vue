@@ -8,31 +8,22 @@
       <span class="comfirm"></span>
     </div>
     <div class="content">
-       <div class="content_l" @touchstart='touchstart'
+       <div v-for="(item, index) in devices"
+          :key="index">
+          <div class="content_l" @touchstart='touchstart'
           @touchend='touchend'>
           <div class="content_left">
-            <img src="@/assets/icon/my/log.jpg"/>
+            <img :src="item.wearerImage"/>
           </div>
           <div class="content_middle">
-            <span>Mothers wathc</span>
+            <span>{{item.wearerNickname}}</span>
           </div>
           <div class="content_right" @click="find">
              <span>查找设备</span>
           </div>
+       </div>
        </div>
        <!-- <div class="content_k"></div> -->
-       <div class="content_l" @touchstart='touchstart(index)'
-          @touchend='touchend'>
-          <div class="content_left">
-            <img src="@/assets/icon/my/log.jpg"/>
-          </div>
-          <div class="content_middle">
-            <span>Mothers wathc</span>
-          </div>
-          <div class="content_right" @click="find">
-             <span>查找设备</span>
-          </div>
-       </div>
        <div class="action" ref='action'>
         <p class="editor" @click.stop='showEditorContact'>解绑</p>
         <p @click.stop='delContact'>删除</p>
@@ -50,9 +41,30 @@ import { MessageBox } from 'mint-ui';
 export default {
   data () {
     return {
+      appuserId:'',
+      devices: []
     }
   },
+  created(){
+    var usernames=this.$cookie.get(('user')||'{}'); ;
+    var userx=(JSON.parse(usernames)||'{}');
+    this.appuserId=userx.appuser.appuserId;
+    this.querylist();
+  },
   methods: {
+     querylist() {
+      this.$http
+        .get(`${config.httpBaseUrl}/wearer/getAll`, {
+          params: {
+            appuserId: this.appuserId,
+          }
+        })
+        .then(res => {
+          if (res.code === 200) {
+             this.devices=res.date.wearers;
+          }
+        });
+    },
     back () {
       this.$router.push({ name: 'MyPage'})
     },
