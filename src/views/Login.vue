@@ -26,6 +26,7 @@
 </template>
 
 <script>
+import { Switch, Toast, DatetimePicker } from 'mint-ui'
 export default {
   name: 'login',
   data () {
@@ -49,9 +50,31 @@ export default {
       }
     },
     handleLogin () {
-      this.$router.push({
-        name: 'Home'
-      })
+      const data = {
+          appuserNumber:this.userInfo.name,
+          appuserPassword:this.userInfo.password
+        }
+        this.$http.post(`${config.httpBaseUrl}/appuser/login`, data).then(res => {
+          if (res.code === 200) {
+            this.$router.push({
+              name: 'Home'
+            })
+            this.$http.get(`${config.httpBaseUrl}/appuser/get`,{
+              params: {
+                  number: this.userInfo.name
+                }
+            }).then(res => {
+            if (res.code === 200) {
+                sessionStorage.setItem("user",JSON.stringify(res.date));
+                this.$cookie.set('user', JSON.stringify(res.date));
+            }
+           });
+            Toast({
+              message: '登陆成功',
+              iconClass: 'icon icon-success'
+            })
+           }
+        });
     },
     goRePassword () {
       this.$router.push({

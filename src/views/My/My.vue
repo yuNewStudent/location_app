@@ -5,7 +5,7 @@
       <p class="head_img">
         <img src="@/assets/icon/home/userImg.png" alt="">
       </p>
-      <p class="user_name">用户12222</p>
+      <p class="user_name">{{username||"无"}}</p>
     </div>
     <div class="content">
       <ul>
@@ -43,8 +43,15 @@
 <script>
 export default {
   data () {
-    return {}
-  }
+    return {
+       username:"",
+    }
+  },
+  created () {
+    var usernames=this.$cookie.get('user'); ;
+    this.username=usernames.appuser;
+    console.log(usernames)
+  },
 }
 </script>
 

@@ -22,7 +22,7 @@
           :key='index'
           @touchstart='touchstart(item, index)'
           @touchend='touchend'>
-          <span>{{item.start_time}} - {{item.end_time}}</span>
+          <span>{{item.nodisturbDate}}</span>
           <mt-switch size='mini' v-model="item.open"></mt-switch>
         </div>
         <div class="action" ref='action'>
@@ -87,18 +87,18 @@ export default {
         black: {}
       },
       blackList: [
-        {
-          start_time: '8:20',
-          end_time: '10:13',
-          open: false,
-          id: 1
-        },
-        {
-          start_time: '5:20',
-          end_time: '12:13',
-          open: false,
-          id: 1
-        }
+        // {
+        //   start_time: '8:20',
+        //   end_time: '10:13',
+        //   open: false,
+        //   id: 1
+        // },
+        // {
+        //   start_time: '5:20',
+        //   end_time: '12:13',
+        //   open: false,
+        //   id: 1
+        // }
       ],
       editor: false
     }
@@ -108,7 +108,22 @@ export default {
     MessageBox,
     DatetimePicker
   },
+  created () {
+    this.disturblist();
+  },
   methods: {
+     // 获取添加闹钟
+    disturblist() {
+      this.$http.get(`${config.httpBaseUrl}/nod/getAll`, {
+        params: {
+          wearerDeviceId: 9611812844
+        }
+      }).then(res => {
+        if (res.code === 200) {
+             this.blackList=res.date.nodis;
+           }
+          })
+        },
     closeBlackList () {
       this.$router.go(-1)
     },
@@ -124,11 +139,21 @@ export default {
           iconClass: 'icon icon-error'
         })
       }
-      this.blackList.push(this.newBlackList)
-      Toast({
-        message: '新增成功',
-        iconClass: 'icon icon-success'
-      })
+      const data = {
+          id:9611812844,
+          keyWord:"SILENCETIME",
+          currency1:this.newBlackList.start_time+'-'+this.newBlackList.end_time,
+        }
+        this.$http.post(`${config.httpBaseUrl}/Appcommand/command`, data).then(res => {
+          if (res.code === 200) {
+             this.disturblist();
+             Toast({
+              message: '新增成功',
+              iconClass: 'icon icon-success'
+            })
+           }
+        });
+      this.blackList.push(this.newBlackList);
     },
     edoitorBlackList (bol) {
       this.isShowEditorBlackList = false
