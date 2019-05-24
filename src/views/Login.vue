@@ -12,7 +12,7 @@
       </p>
       <p class="password">
         <img class="pass" src="@/assets/icon/login/密码IC.png" alt="">
-        <input v-model="userInfo.password" :type="type" placeholder="请输入登陆密码">
+        <input @blur.native.capture="checkInputName" :state="NameStatus" v-model="userInfo.password" :type="type" placeholder="请输入登陆密码">
         <img @click='changeType' class="eye" :src="img" alt="">
       </p>
       <p class="info">
@@ -36,10 +36,21 @@ export default {
       userInfo: {
         name: '',
         password: ''
-      }
+      },
+      NameStatus:'',
     }
   },
   methods: {
+     checkInputName(){ 
+      var regex =/^[\u4E00-\u9FA5]+$/;//判断是全为汉字
+      var name=this.userInfo.name;
+      if(!regex.test(name)){
+        this.NameStatus="error";
+      }
+      else{
+        this.NameStatus="success";
+      }
+     },
     changeType () {
       if (this.type === 'text') {
         this.type = 'password'

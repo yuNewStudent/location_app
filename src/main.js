@@ -7,6 +7,9 @@ import Axios from 'axios'
 import App from './App'
 import router from './router'
 import Moment from 'moment'
+
+import VueCookie from 'vue-cookie'
+Vue.use(VueCookie)
 // import './assets/js/appback.js'
 
 Vue.config.productionTip = false
