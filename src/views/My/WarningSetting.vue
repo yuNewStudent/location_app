@@ -9,41 +9,40 @@
     </div>
     <div class="content">
       <div class="content_l">
-          <div class="content_left">
-            <p>SOS报警</p>
-          </div>
-          <div class="content_middle">
-          </div>
-          <div class="content_right" @click="find">
-             <mt-switch v-model="value"></mt-switch>
-          </div>
-       </div>
-       <!-- <div class="content_k"></div> -->
-       <div class="content_l" @click="lowbattery">
-          <div class="content_left">
-             <p>低电量报警</p>
-          </div>
-          <div class="content_middle">
-          </div>
-          <div class="content_right" @click="find">
-             <mt-switch v-model="value1"></mt-switch>
-          </div>
-       </div>
-       <div class="content_c">
-         <P>默认状态下，当手表电量低于10%时进行报警，您也可以通过点击
-           <span class="content_t">"低电量报警"</span>进行<span class="content_t">自定义</span>设置。
-         </P>
-       </div>
-       <div class="content_l">
-          <div class="content_left">
-            <p>智能围拦报警</p>
-          </div>
-          <div class="content_middle">
-          </div>
-          <div class="content_right" @click="find">
-             <mt-switch v-model="value2"></mt-switch>
-          </div>
-       </div>
+        <div class="content_left">
+          <p>SOS报警</p>
+        </div>
+        <div class="content_middle">
+        </div>
+        <div class="content_right" @click="find">
+            <mt-switch v-model="value"></mt-switch>
+        </div>
+      </div>
+      <div class="content_l" @click="lowbattery">
+        <div class="content_left">
+            <p>低电量报警</p>
+        </div>
+        <div class="content_middle">
+        </div>
+        <div class="content_right" @click="find">
+          <mt-switch v-model="value1"></mt-switch>
+        </div>
+      </div>
+      <div class="content_c">
+        <P>默认状态下，当手表电量低于10%时进行报警，您也可以通过点击
+          <span class="content_t">"低电量报警"</span>进行<span class="content_t">自定义</span>设置。
+        </P>
+      </div>
+      <div class="content_l">
+        <div class="content_left">
+          <p>智能围拦报警</p>
+        </div>
+        <div class="content_middle">
+        </div>
+        <div class="content_right" @click="find">
+            <mt-switch v-model="value2"></mt-switch>
+        </div>
+      </div>
     </div>
   </div>
 </template>

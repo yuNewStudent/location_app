@@ -55,10 +55,30 @@ export default {
           img: require('@/assets/icon/my/log.jpg'),
           name: 'yujian'
         }
-      ]
+      ],
+      appuserId:''
     }
   },
+  created(){
+    var usernames=this.$cookie.get(('user')||'{}'); ;
+    var userx=(JSON.parse(usernames)||'{}');
+    this.appuserId=userx.appuser.appuserId;
+    this.querylist();
+  },
   methods: {
+     querylist() {
+      this.$http
+        .get(`${config.httpBaseUrl}/wearer/getAll`, {
+          params: {
+            appuserId: this.appuserId,
+          }
+        })
+        .then(res => {
+          if (res.code === 200) {
+             this.devices=res.date.wearers;
+          }
+        });
+    },
     back () {
       this.$router.push({ name: 'MyPage'})
     },

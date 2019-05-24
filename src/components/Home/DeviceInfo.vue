@@ -78,6 +78,7 @@ export default {
         wearerWeight: '',
         wearerImage:'',
         wearerAddress:"",
+        wearerDeviceId:'12212112',
         wearerGender:'',
         wearerBirthday:'',
         wearerNickname:'',
