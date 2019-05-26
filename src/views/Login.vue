@@ -62,8 +62,8 @@ export default {
     },
     handleLogin () {
       const data = {
-        appuserNumber:this.userInfo.name,
-        appuserPassword:this.userInfo.password
+        appuserNumber: this.userInfo.name,
+        appuserPassword: this.userInfo.password
       }
       this.$http.post(`${config.httpBaseUrl}/appuser/login`, data).then(res => {
         if (res.code === 200) {

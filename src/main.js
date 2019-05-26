@@ -10,7 +10,7 @@ import Moment from 'moment'
 
 import VueCookie from 'vue-cookie'
 Vue.use(VueCookie)
-// import './assets/js/appback.js'
+import './assets/js/appback.js'
 
 Vue.config.productionTip = false
 Vue.prototype.moment = Moment
@@ -19,15 +19,15 @@ Vue.use(MintUI)
 
 // 路由拦截
 var whiteList = ['Login', 'Register', 'ResetPassword']
-router.beforeEach((to, from, next) => {
-  // 如果未登录， 只能跳转至登录页面或者注册页面
-  const loginUser = JSON.parse(VueCookie.get('user'))
-  console.log(to.name, loginUser, !loginUser && whiteList.indexOf(to.name) === -1)
-  if (!loginUser && whiteList.indexOf(to.name) === -1) {
-    return next({ name: 'Login' })
-  }
-  next()
-})
+// router.beforeEach((to, from, next) => {
+//   // 如果未登录， 只能跳转至登录页面或者注册页面
+//   const loginUser = JSON.parse(VueCookie.get('user'))
+//   console.log(to.name, loginUser, !loginUser && whiteList.indexOf(to.name) === -1)
+//   if (!loginUser && whiteList.indexOf(to.name) === -1) {
+//     return next({ name: 'Login' })
+//   }
+//   next()
+// })
 
 // 请求返回拦截
 Axios.interceptors.response.use(

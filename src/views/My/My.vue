@@ -44,18 +44,18 @@
 export default {
   data () {
     return {
-       username:"",
+      username: ''
     }
   },
   created () {
-    var usernames=this.$cookie.get(('user')||'{}'); ;
-    var userx=(JSON.parse(usernames)||'{}');
-    if(userx=='{}'){
-        this.username="";
+    var usernames = this.$cookie.get(('user')||'{}')
+    var userx = (JSON.parse(usernames)||'{}')
+    if(userx === '{}'){
+      this.username = ''
     }else{
-       this.username=userx.appuser.appuserNumber;
+      this.username = userx.appuser.appuserNumber
     }
-  },
+  }
 }
 </script>
 

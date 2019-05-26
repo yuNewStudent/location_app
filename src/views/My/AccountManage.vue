@@ -53,21 +53,20 @@
 </template>
 
 <script>
-import { Actionsheet,Toast } from 'mint-ui';
-import { MessageBox } from 'mint-ui';
+import { Actionsheet, Toast, MessageBox } from 'mint-ui'
 import changenumber from '@/components/my/changenumber'
 export default {
   data () {
     return {
       inputtext : {
-            phone : '',
-            password:'',
-        },
-        isShowAddPhoneBook:false,
-        title: {
+        phone : '',
+        password:'',
+      },
+      isShowAddPhoneBook: false,
+      title: {
         add: '修改密码',
       },
-      adatar:"",
+      adatar: ''
     }
   },
   components: {
@@ -90,29 +89,29 @@ export default {
     },
     username(){
       MessageBox.prompt('更改用户名', {
-          inputValidator: (val) => {
-            if (val === null) {
-              // 初始化的值为null，不做处理的话，刚打开MessageBox就会校验出错，影响用户体验
-              return true
-            }
-          }, inputErrorMessage: '输入不能为空'
-        }).then((val) => {
-          console.info(val.value)
-        }, () => {
-          console.info('cancel')
+        inputValidator: (val) => {
+          if (val === null) {
+            // 初始化的值为null，不做处理的话，刚打开MessageBox就会校验出错，影响用户体验
+            return true
+          }
+        }, inputErrorMessage: '输入不能为空'
+      }).then((val) => {
+        console.info(val.value)
+      }, () => {
+        console.info('cancel')
       })
     },
     passwordb () {
       this.isShowAddPhoneBook = true
     },
-    fileChange(e) {
+    fileChange (e) {
       var that = this
       var file = e.target.files[0]
       console.log(file)
       var reader = new FileReader()
-      reader.onload = function(e){
-          that.adatar  = e.target.result
-          console.log(that.adatar)
+      reader.onload = function (e) {
+        that.adatar  = e.target.result
+        console.log(that.adatar)
       }
       reader.readAsDataURL(file)
     },
@@ -134,31 +133,32 @@ export default {
         iconClass: 'icon icon-success'
       })
     },
-     homeTel () {                    // 整个方法没有被执行
-        let telValue = this.$refs.homeTel.value;
-        console.log(telValue)
-        // 对比input内的值是否符合
-        if(this.reg.test(telValue)){
-            this.isShowPhoneError = true;
-            this.cc = true;
-            console.log('1')
-        }else{
-            this.isShowPhoneError = true ;
-            this.cc = false;
-            console.log('2')
-        }
+    // 整个方法没有被执行
+    homeTel () {
+      let telValue = this.$refs.homeTel.value
+      console.log(telValue)
+      // 对比input内的值是否符合
+      if (this.reg.test(telValue)) {
+          this.isShowPhoneError = true
+          this.cc = true;
+          console.log('1')
+      } else {
+        this.isShowPhoneError = true 
+        this.cc = false
+        console.log('2')
+      }
     },
     changephone () {
       MessageBox.prompt('更改手机号码', {
-          inputValidator: (val) => {
-            if (val === null) {
-              return true;//初始化的值为null，不做处理的话，刚打开MessageBox就会校验出错，影响用户体验
-            }
-          }, inputErrorMessage: '输入不能为空'
-        }).then((val) => {
-          console.info(val.value)
-        }, () => {
-          console.info('cancel')
+        inputValidator: (val) => {
+          if (val === null) {
+            return true//初始化的值为null，不做处理的话，刚打开MessageBox就会校验出错，影响用户体验
+          }
+        }, inputErrorMessage: '输入不能为空'
+      }).then((val) => {
+        console.info(val.value)
+      }, () => {
+        console.info('cancel')
       })
     }
   }

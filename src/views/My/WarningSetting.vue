@@ -48,35 +48,34 @@
 </template>
 
 <script>
-import { Switch } from 'mint-ui';
-import { MessageBox } from 'mint-ui';
+import { Switch, MessageBox } from 'mint-ui'
 export default {
   data () {
     return {
-      value:false,
-      value1:true,
-      value2:true,
+      value: false,
+      value1: true,
+      value2: true
     }
   },
   methods: {
     back () {
       this.$router.push({ name: 'MyPage'})
     },
-    find(){
+    find () {
     },
-    //输入电量百分之比
+    // 输入电量百分之比
     lowbattery(){
       MessageBox.prompt('请输入低电量报警百分比', {
-          inputValidator: (val) => {
-            if (val === null) {
-              return true;//初始化的值为null，不做处理的话，刚打开MessageBox就会校验出错，影响用户体验
-            }
-          }, inputErrorMessage: '输入不能为空'
-        }).then((val) => {
-          console.info(val.value)
-        }, () => {
-          console.info('cancel')
-      });
+        inputValidator: (val) => {
+          if (val === null) {
+            return true;// 初始化的值为null，不做处理的话，刚打开MessageBox就会校验出错，影响用户体验
+          }
+        }, inputErrorMessage: '输入不能为空'
+      }).then((val) => {
+        console.info(val.value)
+      }, () => {
+        console.info('cancel')
+      })
     }
   }
 }

@@ -2,6 +2,7 @@
  * 解决hbuilder打包app之后点击手机返回键直接退出app的
  */
 document.addEventListener('plusready', function () {
+	if (!window.plus) return
   var webview = plus.webview.currentWebview()
   plus.key.addEventListener('backbutton', function () {
     webview.canBack(function (e) {

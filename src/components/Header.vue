@@ -50,19 +50,19 @@ export default {
         //   name: "李老师"
         // }
       ]
-    };
+    }
   },
   components: {
     AddDevice
   },
-  created(){
-    var usernames=this.$cookie.get(('user')||'{}'); ;
-    var userx=(JSON.parse(usernames)||'{}');
-    this.appuserId=userx.appuser.appuserId;
-    this.querylist();
+  created () {
+    var usernames = this.$cookie.get(('user') || '{}') 
+    var userx = (JSON.parse(usernames) || '{}')
+    this.appuserId = userx.appuser.appuserId
+    this.querylist()
   },
   methods: {
-    querylist() {
+    querylist () {
       this.$http
         .get(`${config.httpBaseUrl}/wearer/getAll`, {
           params: {
@@ -71,39 +71,37 @@ export default {
         })
         .then(res => {
           if (res.code === 200) {
-             this.devices=res.date.wearers;
+             this.devices = res.date.wearers
           }
-        });
+        })
     },
-    handleShowDeviceManage() {
-      this.isShowDeviceManage = !this.isShowDeviceManage;
+    handleShowDeviceManage () {
+      this.isShowDeviceManage = !this.isShowDeviceManage
     },
     // 新增设备
-    handleAddDevice() {
-      this.isShowAddDevice = true;
-      this.isShowDeviceManage = false;
+    handleAddDevice () {
+      this.isShowAddDevice = true
+      this.isShowDeviceManage = false
     },
     // 关闭新增设备页面
-    closeAddDevice(deviceInfo) {
-      if (deviceInfo) {
-        console.log("新增设备");
-      }
-      this.isShowAddDevice = false;
+    closeAddDevice (deviceInfo) {
+      if (deviceInfo) { }
+      this.isShowAddDevice = false
     },
     // 选择手表
-    selectDevice(id, index) {
-      let devices = document.getElementsByClassName("device_item");
+    selectDevice (id, index) {
+      let devices = document.getElementsByClassName('device_item')
       for (var i = 0; i < devices.length; i++) {
-        devices[i].classList.remove("active");
+        devices[i].classList.remove('active')
       }
-      devices[index].classList.add("active");
-      localStorage.setItem("wearerAppuserId", JSON.stringify(id));
+      devices[index].classList.add('active')
+      localStorage.setItem('wearerAppuserId', JSON.stringify(id))
     },
-    isActive(id) {
-      return id === JSON.parse(localStorage.getItem("wearerAppuserId"));
+    isActive (id) {
+      return id === JSON.parse(localStorage.getItem('wearerAppuserId'))
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>

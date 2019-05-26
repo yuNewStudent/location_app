@@ -27,16 +27,16 @@
       <p>
         <img src="@/assets/icon/home/生日IC.png" alt="">
         <span>生日</span>
-          <mt-datetime-picker
-        @confirm="handleConfirm" 
-        v-model="deviceInfo.wearerBirthday"
-        :startDate="new Date('1900/1/1')"
-        ref="picker"
-        type="date"
-        year-format="{value}-"
-        month-format="{value}-"
-        date-format="{value}">
-      </mt-datetime-picker>
+        <mt-datetime-picker
+          @confirm="handleConfirm"
+          v-model="deviceInfo.wearerBirthday"
+          :startDate="new Date('1900/1/1')"
+          ref="picker"
+          type="date"
+          year-format="{value}-"
+          month-format="{value}-"
+          date-format="{value}">
+        </mt-datetime-picker>
         <input v-model="deviceInfo.wearerBirthday" @focus="openPicker" type="text">
       </p>
       <div class="sex">
@@ -68,67 +68,69 @@
 </template>
 
 <script>
-import { Switch, Toast, DatetimePicker } from 'mint-ui'
+import { Toast } from 'mint-ui'
 export default {
   name: 'add_device',
+  props: ['code'],
   data () {
     return {
       deviceInfo: {
         wearerHeight: '',
         wearerWeight: '',
-        wearerImage:'',
-        wearerAddress:"",
-        wearerDeviceId:'12212112',
-        wearerGender:'',
-        wearerBirthday:'',
-        wearerNickname:'',
-        wearerAppuserId:'',
+        wearerImage: '',
+        wearerAddress: '',
+        wearerDeviceId: '12212112',
+        wearerGender: '',
+        wearerBirthday: '',
+        wearerNickname: '',
+        wearerAppuserId: '',
       }
     }
   },
   created () {
-    var usernames=this.$cookie.get(('user')||'{}'); ;
-    var userx=(JSON.parse(usernames)||'{}');
-    this.deviceInfo.wearerAppuserId=userx.appuser.appuserId;
+    var usernames = this.$cookie.get(('user') || '{}')
+    var userx = (JSON.parse(usernames) || '{}')
+    this.deviceInfo.wearerAppuserId = userx.appuser.appuserId
   },
   methods: {
     handleClose () {
       this.$emit('closeDeviceInfo')
     },
-    openPicker() {
-        this.$refs.picker.open();
-        document.activeElement.blur();
-      },
-       fileChange(e) {
-            var that = this;
-            var file = e.target.files[0];
-            console.log(file)
-            var reader = new FileReader();
-            reader.onload = function(e){
-                that.deviceInfo.wearerImage  = e.target.result;
-            }
-            reader.readAsDataURL(file);
-        },
+    openPicker () {
+      this.$refs.picker.open()
+      document.activeElement.blur()
+    },
+    fileChange (e) {
+      var that = this
+      var file = e.target.files[0]
+      console.log(file)
+      var reader = new FileReader()
+      reader.onload = function (e) {
+          that.deviceInfo.wearerImage  = e.target.result
+      }
+      reader.readAsDataURL(file)
+    },
     //日期选择
     handleConfirm (data) {
-      this.deviceInfo.wearerBirthday = this.moment(data).format('YYYY-MM-DD')   //获取的时间为时间戳，getdata是自己写的一个转换时间的方法
+      //获取的时间为时间戳，getdata是自己写的一个转换时间的方法
+      this.deviceInfo.wearerBirthday = this.moment(data).format('YYYY-MM-DD')
     },
     handlecomfirm () {
-        this.$http.post(`${config.httpBaseUrl}/wearer/insert`, this.deviceInfo).then(res => {
-          if (res.code === 200) {
-            console.log(this.deviceInfo);
-            this.$emit('addDevice', this.deviceInfo)
+      this.$http.post(`${config.httpBaseUrl}/wearer/insert`, this.deviceInfo).then(res => {
+        if (res.code === 200) {
+          console.log(this.deviceInfo)
+          this.$emit('addDevice', this.deviceInfo)
+          Toast({
+            message: '信息添加成功',
+            iconClass: 'icon icon-success'
+          })
+          } else {
             Toast({
-              message: '信息添加成功',
-              iconClass: 'icon icon-success'
-            })
-           }else{
-             Toast({
-              message: '信息添加失败',
-              iconClass: 'icon icon-success'
-            })
-           }
-        });
+            message: '信息添加失败',
+            iconClass: 'icon icon-success'
+          })
+        }
+      })
     }
   }
 }

@@ -71,10 +71,30 @@ export default {
       // geocoder: null
     }
   },
+  watch: {
+    route (value) {
+      console.log(value)
+      switch (value) {
+        case 'LocationPage':
+          this.active = 1
+          break
+        case 'HomePage':
+          this.active = 0
+          break
+        case 'MyPage':
+          this.active = 2
+      }
+    }
+  },
   created () {
     // this.$nextTick(() => {
     //   this.initMap()
     // })
+  },
+  computed: {
+    route () {
+      return this.$route.name
+    }
   },
   components: {
     // Button,
@@ -83,7 +103,7 @@ export default {
   methods: {
     // 路由跳转
     handleRoute (name, index) {
-      this.active = index
+      // this.active = index
       this.$router.push({
         name
       })

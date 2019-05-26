@@ -1,27 +1,27 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Home from '@/views/Home'
-import Login from '@/views/Login'
-import Register from '@/views/Regisiter'
-import ResetPassword from '@/views/ResetPassword'
-import HomePage from '@/views/HomePage/HomePage'
-import MyPage from '@/views/My/My'
-import LocationPage from '@/views/Location/Location'
-import AccountManage from '@/views/My/AccountManage'
-import DeviceList from '@/views/My/DeviceList'
-import FindDevice from '@/views/My/FindDevice'
-import WarningSetting from '@/views/My/WarningSetting'
-import MessageCenter from '@/views/My/MessageCenter'
 
-import NoteStep from '@/components/Home/NoteStep'
-import HeartRate from '@/components/Home/HeartRate'
-import BloodPressure from '@/components/Home/BloodPressure'
+const Home = () => import('@/views/Home')
+const Login = () => import('@/views/Login')
+const Register = () => import('@/views/Regisiter')
+const ResetPassword = () => import('@/views/ResetPassword')
+const HomePage = () => import('@/views/HomePage/HomePage')
+const MyPage = () => import('@/views/My/My')
+const LocationPage = () => import('@/views/Location/Location')
+const AccountManage = () => import('@/views/My/AccountManage')
+const DeviceList = () => import('@/views/My/DeviceList')
+const FindDevice = () => import('@/views/My/FindDevice')
+const WarningSetting = () => import('@/views/My/WarningSetting')
+const MessageCenter = () => import('@/views/My/MessageCenter')
 
-import PhoneBook from '@/components/Home/PhoneBook'
-import EmergencyContact from '@/components/Home/EmergencyContact'
-import AlarmSeting from '@/components/Home/AlarmSeting'
-import BlackList from '@/components/Home/BlackList'
-// const ProductExit = name => () => import('@/pages/ProductExit/' + name)
+const NoteStep = () => import('@/components/Home/NoteStep')
+const HeartRate = () => import('@/components/Home/HeartRate')
+const BloodPressure = () => import('@/components/Home/BloodPressure')
+
+const PhoneBook = () => import('@/components/Home/PhoneBook')
+const EmergencyContact = () => import('@/components/Home/EmergencyContact')
+const AlarmSeting = () => import('@/components/Home/AlarmSeting')
+const BlackList = () => import('@/components/Home/BlackList')
 
 Vue.use(Router)
 

@@ -34,7 +34,7 @@
 </template>
 
 <script>
-import { MessageBox } from 'mint-ui';
+import { MessageBox, Toast } from 'mint-ui';
 export default {
   data () {
     return {
@@ -60,10 +60,10 @@ export default {
     }
   },
   created(){
-    var usernames=this.$cookie.get(('user')||'{}'); ;
-    var userx=(JSON.parse(usernames)||'{}');
-    this.appuserId=userx.appuser.appuserId;
-    this.querylist();
+    var usernames=this.$cookie.get(('user')||'{}')
+    var userx=(JSON.parse(usernames)||'{}')
+    this.appuserId=userx.appuser.appuserId
+    this.querylist()
   },
   methods: {
      querylist() {
@@ -75,9 +75,9 @@ export default {
         })
         .then(res => {
           if (res.code === 200) {
-             this.devices=res.date.wearers;
+             this.devices=res.date.wearers
           }
-        });
+        })
     },
     back () {
       this.$router.push({ name: 'MyPage'})
@@ -92,12 +92,12 @@ export default {
     touchend (e) {
       clearTimeout(this.time)
     },
-    find(){
+    find () {
       MessageBox({
         title: '确认查找该设备吗？',
         message: '点击"确认"后，即向该该设备发送指令。',
         showCancelButton: true
-      });
+      })
     },
      // 修改联系人
     showEditorContact () {

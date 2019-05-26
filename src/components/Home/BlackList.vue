@@ -109,7 +109,7 @@ export default {
     DatetimePicker
   },
   created () {
-    this.disturblist();
+    this.disturblist()
   },
   methods: {
      // 获取添加闹钟
@@ -120,7 +120,7 @@ export default {
         }
       }).then(res => {
         if (res.code === 200) {
-          this.blackList=res.date.nodis;
+          this.blackList=res.date.nodis
           }
         })
     },
@@ -140,20 +140,20 @@ export default {
         })
       }
       const data = {
-          id:9611812844,
-          keyWord: "SILENCETIME",
-          currency1: this.newBlackList.start_time + '-' + this.newBlackList.end_time,
-        }
-        this.$http.post(`${config.httpBaseUrl}/Appcommand/command`, data).then(res => {
-          if (res.code === 200) {
-             this.disturblist();
-             Toast({
-              message: '新增成功',
-              iconClass: 'icon icon-success'
-            })
-           }
-        });
-      this.blackList.push(this.newBlackList);
+        id:9611812844,
+        keyWord: "SILENCETIME",
+        currency1: this.newBlackList.start_time + '-' + this.newBlackList.end_time,
+      }
+      this.$http.post(`${config.httpBaseUrl}/Appcommand/command`, data).then(res => {
+        if (res.code === 200) {
+          this.disturblist()
+          Toast({
+            message: '新增成功',
+            iconClass: 'icon icon-success'
+          })
+          }
+      })
+      this.blackList.push(this.newBlackList)
     },
     edoitorBlackList (bol) {
       this.isShowEditorBlackList = false
