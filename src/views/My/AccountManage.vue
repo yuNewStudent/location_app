@@ -27,7 +27,7 @@
         <li  class="item" @click="username">
           <img class="icon" src="@/assets/icon/my/用户名IC.png" alt="">
           <span>用户名</span>
-          <span class="itemc">哈喽牛小萌</span>
+          <span class="itemc">{{appuserName||'无'}}</span>
           <img class="more" src="@/assets/icon/my/箭头.png" alt="">
         </li>
         <li  class="item" @click="passwordb">
@@ -63,6 +63,8 @@ export default {
             phone : '',
             password:'',
         },
+        appuserName:'',
+        appuserId:'',
         isShowAddPhoneBook:false,
         title: {
         add: '修改密码',
@@ -73,7 +75,28 @@ export default {
   components: {
     changenumber
   },
+  created(){
+     var usernames=this.$cookie.get(('user')||'{}');
+    var userx=(JSON.parse(usernames)||'{}');
+    console.log(userx);
+    this.appuserId=userx.appuser.appuserId;
+    this.getinformation();
+  },
   methods: {
+   //查询用户信息
+    getinformation(){
+        this.$http.get(`${config.httpBaseUrl}/appuser/get`,{
+              params: {
+                 appuserId:this.appuserId
+                }
+            }).then(res => {
+            if (res.code === 200) {
+                console.log(res.date.appuser.appuserName)
+                this.appuserName=res.date.appuser.appuserName;
+                console.log(this.appuserName)
+            }
+           });
+    },
     back () {
       this.$router.push({ name: 'MyPage'})
     },
@@ -94,7 +117,21 @@ export default {
             }
           }, inputErrorMessage: '输入不能为空'
         }).then((val) => {
-          console.info(val.value)
+          console.info(val.value);
+
+          this.$http
+            .post(`${config.httpBaseUrl}/appuser/updatename`, {
+                appuserName: val.value,
+                appuserId:this.appuserId
+            })
+            .then(res => {
+              if (res.code === 200) {
+                // this.appuserName=val.value;
+                this.getinformation();
+              }else{
+
+              }
+            });
         }, () => {
           console.info('cancel')
       });

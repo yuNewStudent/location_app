@@ -70,7 +70,7 @@ export default {
             this.$router.push({
               name: 'Home'
             })
-            this.$http.get(`${config.httpBaseUrl}/appuser/get`,{
+            this.$http.get(`${config.httpBaseUrl}/appuser/getappuser`,{
               params: {
                   number: this.userInfo.name
                 }
