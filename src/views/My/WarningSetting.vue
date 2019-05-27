@@ -9,75 +9,73 @@
     </div>
     <div class="content">
       <div class="content_l">
-          <div class="content_left">
-            <p>SOS报警</p>
-          </div>
-          <div class="content_middle">
-          </div>
-          <div class="content_right" @click="find">
-             <mt-switch v-model="value"></mt-switch>
-          </div>
-       </div>
-       <!-- <div class="content_k"></div> -->
-       <div class="content_l" @click="lowbattery">
-          <div class="content_left">
-             <p>低电量报警</p>
-          </div>
-          <div class="content_middle">
-          </div>
-          <div class="content_right" @click="find">
-             <mt-switch v-model="value1"></mt-switch>
-          </div>
-       </div>
-       <div class="content_c">
-         <P>默认状态下，当手表电量低于10%时进行报警，您也可以通过点击
-           <span class="content_t">"低电量报警"</span>进行<span class="content_t">自定义</span>设置。
-         </P>
-       </div>
-       <div class="content_l">
-          <div class="content_left">
-            <p>智能围拦报警</p>
-          </div>
-          <div class="content_middle">
-          </div>
-          <div class="content_right" @click="find">
-             <mt-switch v-model="value2"></mt-switch>
-          </div>
-       </div>
+        <div class="content_left">
+          <p>SOS报警</p>
+        </div>
+        <div class="content_middle">
+        </div>
+        <div class="content_right" @click="find">
+            <mt-switch v-model="value"></mt-switch>
+        </div>
+      </div>
+      <div class="content_l" @click="lowbattery">
+        <div class="content_left">
+            <p>低电量报警</p>
+        </div>
+        <div class="content_middle">
+        </div>
+        <div class="content_right" @click="find">
+          <mt-switch v-model="value1"></mt-switch>
+        </div>
+      </div>
+      <div class="content_c">
+        <P>默认状态下，当手表电量低于10%时进行报警，您也可以通过点击
+          <span class="content_t">"低电量报警"</span>进行<span class="content_t">自定义</span>设置。
+        </P>
+      </div>
+      <div class="content_l">
+        <div class="content_left">
+          <p>智能围拦报警</p>
+        </div>
+        <div class="content_middle">
+        </div>
+        <div class="content_right" @click="find">
+            <mt-switch v-model="value2"></mt-switch>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-import { Switch } from 'mint-ui';
-import { MessageBox } from 'mint-ui';
+import { Switch, MessageBox } from 'mint-ui'
 export default {
   data () {
     return {
-      value:false,
-      value1:true,
-      value2:true,
+      value: false,
+      value1: true,
+      value2: true
     }
   },
   methods: {
     back () {
       this.$router.push({ name: 'MyPage'})
     },
-    find(){
+    find () {
     },
-    //输入电量百分之比
+    // 输入电量百分之比
     lowbattery(){
       MessageBox.prompt('请输入低电量报警百分比', {
-          inputValidator: (val) => {
-            if (val === null) {
-              return true;//初始化的值为null，不做处理的话，刚打开MessageBox就会校验出错，影响用户体验
-            }
-          }, inputErrorMessage: '输入不能为空'
-        }).then((val) => {
-          console.info(val.value)
-        }, () => {
-          console.info('cancel')
-      });
+        inputValidator: (val) => {
+          if (val === null) {
+            return true;// 初始化的值为null，不做处理的话，刚打开MessageBox就会校验出错，影响用户体验
+          }
+        }, inputErrorMessage: '输入不能为空'
+      }).then((val) => {
+        console.info(val.value)
+      }, () => {
+        console.info('cancel')
+      })
     }
   }
 }
@@ -163,11 +161,12 @@ export default {
   color: #000;
 }
 .content_c{
-  padding:8px;
+  padding: 0 8px 8px;
 }
-.content_c p{
-font-size: 10px;
-color: rgba(185, 185, 185, 1);
-}
+.content_c p {
+  font-size: .2rem;
+  line-height: .4rem;
+  color: rgba(185, 185, 185, 1);
+  }
 }
 </style>

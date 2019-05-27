@@ -6,26 +6,37 @@
     </div>
     <div class="content">
       <div class="scan_wrapper">
-        <input type="text" placeholder="请输入15位注册码或点击扫描二维码">
-        <img src="@/assets/icon/home/扫描IC.png" alt="">
+        <input type="text" v-model='code' placeholder="请输入15位注册码或点击扫描二维码">
+        <img @click='isShowScanPage=!isShowScanPage' src="@/assets/icon/home/扫描IC.png" alt="">
       </div>
       <button class="next" @click='handleNext'>下一步</button>
     </div>
-    <device-info @addDevice='addDevice' @closeDeviceInfo='closeDeviceInfo' v-if='isShowDeviceInfo'></device-info>
+    <device-info
+      v-if='isShowDeviceInfo'
+      :code='code'
+      @addDevice='addDevice'
+      @closeDeviceInfo='closeDeviceInfo'></device-info>
+    <scan-page
+      v-if='isShowScanPage'
+      @closeScanPage='closeScanPage'></scan-page>
   </div>
 </template>
 
 <script>
 import DeviceInfo from '@/components/Home/DeviceInfo'
+import ScanPage from '@/components/Scan'
 export default {
   name: 'add_device',
   data () {
     return {
-      isShowDeviceInfo: false
+      isShowDeviceInfo: false,
+      isShowScanPage: false,
+      code: ''
     }
   },
   components: {
-    DeviceInfo
+    DeviceInfo,
+    ScanPage
   },
   methods: {
     handleClose () {
@@ -40,7 +51,15 @@ export default {
     addDevice (deviceInfo) {
       this.isShowDeviceInfo = false
       this.$emit('closeAddDevice', deviceInfo)
+    },
+    // 关闭扫描页面
+    closeScanPage (codeUrl) {
+      this.isShowScanPage = false
+      if (codeUrl) {
+        this.code = codeUrl
+      }
     }
+    
   }
 }
 </script>

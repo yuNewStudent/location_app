@@ -8,22 +8,22 @@
       <span class="comfirm"></span>
     </div>
     <div class="content">
-       <ul>
-        <li  class="item">
-           <img class="icont" :src="adatar?adatar:require('@/assets/icon/my/log.jpg')" alt="">
-           <input type="file" name="" style=" position: absolute;
-            top:42px;
-            right: 0;
-            width: 100%;
-            height:110px;
-            border-radius: 50%;
-            outline: none;
-            opacity: 0;
-            cursor: pointer;
-            " accept="image/gif,image/jpeg,image/jpg,image/png" @change="fileChange">
-          <span></span>
-          <img class="more" src="@/assets/icon/my/箭头.png" alt="">
-        </li>
+      <div class="title">
+        <img class="icont" :src="adatar?adatar:require('@/assets/icon/my/log.jpg')" alt="">
+          <input type="file" name="" style=" position: absolute;
+          top:42px;
+          right: 0;
+          width: 100%;
+          height:110px;
+          border-radius: 50%;
+          outline: none;
+          opacity: 0;
+          cursor: pointer;
+          " accept="image/gif,image/jpeg,image/jpg,image/png" @click="fileChange">
+        <span></span>
+        <img class="more" src="@/assets/icon/my/箭头.png" alt="">
+      </div>
+      <ul>
         <li  class="item" @click="username">
           <img class="icon" src="@/assets/icon/my/用户名IC.png" alt="">
           <span>用户名</span>
@@ -53,8 +53,7 @@
 </template>
 
 <script>
-import { Actionsheet,Toast } from 'mint-ui';
-import { MessageBox } from 'mint-ui';
+import { Actionsheet, Toast, MessageBox } from 'mint-ui'
 import changenumber from '@/components/my/changenumber'
 export default {
   data () {
@@ -67,9 +66,14 @@ export default {
         appuserId:'',
         isShowAddPhoneBook:false,
         title: {
+        phone : '',
+        password:'',
+      },
+      isShowAddPhoneBook: false,
+      title: {
         add: '修改密码',
       },
-      adatar:"",
+      adatar: ''
     }
   },
   components: {
@@ -100,14 +104,16 @@ export default {
     back () {
       this.$router.push({ name: 'MyPage'})
     },
-    handleLogin(){
-       var _this = this;
-       Toast({
-              message: '退出登陆',
-              iconClass: 'icon icon-success'
-            })
-				this.$cookie.delete('user') 
-				_this.$router.push('/login');
+    handleLogin () {
+      var _this = this
+      Toast({
+        message: '退出登陆',
+        iconClass: 'icon icon-success'
+      })
+      this.$cookie.delete('user') 
+        _this.$router.push({
+          name: 'Login'
+      })
     },
     username(){
       MessageBox.prompt('更改用户名', {
@@ -136,21 +142,21 @@ export default {
           console.info('cancel')
       });
     },
-    passwordb(){
+    passwordb () {
       this.isShowAddPhoneBook = true
     },
-    fileChange(e) {
-            var that = this;
-            var file = e.target.files[0];
-            console.log(file)
-            var reader = new FileReader();
-            reader.onload = function(e){
-                that.adatar  = e.target.result;
-                console.log(that.adatar)
-            }
-            reader.readAsDataURL(file);
-        },
-     AddContact (bol, personInfo) {
+    fileChange (e) {
+      var that = this
+      var file = e.target.files[0]
+      console.log(file)
+      var reader = new FileReader()
+      reader.onload = function (e) {
+        that.adatar  = e.target.result
+        console.log(that.adatar)
+      }
+      reader.readAsDataURL(file)
+    },
+    AddContact (bol, personInfo) {
       this.isShowAddPhoneBook = false
       if (bol) {
         for (var k in personInfo) {
@@ -168,32 +174,33 @@ export default {
         iconClass: 'icon icon-success'
       })
     },
-     homeTel(){                    // 整个方法没有被执行
-        let telValue = this.$refs.homeTel.value;
-        console.log(telValue)
-        // 对比input内的值是否符合
-        if(this.reg.test(telValue)){
-            this.isShowPhoneError = true;
-            this.cc = true;
-            console.log('1')
-        }else{
-            this.isShowPhoneError = true ;
-            this.cc = false;
-            console.log('2')
-        }
+    // 整个方法没有被执行
+    homeTel () {
+      let telValue = this.$refs.homeTel.value
+      console.log(telValue)
+      // 对比input内的值是否符合
+      if (this.reg.test(telValue)) {
+          this.isShowPhoneError = true
+          this.cc = true;
+          console.log('1')
+      } else {
+        this.isShowPhoneError = true 
+        this.cc = false
+        console.log('2')
+      }
     },
-    changephone(){
+    changephone () {
       MessageBox.prompt('更改手机号码', {
-          inputValidator: (val) => {
-            if (val === null) {
-              return true;//初始化的值为null，不做处理的话，刚打开MessageBox就会校验出错，影响用户体验
-            }
-          }, inputErrorMessage: '输入不能为空'
-        }).then((val) => {
-          console.info(val.value)
-        }, () => {
-          console.info('cancel')
-      });
+        inputValidator: (val) => {
+          if (val === null) {
+            return true//初始化的值为null，不做处理的话，刚打开MessageBox就会校验出错，影响用户体验
+          }
+        }, inputErrorMessage: '输入不能为空'
+      }).then((val) => {
+        console.info(val.value)
+      }, () => {
+        console.info('cancel')
+      })
     }
   }
 }
@@ -235,43 +242,49 @@ export default {
   }
   .content {
     padding: 0 .26rem;
+    .title {
+      display: flex;
+      align-items: center;
+      border-bottom: 1px solid #EFEFEF;
+      padding: 20px 0 10px;
+      justify-content: space-between;
+      .icont {
+        width: .9rem;
+        height:.9rem;
+        border-radius:50%;
+      }
+    }
+    .more {
+      text-align: right;
+      width: .18rem;
+      height: .24rem;
+    }
     .item {
       display: flex;
       align-items: center;
       border-bottom: 1px solid #EFEFEF;
-      padding: 10px 0 2px;
+      padding: 20px 0 5px;
       .icon {
-        width: .54rem;
-        height: .54rem;
+        width: .3rem;
+        height: .32rem;
       }
       span {
         font-size: .26rem;
         flex: 1;
         margin-left: 10px;
       }
-      .icont{
-        width: 90px;
-        margin-bottom: .2rem;
-        height:90px;
-        border-radius:50%;
-      }
-      .itemc{
+      .itemc {
         text-align: right;
         margin-right: .3rem;
       }
-      .more {
-        text-align: right;
-        width: .18rem;
-        height: .24rem;
-      }
-      .home_input{
+      .home_input {
         border: 1px solid;
       }
     }
-    .exitlogin{
-      width:100%;
-      height: .90rem;
-      line-height: .90rem;
+    .exitlogin {
+      width: 5rem;
+      height: .80rem;
+      line-height: .80rem;
       color: #ffffff;
       font-size: .38rem;
       text-align: center;
@@ -279,8 +292,8 @@ export default {
       margin: 0 auto;
       box-shadow: 0px 2px 6px 0px rgba(20,146,104,0.8);
       border-radius: .45rem;
-      margin: 50px 0 20px;
-      }
+      margin: 100px auto 0;
+    }
   }
 }
 </style>

@@ -122,7 +122,7 @@ export default {
       this.selectPerson.person = item
       this.selectPerson.index = index
       this.$refs.action.style.display = 'block'
-      this.$refs.action.style.top = 90 + (index * 50) + 'px'
+      this.$refs.action.style.top = 10 + (index * 50) + 'px'
     },
     // 隐藏操作栏
     hideAction () {
@@ -195,6 +195,11 @@ export default {
     }
   }
   .content {
+    position: fixed;
+    top: 1.44rem;
+    bottom: 0;
+    width: 100vw;
+    overflow: auto;
     .contact_item {
       padding: 0 10px;
       height: 1rem;
@@ -232,7 +237,7 @@ export default {
       box-shadow: 0px 1px 4px 0px rgba(109,109,109,0.5);
       font-size: .26rem;
       text-align: center;
-      position: fixed;
+      position: absolute;
       // top: 90px;
       display: none;
       right: 70px;

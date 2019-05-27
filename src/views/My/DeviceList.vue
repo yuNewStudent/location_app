@@ -1,5 +1,5 @@
 <template>
-  <div class="device_list">
+  <div class="device_list" @click='hideAction'>
     <div class="home_header">
       <span class="back">
         <img src='@/assets/icon/home/箭头.png' @click='back'/>
@@ -8,48 +8,62 @@
       <span class="comfirm"></span>
     </div>
     <div class="content">
-       <div v-for="(item, index) in devices"
-          :key="index">
-          <div class="content_l" @touchstart='touchstart'
-          @touchend='touchend'>
-          <div class="content_left">
-            <img :src="item.wearerImage"/>
-          </div>
-          <div class="content_middle">
-            <span>{{item.wearerNickname}}</span>
-          </div>
-          <div class="content_right" @click="find">
-             <span>查找设备</span>
-          </div>
-       </div>
-       </div>
-       <!-- <div class="content_k"></div> -->
-       <div class="action" ref='action'>
-        <p class="editor" @click.stop='showEditorContact'>解绑</p>
-        <p @click.stop='delContact'>删除</p>
+      <div
+        class="content_l"
+        v-for='(item, index) in devices'
+        :key='index'
+        @touchstart='touchstart(item, index)'
+        @touchend='touchend'>
+        <div class="content_left">
+          <img src="@/assets/icon/my/log.jpg"/>
+          <span>Mothers wathc</span>
+        </div>
+        <div class="content_right" @click="find">
+          查找设备
+        </div>
       </div>
-       <div class="content_c">
-         <P>若设备处于联网状态，则提示指令发送成功，设备端接收到指令后，即作出响铃提示。
+      <div class="action" ref='action'>
+        <p class="editor" @click.stop='removeDevice'>解绑</p>
+      </div>
+      <div class="content_c">
+        <P>若设备处于联网状态，则提示指令发送成功，设备端接收到指令后，即作出响铃提示。
 若设备处于关机或未联网状态，则无法向设备端发送相关指令。</P>
-       </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-import { MessageBox } from 'mint-ui';
+import { MessageBox, Toast } from 'mint-ui';
 export default {
   data () {
     return {
-      appuserId:'',
-      devices: []
+      devices: [
+        {
+          img: require('@/assets/icon/my/log.jpg'),
+          name: 'yujian'
+        },
+        {
+          img: require('@/assets/icon/my/log.jpg'),
+          name: 'yujian'
+        },
+        {
+          img: require('@/assets/icon/my/log.jpg'),
+          name: 'yujian'
+        },
+        {
+          img: require('@/assets/icon/my/log.jpg'),
+          name: 'yujian'
+        }
+      ],
+      appuserId:''
     }
   },
   created(){
-    var usernames=this.$cookie.get(('user')||'{}'); ;
-    var userx=(JSON.parse(usernames)||'{}');
-    this.appuserId=userx.appuser.appuserId;
-    this.querylist();
+    var usernames=this.$cookie.get(('user')||'{}')
+    var userx=(JSON.parse(usernames)||'{}')
+    this.appuserId=userx.appuser.appuserId
+    this.querylist()
   },
   methods: {
      querylist() {
@@ -61,9 +75,9 @@ export default {
         })
         .then(res => {
           if (res.code === 200) {
-             this.devices=res.date.wearers;
+             this.devices=res.date.wearers
           }
-        });
+        })
     },
     back () {
       this.$router.push({ name: 'MyPage'})
@@ -78,30 +92,29 @@ export default {
     touchend (e) {
       clearTimeout(this.time)
     },
-    find(){
+    find () {
       MessageBox({
         title: '确认查找该设备吗？',
         message: '点击"确认"后，即向该该设备发送指令。',
         showCancelButton: true
-      });
+      })
     },
      // 修改联系人
     showEditorContact () {
       this.isShowEditorPhoneBook = true
     },
-    delContact () {
-      this.contacts.splice(this.selectPerson.index, 1)
+    // 解绑设备
+    removeDevice () {
+      this.devices.splice(this.selectPerson.index, 1)
       this.hideAction()
       Toast({
         message: '操作成功',
         iconClass: 'icon icon-success'
       })
     },
-     showAction(index) {
-      // this.selectPerson.person = item
-      // this.selectPerson.index = index
+    showAction (item, index) {
       this.$refs.action.style.display = 'block'
-      this.$refs.action.style.top = 90 + (index * 50) + 'px'
+      this.$refs.action.style.top = .4 + (index * 1.4) + 'rem'
     },
     // 隐藏操作栏
     hideAction () {
@@ -148,75 +161,77 @@ export default {
   }
   .content {
     width: 100%;
-  }
-  .content_k{
-    width: 100%;
-    background: rgb(239,239,239);
-    height: .10rem;
-  }
-  .content_l{
-    width: 100%;
-    display:flex;
-    background-color: #ffffff;
-    box-shadow: 0px 15px 10px -20px #888888;
-    margin-bottom: 10px;
-  }
-  .content_left{
-    width: 20%;
-  }
-  .content_left img {
-    width:50px;
-    height:46px;
-    margin: .1rem 0rem 0rem .15rem;
-    border-radius: 40px;
-    background-color: #eee;
-}
-.content_middle{
-  width:50%;
-  margin: .35rem .0rem;
-  font-size: .20rem;
-}
-.content_middle span{
-  line-height: .25rem;
-  font-size: .20rem;
-}
-.content_right{
-  width:30%;
-  margin: .35rem .0rem;
-  background-color: #15BF86;
-  font-size: .20rem;
-  text-align: right;
-  border-radius:.25rem .0rem .0rem .25rem;
-  float: right;
-}
-.content_right span{
-  line-height: .50rem;
-  margin-right:.5rem;
-  color: #FFFFFF;
-}
-.content_c{
-  padding: 10px;
-}
-.content_c p{
-font-size: 10px;
-color: rgba(185, 185, 185, 1);
-}
-.action {
+    overflow: auto;
+    position: fixed;
+    top: 1.44rem;
+    bottom: 0;
+    width: 100vw;
+    .action {
       width: 1.6rem;
-      height: 1.3rem;
-      box-shadow: 0px 1px 4px 0px rgba(109,109,109,0.5);
+      height: .65rem;
       font-size: .26rem;
       text-align: center;
-      position: fixed;
+      position: absolute;
+      background: white;
       // top: 90px;
       display: none;
       right: 70px;
       p {
+        border-radius: 5px;
         line-height: .65rem;
         &.editor {
           background: #D4F4EA;
         }
       }
     }
+  }
+  .content_l{
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #ffffff;
+    box-shadow: 0px 15px 10px -20px #888888;
+    margin-bottom: 10px;
+    height: 1.2rem;
+    .content_left{
+      font-size: .20rem;
+      display: flex;
+      align-items: center;
+      margin-left: 10px;
+      img {
+        width: .9rem;
+        height: .9rem;
+        border-radius: 50%;
+        background-color: #eee;
+      }
+      span {
+        display: inline-block;
+        margin-left: 5px;
+      }
+    }
+    .content_right{
+      width: 1.42rem;
+      height: .44rem;
+      line-height: .44rem;
+      background-color: #15BF86;
+      font-size: .26rem;
+      color: white;
+      text-align: center;
+      border-radius: .25rem .0rem .0rem .25rem;
+      span{
+        line-height: .50rem;
+        color: #FFFFFF;
+      }
+    }
+  }
+  .content_c{
+    padding: 5px 10px;
+    p{
+      font-size: .2rem;
+      color: rgba(185, 185, 185, 1);
+      line-height: .4rem;
+    }
+  }
 }
 </style>

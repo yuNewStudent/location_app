@@ -24,11 +24,11 @@
           <span>消息中心</span>
           <img class="more" src="@/assets/icon/my/箭头.png" alt="">
         </router-link>
-        <router-link tag='li' to='/my/finddevice' class="item">
+        <!-- <router-link tag='li' to='/my/finddevice' class="item">
           <img class="icon" src="@/assets/icon/my/找设备IC.png" alt="">
           <span>找设备</span>
           <img class="more" src="@/assets/icon/my/箭头.png" alt="">
-        </router-link>
+        </router-link> -->
         <router-link tag='li' to='/my/accountManage' class="item">
           <img class="icon" src="@/assets/icon/my/账号管理IC.png" alt="">
           <span>账号管理</span>
@@ -44,18 +44,18 @@
 export default {
   data () {
     return {
-       username:"",
+      username: ''
     }
   },
   created () {
-    var usernames=this.$cookie.get(('user')||'{}'); ;
-    var userx=(JSON.parse(usernames)||'{}');
-    if(userx=='{}'){
-        this.username="";
+    var usernames = this.$cookie.get(('user')||'{}')
+    var userx = (JSON.parse(usernames)||'{}')
+    if(userx === '{}'){
+      this.username = ''
     }else{
-       this.username=userx.appuser.appuserNumber;
+      this.username = userx.appuser.appuserNumber
     }
-  },
+  }
 }
 </script>
 

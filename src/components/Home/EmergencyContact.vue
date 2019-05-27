@@ -54,19 +54,25 @@ export default {
         {
           sosName: 'yyy',
           sosNumber: 5555,
+          sosWearerID: localStorage.getItem('deviceId')
         },
         {
           sosName: 'xixix',
           sosNumber: 7899,
+          sosWearerID: localStorage.getItem('deviceId')
         },
         {
           sosName: 'ssss',
           sosNumber: 2345,
+          sosWearerID: localStorage.getItem('deviceId')
         }
       ]
     }
   },
   components: {
+  },
+  created () {
+    this.getEmergency()
   },
   methods: {
     closeEmergencyContact () {
@@ -79,6 +85,21 @@ export default {
         this.type = '编辑'
         this.saveEmergency()
       }
+    },
+    // 获取SOS
+    getEmergency () {
+      this.$http.get(`${config.httpBaseUrl}/sos/getAll`,{
+        params: {
+          wearerDeviceId: localStorage.getItem('deviceId')
+        }
+      }).then(res => {
+        if (res.code === 200) {
+          this.contacts = res.date.soss.map(item => {
+            delete item.sosId
+            return item
+          })
+        }
+      })
     },
     // 设置SOS
     saveEmergency () {

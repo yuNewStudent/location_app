@@ -42,15 +42,15 @@ export default {
   },
   methods: {
      checkInputName(){ 
-      var regex =/^[\u4E00-\u9FA5]+$/;//判断是全为汉字
-      var name=this.userInfo.name;
-      if(!regex.test(name)){
-        this.NameStatus="error";
+      // 判断是全为汉字
+      var regex = /^[\u4E00-\u9FA5]+$/
+      var name = this.userInfo.name
+      if (!regex.test(name)) {
+        this.NameStatus="error"
+      } else {
+        this.NameStatus="success"
       }
-      else{
-        this.NameStatus="success";
-      }
-     },
+    },
     changeType () {
       if (this.type === 'text') {
         this.type = 'password'
@@ -76,16 +76,19 @@ export default {
                 }
             }).then(res => {
             if (res.code === 200) {
-                sessionStorage.setItem("user",JSON.stringify(res.date));
-                this.$cookie.set('user', JSON.stringify(res.date));
+              this.$cookie.set('user', JSON.stringify(res.date))
+              this.$router.push({
+                name: 'Home'
+              })
             }
-           });
-            Toast({
-              message: '登陆成功',
-              iconClass: 'icon icon-success'
-            })
-           }
-        });
+          })
+        } else {
+          Toast({
+            message: '登陆失败\n账号和密码输入错误',
+            iconClass: 'icon icon-success'
+          })
+        }
+      })
     },
     goRePassword () {
       this.$router.push({

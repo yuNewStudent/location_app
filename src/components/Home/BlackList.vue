@@ -109,21 +109,21 @@ export default {
     DatetimePicker
   },
   created () {
-    this.disturblist();
+    this.disturblist()
   },
   methods: {
      // 获取添加闹钟
-    disturblist() {
+    disturblist () {
       this.$http.get(`${config.httpBaseUrl}/nod/getAll`, {
         params: {
-          wearerDeviceId: 9611812844
+          wearerDeviceId: localStorage.getItem('deviceId')
         }
       }).then(res => {
         if (res.code === 200) {
-             this.blackList=res.date.nodis;
-           }
-          })
-        },
+          this.blackList=res.date.nodis
+          }
+        })
+    },
     closeBlackList () {
       this.$router.go(-1)
     },
@@ -140,20 +140,20 @@ export default {
         })
       }
       const data = {
-          id:9611812844,
-          keyWord:"SILENCETIME",
-          currency1:this.newBlackList.start_time+'-'+this.newBlackList.end_time,
-        }
-        this.$http.post(`${config.httpBaseUrl}/Appcommand/command`, data).then(res => {
-          if (res.code === 200) {
-             this.disturblist();
-             Toast({
-              message: '新增成功',
-              iconClass: 'icon icon-success'
-            })
-           }
-        });
-      this.blackList.push(this.newBlackList);
+        id:9611812844,
+        keyWord: "SILENCETIME",
+        currency1: this.newBlackList.start_time + '-' + this.newBlackList.end_time,
+      }
+      this.$http.post(`${config.httpBaseUrl}/Appcommand/command`, data).then(res => {
+        if (res.code === 200) {
+          this.disturblist()
+          Toast({
+            message: '新增成功',
+            iconClass: 'icon icon-success'
+          })
+          }
+      })
+      this.blackList.push(this.newBlackList)
     },
     edoitorBlackList (bol) {
       this.isShowEditorBlackList = false
@@ -209,7 +209,7 @@ export default {
       this.selectBlack.black = item
       this.selectBlack.index = index
       this.$refs.action.style.display = 'block'
-      this.$refs.action.style.top = 230 + (index * 50) + 'px'
+      this.$refs.action.style.top = .1 + 1.2 * (index * 1) + 'rem'
     },
     // 隐藏操作栏
     hideAction () {
@@ -272,6 +272,7 @@ export default {
   .content {
     .night {
       font-size: .26rem;
+      height: 2.5rem;
       .show {
         display: flex;
         padding: 0 20px;
@@ -289,13 +290,18 @@ export default {
       }
     }
     .normal {
+      overflow: auto;
+      position: fixed;
+      top: 3.8rem;
+      bottom: 0;
+      width: 100vw;
       .action {
         width: 1.6rem;
         height: 1.3rem;
         box-shadow: 0px 1px 4px 0px rgba(109,109,109,0.5);
         font-size: .26rem;
         text-align: center;
-        position: fixed;
+        position: absolute;
         // top: 90px;
         display: none;
         right: 100px;

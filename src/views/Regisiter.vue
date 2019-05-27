@@ -32,7 +32,7 @@
 </template>
 
 <script>
-import { Switch, Toast, DatetimePicker } from 'mint-ui'
+import { Toast } from 'mint-ui'
 export default {
   name: 'register',
   data () {
@@ -70,31 +70,31 @@ export default {
     goLogin () {
       if(this.userInfo.password==this.userInfo.repassword){
       const data = {
-          appuserNumber:this.userInfo.name,
-          appuserPassword:this.userInfo.password,
+        appuserNumber:this.userInfo.name,
+        appuserPassword:this.userInfo.password
+      }
+      this.$http.post(`${config.httpBaseUrl}/appuser/insertAppuser`, data).then(res => {
+        if (res.code === 200) {
+          this.$router.push({
+            name: 'Login'
+          })
+        Toast({
+          message: '注册成功',
+          iconClass: 'icon icon-success'
+        })
         }
-        this.$http.post(`${config.httpBaseUrl}/appuser/insertAppuser`, data).then(res => {
-          if (res.code === 200) {
-             this.$router.push({
-                name: 'Login'
-              })
-            Toast({
-              message: '注册成功',
-              iconClass: 'icon icon-success'
-            })
-           }
-        });
-        }else{
-         Toast({
-              message: '两次输入密码不一致',
-              iconClass: 'icon icon-success'
-            })
+      })
+      } else {
+        Toast({
+          message: '两次输入密码不一致',
+          iconClass: 'icon icon-success'
+        })
       }
     },
-    immediatelylogin(){
+    immediatelylogin () {
       this.$router.push({
-                name: 'Login'
-              })
+        name: 'Login'
+      })
     }
   }
 }
@@ -125,7 +125,7 @@ export default {
     font-size: .26rem;
     .head_img {
       display: inline-block;
-      margin-top: 50px;
+      margin-top: 20px;
       width: 1.4rem;
       height: 1.4rem;
       img {
