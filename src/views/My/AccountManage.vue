@@ -9,7 +9,7 @@
     </div>
     <div class="content">
       <div class="title">
-        <img class="icont" :src="adatar?adatar:require('@/assets/icon/my/log.jpg')" alt="">
+        <img class="icont" :src="appuserImage?appuserImage:require('@/assets/icon/my/log.jpg')" alt="">
           <input type="file" name="" style=" position: absolute;
           top:42px;
           right: 0;
@@ -19,7 +19,7 @@
           outline: none;
           opacity: 0;
           cursor: pointer;
-          " accept="image/gif,image/jpeg,image/jpg,image/png" @click="fileChange">
+          " accept="image/gif,image/jpeg,image/jpg,image/png" @change="fileChange">
         <span></span>
         <img class="more" src="@/assets/icon/my/箭头.png" alt="">
       </div>
@@ -33,13 +33,13 @@
         <li  class="item" @click="passwordb">
           <img class="icon" src="@/assets/icon/my/密码IC.png" alt="">
           <span>密码</span>
-          <span class="itemc">******</span>
+          <span class="itemc" @touchend="touchend" v-if="play">******</span>
           <img class="more" src="@/assets/icon/my/箭头.png" alt="">
         </li>
         <li  class="item" @click="changephone">
           <img class="icon" src="@/assets/icon/my/手机IC.png" alt="">
           <span>绑定手机号码</span>
-          <span class="itemc">15828658729</span>
+          <span class="itemc">{{appuserNumber}}</span>
           <img class="more" src="@/assets/icon/my/箭头.png" alt="">
         </li>
        </ul>
@@ -62,18 +62,20 @@ export default {
             phone : '',
             password:'',
         },
+        play: true,
         appuserName:'',
+        appuserImage:'',
         appuserId:'',
-        isShowAddPhoneBook:false,
         title: {
         phone : '',
         password:'',
       },
+      appuserNumber:'',
       isShowAddPhoneBook: false,
       title: {
         add: '修改密码',
       },
-      adatar: ''
+      adatar:'',
     }
   },
   components: {
@@ -82,11 +84,13 @@ export default {
   created(){
      var usernames=this.$cookie.get(('user')||'{}');
     var userx=(JSON.parse(usernames)||'{}');
-    console.log(userx);
     this.appuserId=userx.appuser.appuserId;
     this.getinformation();
   },
   methods: {
+    touchend(){
+      console.log(1);
+    },
    //查询用户信息
     getinformation(){
         this.$http.get(`${config.httpBaseUrl}/appuser/get`,{
@@ -95,9 +99,9 @@ export default {
                 }
             }).then(res => {
             if (res.code === 200) {
-                console.log(res.date.appuser.appuserName)
                 this.appuserName=res.date.appuser.appuserName;
-                console.log(this.appuserName)
+                this.appuserImage=res.date.appuser.appuserImage;
+                this.appuserNumber=res.date.appuser.appuserNumber;
             }
            });
     },
@@ -123,8 +127,6 @@ export default {
             }
           }, inputErrorMessage: '输入不能为空'
         }).then((val) => {
-          console.info(val.value);
-
           this.$http
             .post(`${config.httpBaseUrl}/appuser/updatename`, {
                 appuserName: val.value,
@@ -132,7 +134,6 @@ export default {
             })
             .then(res => {
               if (res.code === 200) {
-                // this.appuserName=val.value;
                 this.getinformation();
               }else{
 
@@ -151,12 +152,32 @@ export default {
       console.log(file)
       var reader = new FileReader()
       reader.onload = function (e) {
-        that.adatar  = e.target.result
-        console.log(that.adatar)
+          that.adatar  = e.target.result
+          that.upload(that.adatar);
+          console.log(that.adatar)
       }
-      reader.readAsDataURL(file)
+      reader.readAsDataURL(file);
+    },
+    upload(flex){
+        this.$http
+            .post(`${config.httpBaseUrl}/appuser/updateImage`,{
+              appuserImage:flex,
+              appuserId:this.appuserId
+            })
+            .then(res => {
+              if (res.code === 200) {
+                Toast({
+                  message: '头像修改成功',
+                  iconClass: 'icon icon-success'
+                })
+                this.getinformation();
+              }else{
+
+              }
+            });
     },
     AddContact (bol, personInfo) {
+      console.log(personInfo)
       this.isShowAddPhoneBook = false
       if (bol) {
         for (var k in personInfo) {
@@ -165,14 +186,34 @@ export default {
               message: '人员信息不能为空',
               iconClass: 'icon icon-error'
             })
+          }else if(personInfo.appuserPassword!=personInfo.confirmpassword){
+            return Toast({
+              message: '输入密码不一致',
+              iconClass: 'icon icon-error'
+            })
+          }else if(personInfo.appuserNumber!=this.appuserNumber){
+            return Toast({
+              message: '不是原手机号码',
+              iconClass: 'icon icon-error'
+            })
           }
         }
+        var date={
+          appuserNumber:personInfo.appuserNumber,
+          appuserPassword:personInfo.appuserPassword
+        }
+         this.$http.post(`${config.httpBaseUrl}/appuser/changePassword`,date).then(res => {
+        if (res.code === 200) {
+          this.getinformation();
+          }
+        })
+          Toast({
+            message: '操作成功',
+            iconClass: 'icon icon-success'
+          })
+      }else{
+        
       }
-      this.contacts.push(personInfo)
-      Toast({
-        message: '操作成功',
-        iconClass: 'icon icon-success'
-      })
     },
     // 整个方法没有被执行
     homeTel () {
@@ -197,7 +238,18 @@ export default {
           }
         }, inputErrorMessage: '输入不能为空'
       }).then((val) => {
-        console.info(val.value)
+         this.$http
+            .post(`${config.httpBaseUrl}/appuser/updatenumber`, {
+                appuserNumber: val.value,
+                appuserId:this.appuserId
+            })
+            .then(res => {
+              if (res.code === 200) {
+                this.getinformation();
+              }else{
+
+              }
+            });
       }, () => {
         console.info('cancel')
       })

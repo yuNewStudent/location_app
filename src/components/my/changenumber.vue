@@ -10,15 +10,17 @@
       </p> -->
       <p class="name">
         <label for="">手机号码</label>
-        <input type="text" v-model='personInfo.name'>
+        <input type="text" v-model='personInfo.appuserNumber'>
       </p>
       <p class="phone">
         <label for="">密码</label>
-        <input type="text" v-model='personInfo.phone'>
+        <input :type="type" v-model='personInfo.appuserPassword'>
+        <img @click='changeType' class="eye" :src="img" alt="">
       </p>
       <p class="phone">
         <label for="">新密码</label>
-        <input type="text" v-model='personInfo.phone'>
+        <input :type="type" v-model='personInfo.confirmpassword'>
+        <img @click='changeType' class="eye" :src="img" alt="">
       </p>
     </div>
   </message-box>
@@ -30,10 +32,13 @@ export default {
   props: ['title', 'selectPerson'],
   data () {
     return {
+      type: 'password',
+      img: require('@/assets/icon/login/eye—open.png'),
       // title: '新增电话本'
       personInfo: {
-        name: '',
-        phone: ''
+        appuserNumber: '',
+        appuserPassword: '',
+        confirmpassword:'',
       }
     }
   },
@@ -47,7 +52,16 @@ export default {
       } else {
         this.$emit('editorContact', bol, this.personInfo)
       }
-    }
+    },
+     changeType () {
+      if (this.type === 'text') {
+        this.type = 'password'
+        this.img = require('@/assets/icon/login/eye—open.png')
+      } else {
+        this.type = 'text'
+        this.img = require('@/assets/icon/login/eye—close.png')
+      }
+    },
   },
   created () {
     if (this.selectPerson) {
@@ -89,6 +103,10 @@ export default {
         width: 70px;
       }
     }
+    img.eye {
+        width: .36rem;
+        height: .16rem;
+      }
   }
 }
 </style>
