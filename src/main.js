@@ -6,6 +6,7 @@ import 'mint-ui/lib/style.css'
 import Axios from 'axios'
 import App from './App'
 import router from './router'
+import store from './store'
 import Moment from 'moment'
 
 import VueCookie from 'vue-cookie'
@@ -52,6 +53,7 @@ Axios.interceptors.response.use(
 new Vue({
   el: '#app',
   router,
+  store,
   components: { App },
   template: '<App/>'
 })

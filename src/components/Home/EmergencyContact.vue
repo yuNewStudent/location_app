@@ -9,34 +9,18 @@
     </div>
     <div class="content">
       <ul>
-        <li class="contact_item" :class="{editor:type!=='编辑'}">
+        <li
+          v-for='(item, index) in contacts'
+          :key='index'
+          class="contact_item"
+          :class="{editor:type!=='编辑'}">
           <p>
-            <span>号码1:</span>
-            <input v-model="contacts[0].sosName" placeholder="昵称" type="text" :disabled='type=="编辑"'>
+            <span>号码{{index+1}}:</span>
+            <input v-model="item.sosName" type="text" :disabled='type=="编辑"'>
           </p>
           <p>
             <span></span>
-            <input v-model="contacts[0].sosNumber" placeholder="请输入联系电话" type="text" :disabled='type=="编辑"'>
-          </p>
-        </li>
-        <li class="contact_item disabled" :class="{editor:type!=='编辑'}">
-          <p>
-            <span>号码2:</span>
-            <input v-model="contacts[1].sosName" placeholder="昵称" type="text" :disabled='type=="编辑"'>
-          </p>
-          <p>
-            <span></span>
-            <input v-model="contacts[1].sosNumber" placeholder="请输入联系电话" type="text" :disabled='type=="编辑"'>
-          </p>
-        </li>
-        <li class="contact_item disabled" :class="{editor:type!=='编辑'}">
-          <p>
-            <span>号码3:</span>
-            <input v-model="contacts[2].sosName" placeholder="昵称" type="text" :disabled='type=="编辑"'>
-          </p>
-          <p>
-            <span></span>
-            <input v-model="contacts[2].sosNumber" placeholder="请输入联系电话" type="text" :disabled='type=="编辑"'>
+            <input v-model="item.sosNumber" placeholder="请输入联系电话" type="text" :disabled='type=="编辑"'>
           </p>
         </li>
       </ul>
@@ -51,25 +35,26 @@ export default {
     return {
       type: '编辑',
       contacts: [
-        {
-          sosName: 'yyy',
-          sosNumber: 5555,
-          sosWearerID: localStorage.getItem('deviceId')
-        },
-        {
-          sosName: 'xixix',
-          sosNumber: 7899,
-          sosWearerID: localStorage.getItem('deviceId')
-        },
-        {
-          sosName: 'ssss',
-          sosNumber: 2345,
-          sosWearerID: localStorage.getItem('deviceId')
-        }
+        // {
+        //   sosName: '',
+        //   sosNumber: '',
+        //   sosWearerID: ''
+        // },
+        // {
+        //   sosName: '',
+        //   sosNumber: '',
+        //   sosWearerID: ''
+        // },
+        // {
+        //   sosName: '',
+        //   sosNumber: '',
+        //   sosWearerID: ''
+        // }
       ]
     }
   },
   components: {
+
   },
   created () {
     this.getEmergency()
@@ -94,9 +79,10 @@ export default {
         }
       }).then(res => {
         if (res.code === 200) {
-          this.contacts = res.date.soss.map(item => {
+          res.date.soss.forEach((item, index) => {
+            if (index > 2) return
             delete item.sosId
-            return item
+            this.contacts.push(item)
           })
         }
       })
@@ -108,7 +94,6 @@ export default {
         // 单个sos不能有空
         if ((item.sosName && item.sosNumber) || (!item.sosName && !item.sosNumber)) {
           data.push({
-            sosWearerID: localStorage.getItem('deviceId'),
             ...item
           })
         } else {

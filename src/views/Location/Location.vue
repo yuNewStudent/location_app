@@ -101,7 +101,7 @@ export default {
     getDeviceInfo () {
       this.$http.get(`${config.httpBaseUrl}/appPosition/getAppposition`, {
         params: {
-          userId: 9512494668
+          userId: 9611812844
         }
       }).then(res => {
         if (res.code === 200) {

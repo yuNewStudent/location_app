@@ -134,7 +134,7 @@ export default {
           startTime: this.pickerVisible.startTime.slice(0, 2),
           endTime: this.pickerVisible.endTime.slice(0, 2),
           date: this.pickerVisible.date,
-          userId: 9512494668
+          userId: 9611812844
         }
         this.$http.get(`${config.httpBaseUrl}/appPosition/getAPPtracks`, {
           params: data
@@ -262,7 +262,7 @@ export default {
         startTime: this.pickerVisible.startTime.slice(0, 2),
         endTime: this.pickerVisible.endTime.slice(0, 2),
         date: this.pickerVisible.date,
-        userId: 9512494668
+        userId: 9611812844
       }
       this.$http.get(`${config.httpBaseUrl}/appPosition/getAPPtracks`, {
         params: data

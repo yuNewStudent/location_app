@@ -54,9 +54,9 @@
             </p>
           </div>
         </div>
-        <span class="isRead" @click='handleChange'>
+        <span class="isRead">
           <img v-if='item.isRead' src="@/assets/icon/my/2.png">
-          <img v-else src="@/assets/icon/my/选择—高亮 拷贝 2.png">
+          <img @click='handleChange' v-else src="@/assets/icon/my/选择—高亮 拷贝 2.png">
         </span>
       </li>
     </ul>
@@ -93,7 +93,7 @@ export default {
     back () {
       this.$router.push({ name: 'MyPage'})
     },
-    handleChange () {
+    handleChange (e) {
       console.log(0)
     }
   }

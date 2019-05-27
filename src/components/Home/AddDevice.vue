@@ -56,7 +56,10 @@ export default {
     closeScanPage (codeUrl) {
       this.isShowScanPage = false
       if (codeUrl) {
-        this.code = codeUrl
+        let newCode = JSON.stringify(codeUrl).split('').filter((item, index) => {
+          return index !== 0 && index !== 3 && index !== 6 && index !== 10 && index !== 14
+        })
+        this.code = newCode.join('')
       }
     }
     

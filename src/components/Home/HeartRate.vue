@@ -11,20 +11,20 @@
       <div class="one_day">
         <p class="title">
           <span class="back" @click="handleBack">前一天</span>
-          <span class="date">2019-05-16</span>
+          <span class="date">{{currentHeart.healthDate}}</span>
           <span class="next" @click="handleNext">后一天</span>
         </p>
         <div class="current">
           <div class="current_wrapper">
             <p class="text">当前心率</p>
-            <p class="num">199<span>bpm</span></p>
+            <p class="num">{{currentHeart.healthUptodate}}<span>bpm</span></p>
             <p class="active">远程测量</p>
           </div>
         </div>
         <p class="desc">
-          <span>最高:110bpm</span>
-          <span>平均:86bpm</span>
-          <span>最低:72bpm</span>
+          <span>最高:{{currentHeart.healthHeartrate}}bpm</span>
+          <span>平均:{{(JSON.parse(currentHeart.healthHeartrate)+JSON.parse(currentHeart.healthLowheartrate))/2}}bpm</span>
+          <span>最低:{{currentHeart.healthHeartrate}}bpm</span>
         </p>
       </div>
       <div class="all_day">
@@ -36,13 +36,27 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 export default {
   data () {
-    return {}
+    return {
+      currentHeart: {},
+      allHeart: [],
+      hearts: [],
+      currentIndex: 0,
+      isBack: true,
+      isNext: false
+    }
+  },
+  created () {
+    this.currentHeart = this.getHeart[0]
+    this.getWeekHearthRate()
   },
   mounted () {
-    console.log(1)
-    this.initChart()
+    // this.getHearthRate()
+  },
+  computed: {
+    ...mapGetters(['getHeart'])
   },
   methods: {
     closeHeartRate () {
@@ -78,7 +92,7 @@ export default {
               }
             }
           },
-          data: [89, 98, 79, 87, 93, 110, 77],
+          data: this.hearts,
           type: 'line'
         }]
       }
@@ -87,7 +101,41 @@ export default {
     // 展示前一天
     handleBack () {},
     // 展示后一天
-    handleNext () {}
+    handleNext () {},
+    // 获取一周心率
+    getWeekHearthRate () {
+      const data = {
+        wearerDeviceId: localStorage.deviceId
+      }
+      this.$http.get(`${config.httpBaseUrl}/health/getweek`, {
+        params: data
+      }).then(res => {
+        console.log(res)
+        if (res.code === 200) {
+          res.date.healths.forEach((item, index) => {
+            if (item) {
+              this.allHeart.push({
+                healthDate: item.healthDate,
+                healthHeartrate: item.healthHeartrate,
+                healthUptodate: item.healthUptodate,
+                healthLowheartrate: item.healthLowheartrate
+              })
+              this.hearts.push(item.healthUptodate)
+            } else {
+              this.allHeart.push({
+                healthDate: '',
+                healthHeartrate: '',
+                healthUptodate: '',
+                healthLowheartrate: ''
+              })
+              this.hearts.push('')
+            }
+          })
+          console.log(this.hearts)
+          this.initChart()
+        }
+      })
+    }
   }
 }
 </script>
@@ -213,7 +261,7 @@ export default {
       }
       #chart {
         height: 100%;
-        width: 300px;
+        width: 100%;
       }
     }
   }

@@ -10,14 +10,14 @@
     <div class="content">
       <div class="one_day">
         <p class="title">
-          <span class="back" @click="handleBack">前一天</span>
-          <span class="date">2019-05-16</span>
-          <span class="next" @click="handleNext">后一天</span>
+          <span :class='{active:!isBack}' class="back" @click="handleBack">前一天</span>
+          <span class="date">{{currentBlood.healthDate}}</span>
+          <span :class='{active:!isNext}' class="next" @click="handleNext">后一天</span>
         </p>
         <p class="text">当前血压</p>
         <div class="blood">
-          <div class="high">高压:<span>129mmHg</span></div>
-          <div class="low">低压<span>78mmHg</span></div>
+          <div class="high">高压:<span>{{currentBlood.healthHighpressure || '无数据'}}</span></div>
+          <div class="low">低压<span>{{currentBlood.healthLowpressure || '无数据'}}</span></div>
         </div>
         <p class="long_range">远程测量</p>
       </div>
@@ -30,12 +30,27 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 export default {
   data () {
-    return {}
+    return {
+      currentBlood: {},
+      allBlood: [],
+      lowPressures: [],
+      highPressures: [],
+      currentIndex: 0,
+      isBack: true,
+      isNext: false
+    }
   },
   mounted () {
-    this.initChart()
+  },
+  computed: {
+    ...mapGetters(['getBlood'])
+  },
+  created () {
+    this.currentBlood = this.getBlood[0]
+    this.getWeekHearthRate()
   },
   methods: {
     closeBloodPressure () {
@@ -71,7 +86,7 @@ export default {
               }
             }
           },
-          data: [89, 98, 79, 87, 93, 110, 77],
+          data: this.lowPressures,
           type: 'line'
         },
         {
@@ -92,16 +107,68 @@ export default {
               }
             }
           },
-          data: [80, 89, 73, 80, 76, 100, 75],
+          data: this.highPressures,
           type: 'line'
         }]
       }
       chart.setOption(option)
     },
     // 展示前一天
-    handleBack () {},
+    handleBack () {
+      if (this.currentIndex === 6) {
+        return
+      }
+      this.currentIndex += 1
+      this.currentBlood = this.allBlood[this.currentIndex]
+      this.isNext = true
+      if (this.currentIndex === 6) {
+        this.isBack = false
+      }
+    },
     // 展示后一天
-    handleNext () {}
+    handleNext () {
+      if (this.currentIndex === 0) {
+        return
+      }
+      this.isBack = true
+      this.currentIndex -= 1
+      this.currentBlood = this.allBlood[this.currentIndex]
+      if (this.currentIndex === 0) {
+        this.isNext = false
+      }
+    },
+    // 获取血压
+    getWeekHearthRate (date) {
+      const data = {
+        wearerDeviceId: localStorage.deviceId
+      }
+      this.$http.get(`${config.httpBaseUrl}/health/getweek`, {
+        params: data
+      }).then(res => {
+        if (res.code === 200) {
+          res.date.healths.forEach((item, index) => {
+            if (item) {
+              this.allBlood.push({
+                healthDate: item.healthDate,
+                healthHighpressure: item.healthHighpressure + 'mmHg',
+                healthLowpressure: item.healthLowpressure + 'mmHg'
+              })
+              this.lowPressures.push(item.healthLowpressure)
+              this.highPressures.push(item.healthHighpressure)
+            } else {
+              this.allBlood.push({
+                healthDate: '',
+                healthHighpressure: '',
+                healthLowpressure: ''
+              })
+              this.lowPressures.push('')
+              this.highPressures.push('')
+            }
+          })
+          this.initChart()
+        }
+      })
+    }
   }
 }
 </script>
@@ -166,6 +233,10 @@ export default {
           height: .5rem;
           text-align: center;
           line-height: .5rem;
+          color: #15BF86;
+          border: 1px solid #15BF86;
+        }
+        .active {
           color: #B9B9B9;
           border: 1px solid #B9B9B9;
         }

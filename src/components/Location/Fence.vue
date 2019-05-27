@@ -195,7 +195,7 @@ export default {
       }
       this.$http.get(`${config.httpBaseUrl}/appPosition/Appelectricfence`, {
         params: {
-          userId: 9512494668,
+          userId: 9611812844,
           wem: this.defaultRange / 1000,
           longitud: this.centerLngLat[0],
           latind: this.centerLngLat[1]

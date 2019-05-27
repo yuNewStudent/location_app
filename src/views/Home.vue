@@ -73,7 +73,6 @@ export default {
   },
   watch: {
     route (value) {
-      console.log(value)
       switch (value) {
         case 'LocationPage':
           this.active = 1

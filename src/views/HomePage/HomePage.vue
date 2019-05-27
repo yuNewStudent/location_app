@@ -55,9 +55,9 @@
                 <img src="@/assets/icon/home/心率IC.png" alt="">
               </span>
               <div class="desc">
-                <p class="time">更新时间：2019-05-14 19：40</p>
+                <p class="time">更新时间：{{heart[0].healthDate}}</p>
                 <p class="step">
-                  <span>58BPM</span>
+                  <span>{{heart[0].healthUptodate}}</span>
                 </p>
               </div>
             </div>
@@ -89,9 +89,10 @@
                 <img src="@/assets/icon/home/血压IC.png" alt="">
               </span>
               <div class="desc">
-                <p class="time">更新时间：2019-05-14 19：40</p>
+                <p class="time">更新时间：{{heart[0].healthDate}}</p>
                 <p class="step">
-                  <span>高压100</span>
+                  <span>高压{{blood[0].healthHighpressure}}</span>
+                  <span>低压{{blood[0].healthLowpressure}}</span>
                 </p>
               </div>
             </div>
@@ -106,17 +107,57 @@
 <script>
 import Slider from '@/components/scroll'
 import HeaderPage from '@/components/Header'
+import { mapMutations, mapGetters } from 'vuex'
 export default {
   data () {
     return {
-      head_title: '首页'
+      head_title: '首页',
+      heart: [],
+      blood: []
     }
   },
   components: {
     Slider,
     HeaderPage
   },
+  created () {
+    this.getHearthRate()
+  },
+  computed: {
+    ...mapGetters(['getHeart'])
+  },
   methods: {
+    ...mapMutations(['setHeart', 'setBlood']),
+    // 获取心率and血压
+    getHearthRate () {
+      const data = {
+        wearerDeviceId: localStorage.deviceId,
+        date: this.moment(new Date()).format('YYYY-MM-DD')
+      }
+      this.$http.get(`${config.httpBaseUrl}/health/getAll`, {
+        params: data
+      }).then(res => {
+        if (res.code === 200) {
+          console.log(res.date.healths)
+          res.date.healths.forEach((item, index) => {
+            this.heart.push({
+              healthDate: item.healthDate,
+              healthHeartrate: item.healthHeartrate,
+              healthUptodate: item.healthUptodate,
+              healthLowheartrate: item.healthLowheartrate
+            })
+            this.setHeart(this.heart)
+            this.blood.push({
+              healthDate: item.healthDate,
+              healthHighpressure: item.healthHighpressure + 'mmHg',
+              healthLowpressure: item.healthLowpressure + 'mmHg'
+            })
+            this.setBlood(this.blood)
+          })
+          // console.log(this.heart, this.blood)
+        }
+      })
+    }
   }
 }
 </script>
