@@ -4,6 +4,9 @@ const mutations = {
   },
   setBlood (state, bloodInfo) {
     state.blood = bloodInfo
+  },
+  setStep (state, stepInfo) {
+    state.step = stepInfo
   }
 }
 

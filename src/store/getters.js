@@ -4,6 +4,9 @@ const getters = {
   },
   getBlood (state) {
     return state.blood
+  },
+  getStep (state) {
+    return state.step
   }
 }
 

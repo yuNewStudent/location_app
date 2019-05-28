@@ -74,16 +74,15 @@ export default {
   props: ['code'],
   data () {
     return {
-      deviceInfo:{
+      deviceInfo: {
         wearerHeight: '',
         wearerWeight: '',
         wearerImage: '',
         wearerAddress: '',
-        wearerDeviceId: '12212112',
         wearerGender: '',
         wearerBirthday: '',
         wearerNickname: '',
-        wearerAppuserId: '',
+        wearerAppuserId: ''
       }
     }
   },
@@ -103,10 +102,9 @@ export default {
     fileChange (e) {
       var that = this
       var file = e.target.files[0]
-      console.log(file)
       var reader = new FileReader()
       reader.onload = function (e) {
-          that.deviceInfo.wearerImage  = e.target.result
+        that.deviceInfo.wearerImage  = e.target.result
       }
       reader.readAsDataURL(file)
     },
@@ -116,15 +114,33 @@ export default {
       this.deviceInfo.wearerBirthday = this.moment(data).format('YYYY-MM-DD')
     },
     handlecomfirm () {
-      this.$http.post(`${config.httpBaseUrl}/wearer/insert`, this.deviceInfo).then(res => {
+      const wearerDeviceId = JSON.stringify(this.code).split('').filter((item, index) => {
+        return index !== 0 && index !== 3 && index !== 6 && index !== 10 && index !== 14
+      }).join('')
+      console.log(wearerDeviceId)
+      const data = {
+        wearerDeviceId: 9512494668,
+        ...this.deviceInfo
+      }
+      console.log(data)
+      // 判断不能为空
+      for (let k in data) {
+        if (!data[k]) {
+          return Toast({
+            message: '信息不能有空',
+            iconClass: 'icon icon-success'
+          })
+        }
+      }
+      this.$http.post(`${config.httpBaseUrl}/wearer/insert`, data).then(res => {
         if (res.code === 200) {
           this.$emit('addDevice', this.deviceInfo)
           Toast({
             message: '信息添加成功',
             iconClass: 'icon icon-success'
           })
-          } else {
-            Toast({
+        } else {
+          Toast({
             message: '信息添加失败',
             iconClass: 'icon icon-success'
           })

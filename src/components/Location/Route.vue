@@ -134,9 +134,9 @@ export default {
           startTime: this.pickerVisible.startTime.slice(0, 2),
           endTime: this.pickerVisible.endTime.slice(0, 2),
           date: this.pickerVisible.date,
-          userId: 9611812844
+          userId: 9512494668
         }
-        this.$http.get(`${config.httpBaseUrl}/appPosition/getAPPtracks`, {
+        this.$http.get(`${config.httpBaseUrl}/map/getAll`, {
           params: data
         }).then(res => {
           if (res.code === 200 && res.date.maplocations) {
@@ -262,7 +262,7 @@ export default {
         startTime: this.pickerVisible.startTime.slice(0, 2),
         endTime: this.pickerVisible.endTime.slice(0, 2),
         date: this.pickerVisible.date,
-        userId: 9611812844
+        userId: 9512494668
       }
       this.$http.get(`${config.httpBaseUrl}/appPosition/getAPPtracks`, {
         params: data

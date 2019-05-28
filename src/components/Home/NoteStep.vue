@@ -10,14 +10,14 @@
     <div class="content">
       <div class="one_day">
         <p class="title">
-          <span class="back" @click="handleBack">前一天</span>
-          <span class="date">2019-05-16</span>
-          <span class="next" @click="handleNext">后一天</span>
+          <span :class='{active:!isBack}' class="back" @click="handleBack">前一天</span>
+          <span class="date">{{getDate}}</span>
+          <span :class='{active:!isNext}' class="next" @click="handleNext">后一天</span>
         </p>
         <div class="canvas_wrapper"><canvas id="canvas"></canvas></div>
         <div class="desc">
           <p class="step_title">今日步数</p>
-          <p class="step_num">3444</p>
+          <p class="step_num">{{currentStep}}</p>
         </div>
       </div>
       <div class="all_day">
@@ -29,50 +29,52 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+import { Toast } from 'mint-ui'
 export default {
   data () {
     return {
-      steps: [
-        {
-          date: '2019-5-23',
-          stepNum: 3000
-        },
-        {
-          date: '2019-5-22',
-          stepNum: 3000
-        },
-        {
-          date: '2019-5-21',
-          stepNum: 3000
-        },
-        {
-          date: '2019-5-20',
-          stepNum: 3000
-        },
-        {
-          date: '2019-5-19',
-          stepNum: 3000
-        },
-        {
-          date: '2019-5-18',
-          stepNum: 3000
-        },
-        {
-          date: '2019-5-18',
-          stepNum: 3000
-        }
-      ]
+      // allStep: [],
+      currentStep: '',
+      allStep: [],
+      currentIndex: 0,
+      isBack: true,
+      isNext: false,
     }
   },
   mounted () {
+    // this.getWeekStep()
     this.$nextTick(() => {
       this.drawChart()
-      this.initChart()
     })
+  },
+  computed: {
+    ...mapGetters(['getStep']),
+    getDate () {
+      let date = new Date(new Date().getTime() - 24 * 60 * 60 * 1000 * (this.currentIndex))
+      return this.moment(date).format('YYYY-MM-DD')
+    }
   },
   methods: {
     closeNoteStep () {
       this.$router.go(-1)
+    },
+    getChartDate (type) {
+      const today = new Date().getDay()
+      if (type === 'step') {
+        let allStep = Object.assign([], this.allStep)
+        const a = allStep.splice(0, 1)
+        allStep = allStep.concat(a)
+        return allStep
+      }
+      if (type === 'week') {
+        let week = ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
+        if (today !== 7) {
+          const a = week.splice(0, today)
+          week = week.concat(a)
+        }
+        return week
+      }
     },
     drawBg (ctx) {
       ctx.beginPath()
@@ -131,9 +133,56 @@ export default {
       chart.setOption(option)
     },
     // 展示前一天
-    handleBack () {},
+    handleBack () {
+      if (this.currentIndex === 6) {
+        return Toast({
+          message: '无数据',
+          iconClass: 'icon icon-success'
+        })
+      }
+      this.currentIndex += 1
+      this.currentStep = this.allStep[this.currentIndex]
+      this.isNext = true
+      if (this.currentIndex === 6) {
+        this.isBack = false
+      }
+    },
     // 展示后一天
-    handleNext () {}
+    handleNext () {
+      if (this.currentIndex === 0) {
+        return Toast({
+          message: '无数据',
+          iconClass: 'icon icon-success'
+        })
+      }
+      this.isBack = true
+      this.currentIndex -= 1
+      this.currentStep = this.allStep[this.currentIndex]
+      if (this.currentIndex === 0) {
+        this.isNext = false
+      }
+    },
+    // 获取一周脚步
+    getWeekStep () {
+      const data = {
+        wearerDeviceId: localStorage.deviceId,
+        // this.moment(new Date()).format('YYYY-MM-DD')
+      }
+      this.$http.get(`${config.httpBaseUrl}/step/get`, {
+        params: data
+      }).then(res => {
+        if (res.code === 200) {
+          res.date.healths.forEach((item, index) => {
+            if (item) {
+              this.allStep.push(item.step)
+            } else {
+              this.allStep.push('')
+            }
+          })
+          this.initChart()
+        }
+      })
+    }
   }
 }
 </script>
@@ -199,6 +248,10 @@ export default {
           height: .5rem;
           text-align: center;
           line-height: .5rem;
+          color: #15BF86;
+          border: 1px solid #15BF86;
+        }
+        .active {
           color: #B9B9B9;
           border: 1px solid #B9B9B9;
         }

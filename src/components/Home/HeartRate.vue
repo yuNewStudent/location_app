@@ -10,21 +10,21 @@
     <div class="content">
       <div class="one_day">
         <p class="title">
-          <span class="back" @click="handleBack">前一天</span>
-          <span class="date">{{currentHeart.healthDate}}</span>
-          <span class="next" @click="handleNext">后一天</span>
+          <span :class='{active:!isBack}' class="back" @click="handleBack">前一天</span>
+          <span class="date">{{getDate}}</span>
+          <span :class='{active:!isNext}' class="next" @click="handleNext">后一天</span>
         </p>
         <div class="current">
           <div class="current_wrapper">
             <p class="text">当前心率</p>
-            <p class="num">{{currentHeart.healthUptodate}}<span>bpm</span></p>
+            <p class="num">{{currentHeart.healthUptodate || '无'}}<span>bpm</span></p>
             <p class="active">远程测量</p>
           </div>
         </div>
         <p class="desc">
-          <span>最高:{{currentHeart.healthHeartrate}}bpm</span>
-          <span>平均:{{(JSON.parse(currentHeart.healthHeartrate)+JSON.parse(currentHeart.healthLowheartrate))/2}}bpm</span>
-          <span>最低:{{currentHeart.healthHeartrate}}bpm</span>
+          <span>最高:{{currentHeart.healthHeartrate || '无'}}bpm</span>
+          <span>平均:{{currentHeart.healthHeartrate?(JSON.parse(currentHeart.healthHeartrate)+JSON.parse(currentHeart.healthLowheartrate))/2:'无'}}bpm</span>
+          <span>最低:{{currentHeart.healthHeartrate || '无'}}bpm</span>
         </p>
       </div>
       <div class="all_day">
@@ -37,6 +37,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import { Toast } from 'mint-ui'
 export default {
   data () {
     return {
@@ -56,11 +57,33 @@ export default {
     // this.getHearthRate()
   },
   computed: {
-    ...mapGetters(['getHeart'])
+    ...mapGetters(['getHeart']),
+    // 获取日期
+    getDate () {
+      let date = new Date(new Date().getTime() - 24 * 60 * 60 * 1000 * (this.currentIndex))
+      return this.moment(date).format('YYYY-MM-DD')
+    }
   },
   methods: {
     closeHeartRate () {
       this.$router.go(-1)
+    },
+    getChartDate (type) {
+      const today = new Date().getDay()
+      if (type === 'heart') {
+        let hearts = Object.assign([], this.hearts)
+        const a = hearts.splice(0, 1)
+        hearts = hearts.concat(a)
+        return hearts
+      }
+      if (type === 'week') {
+        let week = ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
+        if (today !== 7) {
+          const a = week.splice(0, today)
+          week = week.concat(a)
+        }
+        return week
+      }
     },
     initChart () {
       let chart = echarts.init(document.getElementById('chart'))
@@ -70,7 +93,7 @@ export default {
         },
         xAxis: {
           type: 'category',
-          data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
+          data: this.getChartDate('week')
         },
         yAxis: {
           type: 'value'
@@ -92,16 +115,42 @@ export default {
               }
             }
           },
-          data: this.hearts,
+          data: this.getChartDate('heart'),
           type: 'line'
         }]
       }
       chart.setOption(option)
     },
     // 展示前一天
-    handleBack () {},
+    handleBack () {
+      if (this.currentIndex === 6) {
+        return Toast({
+          message: '无数据',
+          iconClass: 'icon icon-success'
+        })
+      }
+      this.currentIndex += 1
+      this.currentHeart = this.allHeart[this.currentIndex]
+      this.isNext = true
+      if (this.currentIndex === 6) {
+        this.isBack = false
+      }
+    },
     // 展示后一天
-    handleNext () {},
+    handleNext () {
+      if (this.currentIndex === 0) {
+        return Toast({
+          message: '无数据',
+          iconClass: 'icon icon-success'
+        })
+      }
+      this.isBack = true
+      this.currentIndex -= 1
+      this.currentHeart = this.allHeart[this.currentIndex]
+      if (this.currentIndex === 0) {
+        this.isNext = false
+      }
+    },
     // 获取一周心率
     getWeekHearthRate () {
       const data = {
@@ -115,7 +164,6 @@ export default {
           res.date.healths.forEach((item, index) => {
             if (item) {
               this.allHeart.push({
-                healthDate: item.healthDate,
                 healthHeartrate: item.healthHeartrate,
                 healthUptodate: item.healthUptodate,
                 healthLowheartrate: item.healthLowheartrate
@@ -123,7 +171,6 @@ export default {
               this.hearts.push(item.healthUptodate)
             } else {
               this.allHeart.push({
-                healthDate: '',
                 healthHeartrate: '',
                 healthUptodate: '',
                 healthLowheartrate: ''
@@ -200,6 +247,10 @@ export default {
           height: .5rem;
           text-align: center;
           line-height: .5rem;
+          color: #15BF86;
+          border: 1px solid #15BF86;
+        }
+        .active {
           color: #B9B9B9;
           border: 1px solid #B9B9B9;
         }

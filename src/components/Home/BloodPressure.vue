@@ -11,7 +11,7 @@
       <div class="one_day">
         <p class="title">
           <span :class='{active:!isBack}' class="back" @click="handleBack">前一天</span>
-          <span class="date">{{currentBlood.healthDate}}</span>
+          <span class="date">{{getDate}}</span>
           <span :class='{active:!isNext}' class="next" @click="handleNext">后一天</span>
         </p>
         <p class="text">当前血压</p>
@@ -31,6 +31,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import { Toast } from 'mint-ui'
 export default {
   data () {
     return {
@@ -46,7 +47,12 @@ export default {
   mounted () {
   },
   computed: {
-    ...mapGetters(['getBlood'])
+    ...mapGetters(['getBlood']),
+    // 获取日期
+    getDate () {
+      let date = new Date(new Date().getTime() - 24 * 60 * 60 * 1000 * (this.currentIndex))
+      return this.moment(date).format('YYYY-MM-DD')
+    }
   },
   created () {
     this.currentBlood = this.getBlood[0]
@@ -56,6 +62,29 @@ export default {
     closeBloodPressure () {
       this.$router.go(-1)
     },
+    getChartDate (type) {
+      const today = new Date().getDay()
+      if (type === 'lowPressures') {
+        let lowPressures = Object.assign([], this.lowPressures)
+        const a = lowPressures.splice(0, 1)
+        lowPressures = lowPressures.concat(a)
+        return lowPressures
+      }
+      if (type === 'highPressures') {
+        let highPressures = Object.assign([], this.highPressures)
+        const a = highPressures.splice(0, 1)
+        highPressures = highPressures.concat(a)
+        return highPressures
+      }
+      if (type === 'week') {
+        let week = ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
+        if (today !== 7) {
+          const a = week.splice(0, today)
+          week = week.concat(a)
+        }
+        return week
+      }
+    },
     initChart () {
       let chart = echarts.init(document.getElementById('chart'))
       const option = {
@@ -64,7 +93,7 @@ export default {
         },
         xAxis: {
           type: 'category',
-          data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
+          data: this.getChartDate('week')
         },
         yAxis: {
           type: 'value'
@@ -86,7 +115,7 @@ export default {
               }
             }
           },
-          data: this.lowPressures,
+          data: this.getChartDate('lowPressures'),
           type: 'line'
         },
         {
@@ -107,7 +136,7 @@ export default {
               }
             }
           },
-          data: this.highPressures,
+          data: this.getChartDate('highPressures'),
           type: 'line'
         }]
       }
@@ -116,7 +145,10 @@ export default {
     // 展示前一天
     handleBack () {
       if (this.currentIndex === 6) {
-        return
+        return Toast({
+          message: '无数据',
+          iconClass: 'icon icon-success'
+        })
       }
       this.currentIndex += 1
       this.currentBlood = this.allBlood[this.currentIndex]
@@ -128,7 +160,10 @@ export default {
     // 展示后一天
     handleNext () {
       if (this.currentIndex === 0) {
-        return
+        return Toast({
+          message: '无数据',
+          iconClass: 'icon icon-success'
+        })
       }
       this.isBack = true
       this.currentIndex -= 1
@@ -138,7 +173,7 @@ export default {
       }
     },
     // 获取血压
-    getWeekHearthRate (date) {
+    getWeekHearthRate () {
       const data = {
         wearerDeviceId: localStorage.deviceId
       }
@@ -149,7 +184,6 @@ export default {
           res.date.healths.forEach((item, index) => {
             if (item) {
               this.allBlood.push({
-                healthDate: item.healthDate,
                 healthHighpressure: item.healthHighpressure + 'mmHg',
                 healthLowpressure: item.healthLowpressure + 'mmHg'
               })
@@ -157,7 +191,6 @@ export default {
               this.highPressures.push(item.healthHighpressure)
             } else {
               this.allBlood.push({
-                healthDate: '',
                 healthHighpressure: '',
                 healthLowpressure: ''
               })

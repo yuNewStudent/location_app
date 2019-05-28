@@ -12,7 +12,7 @@
         class="content_l"
         v-for='(item, index) in devices'
         :key='index'
-        @touchstart='touchstart(item, index)'
+        @touchstart='touchstart(item.wearerDeviceId, index)'
         @touchend='touchend'>
         <div class="content_left">
           <img :src="item.wearerImage"/>
@@ -23,40 +23,57 @@
         </div>
       </div>
       <div class="action" ref='action'>
-        <p class="editor" @click.stop='removeDevice'>解绑</p>
+        <p class="editor" @click.stop='removeDevice()'>解绑</p>
       </div>
       <div class="content_c">
         <P>若设备处于联网状态，则提示指令发送成功，设备端接收到指令后，即作出响铃提示。
 若设备处于关机或未联网状态，则无法向设备端发送相关指令。</P>
       </div>
     </div>
+    <message-page
+      :title='title'
+      v-if='isShowChangePermission'
+      class="change_permission"
+      @closeAddContact='closeChangePermission'>
+      <div class="permission_content">
+        <p
+          v-for="(item, index) in users"
+          :key='index'
+          class="per_item">
+          <span>{{item.appuserNumber}}</span>
+          <input name='sex' v-model='selectPer' :value="item.appuserId" type="radio">
+        </p>
+        <!-- <p
+          class="per_item">
+          <span>wwwww</span>
+          <input name='sex' v-model='selectPer' :value="item.appuserId" type="radio">
+        </p>
+        <p
+          class="per_item">
+          <span>233333</span>
+          <input name='sex' v-model='selectPer' :value="item.appuserId" type="radio">
+        </p> -->
+      </div>
+    </message-page>
   </div>
 </template>
 
 <script>
-import { MessageBox, Toast } from 'mint-ui';
+import { MessageBox, Toast } from 'mint-ui'
+import MessagePage from '@/components/MessageBox'
 export default {
   data () {
     return {
-      devices: [
-        {
-          img: require('@/assets/icon/my/log.jpg'),
-          name: 'yujian'
-        },
-        {
-          img: require('@/assets/icon/my/log.jpg'),
-          name: 'yujian'
-        },
-        {
-          img: require('@/assets/icon/my/log.jpg'),
-          name: 'yujian'
-        },
-        {
-          img: require('@/assets/icon/my/log.jpg'),
-          name: 'yujian'
-        }
-      ],
-      appuserId:''
+      title: '权限转让',
+      devices: [],
+      appuserId: '',
+      selectDevice: {
+        index: '',
+        wearerDeviceId: ''
+      },
+      users: [],
+      isShowChangePermission: false,
+      selectPer: ''
     }
   },
   created(){
@@ -75,7 +92,7 @@ export default {
         })
         .then(res => {
           if (res.code === 200) {
-             this.devices=res.date.wearers
+            this.devices=res.date.wearers
           }
         })
     },
@@ -105,14 +122,73 @@ export default {
     },
     // 解绑设备
     removeDevice () {
-      this.devices.splice(this.selectPerson.index, 1)
-      this.hideAction()
-      Toast({
-        message: '操作成功',
-        iconClass: 'icon icon-success'
+      let permission = JSON.parse(localStorage.getItem('device')).appuserPermission
+      if (permission !== 1) {
+        this.deleDevice()
+      } else {
+        // 转让权限
+        this.$http.get(`${config.httpBaseUrl}/appuser/getwerarId`, {
+          params: {
+            wearerDeviceId: this.selectDevice.wearerDeviceId
+          }
+        }).then(res => {
+          if (res.code === 200) {
+            // 如果第二级权限没有人员直接删除
+            if (!res.date.appusers.length) {
+              this.deleDevice()
+            } else {
+              this.isShowChangePermission = true
+              this.users = res.date.appusers
+            }
+          }
+        })
+      }
+      
+      // this.devices.splice(this.selectPerson.index, 1)
+      // this.hideAction()
+      // Toast({
+      //   message: '操作成功',
+      //   iconClass: 'icon icon-success'
+      // })
+    },
+    // 转让权限
+    changePermission () {
+      this.$http.get(`${config.httpBaseUrl}/appuser/updatePermission`, {
+        params: {
+          appuserId: this.selectPer
+        }
+      }).then(res => {
+        console.log(res)
+        this.deleDevice()
       })
     },
-    showAction (item, index) {
+    // 删除手表
+    deleDevice () {
+      this.$http.get(`${config.httpBaseUrl}/appuser/delete`, {
+        params: {
+          wearerDeviceId: this.selectDevice.wearerDeviceId,
+          appuserId: this.selectPer
+        }
+      }).then(res => {
+        console.log(res)
+        Toast({
+          message: '操作成功',
+          iconClass: 'icon icon-success'
+        })
+        this.devices.splice(this.selectPerson.index, 1)
+      })
+    },
+    // 关闭权限设置
+    closeChangePermission (bol) {
+      if (bol) {
+        this.changePermission()
+      }
+      this.isShowChangePermission = false
+      this.selectPer = ''
+    },
+    showAction (wearerDeviceId, index) {
+      this.selectDevice.wearerDeviceId = wearerDeviceId
+      this.selectDevice.index = index
       this.$refs.action.style.display = 'block'
       this.$refs.action.style.top = .4 + (index * 1.4) + 'rem'
     },
@@ -121,6 +197,9 @@ export default {
       if (!this.$refs.action) { return }
       this.$refs.action.style.display = 'none'
     },
+  },
+  components: {
+    MessagePage
   }
 }
 </script>
@@ -231,6 +310,22 @@ export default {
       font-size: .2rem;
       color: rgba(185, 185, 185, 1);
       line-height: .4rem;
+    }
+  }
+  .change_permission {
+    .permission_content {
+      width: 200px;
+      padding: 10px 0 0;
+      .per_item {
+        display: flex;
+        align-items: center;
+        padding: 5px 0 0;
+        justify-content: space-between;
+        // span {
+        //   margin-right: 10px;
+        // }
+        input {}
+      }
     }
   }
 }

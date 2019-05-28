@@ -8,7 +8,7 @@
         <div>
           <span class="fence" @click='isShowFencePage=!isShowFencePage'><img src="@/assets/icon/location/围栏.png" alt=""></span>
           <span class="route" @click='isShowRoutePage=!isShowRoutePage'><img src="@/assets/icon/location/轨迹.png" alt=""></span>
-          <span class="navigation"><img src="@/assets/icon/location/导航.png" alt=""></span>
+          <!-- <span class="navigation"><img src="@/assets/icon/location/导航.png" alt=""></span> -->
         </div>
       </div>
     </div>
@@ -99,9 +99,9 @@ export default {
     },
     // 获取设备信息
     getDeviceInfo () {
-      this.$http.get(`${config.httpBaseUrl}/appPosition/getAppposition`, {
+      this.$http.get(`${config.httpBaseUrl}/map/getMapuser`, {
         params: {
-          userId: 9611812844
+          userId: 9512494668
         }
       }).then(res => {
         if (res.code === 200) {

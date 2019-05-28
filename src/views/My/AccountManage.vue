@@ -9,12 +9,11 @@
     </div>
     <div class="content">
       <div class="title">
-        <img class="icont" :src="appuserImage?appuserImage:require('@/assets/icon/my/log.jpg')" alt="">
+        <img class="icont" :src="appuserImage?appuserImage:require('@/assets/icon/home/userImg.png')" alt="">
           <input type="file" name="" style=" position: absolute;
           top:42px;
           right: 0;
           width: 100%;
-          height:110px;
           border-radius: 50%;
           outline: none;
           opacity: 0;
@@ -45,65 +44,71 @@
        </ul>
        <div @click='handleLogin' class="exitlogin">退出登陆</div>
     </div>
-    <changenumber
+    <change-password
       v-if='isShowAddPhoneBook'
       @addContact='AddContact'
-      :title='title.add'></changenumber>
+      :title='title.add'></change-password>
   </div>
 </template>
 
 <script>
 import { Actionsheet, Toast, MessageBox } from 'mint-ui'
-import changenumber from '@/components/my/changenumber'
+import ChangePassword from '@/components/my/changenumber'
 export default {
   data () {
     return {
       inputtext : {
-            phone : '',
-            password:'',
-        },
-        play: true,
-        appuserName:'',
-        appuserImage:'',
-        appuserId:'',
-        title: {
+        phone : '',
+        password:'',
+      },
+      play: true,
+      appuserName:'',
+      appuserImage:'',
+      appuserId:'',
+      title: {
         phone : '',
         password:'',
       },
       appuserNumber:'',
       isShowAddPhoneBook: false,
       title: {
-        add: '修改密码',
-      },
-      adatar:'',
+        add: '修改密码'
+      }
     }
   },
   components: {
-    changenumber
+    ChangePassword
   },
   created(){
-     var usernames=this.$cookie.get(('user')||'{}');
-    var userx=(JSON.parse(usernames)||'{}');
-    this.appuserId=userx.appuser.appuserId;
-    this.getinformation();
+    var usernames = this.$cookie.get(('user') || '{}')
+    var userx = (JSON.parse(usernames) || '{}')
+    this.appuserId = userx.appuser.appuserId
+    this.getinformation()
   },
   methods: {
-    touchend(){
-      console.log(1);
+    touchend () {
     },
-   //查询用户信息
+    // 查询用户信息
     getinformation(){
-        this.$http.get(`${config.httpBaseUrl}/appuser/get`,{
-              params: {
-                 appuserId:this.appuserId
-                }
-            }).then(res => {
-            if (res.code === 200) {
-                this.appuserName=res.date.appuser.appuserName;
-                this.appuserImage=res.date.appuser.appuserImage;
-                this.appuserNumber=res.date.appuser.appuserNumber;
-            }
-           });
+      this.$http.get(`${config.httpBaseUrl}/appuser/get`, {
+        params: {
+          appuserId: this.appuserId
+        }
+      }).then(res => {
+        if (res.code === 200) {
+          this.appuserName = res.date.appuser.appuserName
+          this.appuserImage = res.date.appuser.appuserImage
+          this.appuserNumber = res.date.appuser.appuserNumber
+          let userInfo = {
+            appuserName: this.appuserName,
+            appuserImage: this.appuserImage,
+            appuserNumber: this.appuserNumber,
+            appuserId: res.date.appuser.appuserId
+          }
+          localStorage.setItem('user', JSON.stringify(userInfo))
+          // this.$cookie.set('user', JSON.stringify(userInfo))
+        }
+      })
     },
     back () {
       this.$router.push({ name: 'MyPage'})
@@ -119,29 +124,31 @@ export default {
           name: 'Login'
       })
     },
+    // 更改用户名
     username(){
       MessageBox.prompt('更改用户名', {
-          inputValidator: (val) => {
-            if (val === null) {
-              return true;//初始化的值为null，不做处理的话，刚打开MessageBox就会校验出错，影响用户体验
-            }
-          }, inputErrorMessage: '输入不能为空'
-        }).then((val) => {
-          this.$http
-            .post(`${config.httpBaseUrl}/appuser/updatename`, {
-                appuserName: val.value,
-                appuserId:this.appuserId
+        inputValidator: (val) => {
+          if (val === null) {
+            return true//初始化的值为null，不做处理的话，刚打开MessageBox就会校验出错，影响用户体验
+          }
+        }, inputErrorMessage: '输入不能为空'
+      }).then((val) => {
+        this.$http.post(`${config.httpBaseUrl}/appuser/updatename`, {
+          appuserName: val.value,
+          appuserId:this.appuserId
+        }).then(res => {
+          if (res.code === 200) {
+            this.getinformation()
+            Toast({
+              message: '操作成功',
+              iconClass: 'icon icon-success'
             })
-            .then(res => {
-              if (res.code === 200) {
-                this.getinformation();
-              }else{
-
-              }
-            });
-        }, () => {
-          console.info('cancel')
-      });
+          }else{
+          }
+        })
+      }, () => {
+        console.info('cancel')
+      })
     },
     passwordb () {
       this.isShowAddPhoneBook = true
@@ -149,32 +156,28 @@ export default {
     fileChange (e) {
       var that = this
       var file = e.target.files[0]
-      console.log(file)
       var reader = new FileReader()
       reader.onload = function (e) {
-          that.adatar  = e.target.result
-          that.upload(that.adatar);
-          console.log(that.adatar)
+        console.log(e.target.result)
+        that.appuserImage  = e.target.result
+        that.upload(that.appuserImage)
       }
-      reader.readAsDataURL(file);
+      reader.readAsDataURL(file)
     },
-    upload(flex){
-        this.$http
-            .post(`${config.httpBaseUrl}/appuser/updateImage`,{
-              appuserImage:flex,
-              appuserId:this.appuserId
-            })
-            .then(res => {
-              if (res.code === 200) {
-                Toast({
-                  message: '头像修改成功',
-                  iconClass: 'icon icon-success'
-                })
-                this.getinformation();
-              }else{
-
-              }
-            });
+    upload (url) {
+      this.$http.post(`${config.httpBaseUrl}/appuser/updateImage`,{
+        appuserImage: url,
+        appuserId: this.appuserId
+      }).then(res => {
+        console.log(res)
+        // if (res.code === 200) {
+        //   Toast({
+        //     message: '头像修改成功',
+        //     iconClass: 'icon icon-success'
+        //   })
+        //   this.getinformation()
+        // }
+      })
     },
     AddContact (bol, personInfo) {
       console.log(personInfo)
@@ -198,22 +201,20 @@ export default {
             })
           }
         }
-        var date={
+        var date = {
           appuserNumber:personInfo.appuserNumber,
           appuserPassword:personInfo.appuserPassword
         }
-         this.$http.post(`${config.httpBaseUrl}/appuser/changePassword`,date).then(res => {
-        if (res.code === 200) {
-          this.getinformation();
+        this.$http.post(`${config.httpBaseUrl}/appuser/changePassword`, date).then(res => {
+          if (res.code === 200) {
+            this.getinformation()
+            Toast({
+              message: '操作成功',
+              iconClass: 'icon icon-success'
+            })
           }
         })
-          Toast({
-            message: '操作成功',
-            iconClass: 'icon icon-success'
-          })
-      }else{
-        
-      }
+      } else {}
     },
     // 整个方法没有被执行
     homeTel () {

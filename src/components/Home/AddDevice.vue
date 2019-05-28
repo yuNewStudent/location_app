@@ -25,6 +25,7 @@
 <script>
 import DeviceInfo from '@/components/Home/DeviceInfo'
 import ScanPage from '@/components/Scan'
+import { Toast } from 'mint-ui'
 export default {
   name: 'add_device',
   data () {
@@ -43,6 +44,12 @@ export default {
       this.$emit('closeAddDevice')
     },
     handleNext () {
+      if (!this.code) {
+        return Toast({
+          message: '注册码不能为空',
+          iconClass: 'icon icon-success'
+        })
+      }
       this.isShowDeviceInfo = true
     },
     closeDeviceInfo () {

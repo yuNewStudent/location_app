@@ -1,7 +1,7 @@
 <template>
   <div class="home_header">
     <span class="headIcon">
-      <img src="@/assets/icon/home/userImg.png" alt>
+      <img :src="headImg" alt>
     </span>
     <span class="title">{{title}}</span>
     <div class="device" @click="handleShowDeviceManage">
@@ -11,8 +11,8 @@
           v-for="(item, index) in devices"
           :key="index"
           class="device_item"
-          :class="{active: isActive(item.wearerAppuserId)}"
-          @click.stop="selectDevice(item.wearerAppuserId, index)"
+          :class="{active: isActive(item.wearerDeviceId)}"
+          @click.stop="selectDevice(item, index)"
         >
           <img src="@/assets/icon/header/手表IC.png" alt>
           <span>{{item.wearerNickname}}</span>
@@ -36,20 +36,7 @@ export default {
       isShowDeviceManage: false,
       isShowAddDevice: false,
       appuserId:'',
-      devices: [
-        // {
-        //   deviceId: 9611812844,
-        //   name: "余老大"
-        // },
-        // {
-        //   deviceId: 44444,
-        //   name: "朱老三"
-        // },
-        // {
-        //   deviceId: 5666666,
-        //   name: "李老师"
-        // }
-      ]
+      devices: []
     }
   },
   components: {
@@ -61,6 +48,11 @@ export default {
     this.appuserId = userx.appuser.appuserId
     this.querylist()
   },
+  computed: {
+    headImg () {
+      return JSON.parse(localStorage.getItem('user')).appuserImage || require('@/assets/icon/home/userImg.png')
+    }
+  },
   methods: {
     querylist () {
       this.$http
@@ -71,7 +63,7 @@ export default {
         })
         .then(res => {
           if (res.code === 200) {
-             this.devices = res.date.wearers
+            this.devices = res.date.wearers
           }
         })
     },
@@ -85,20 +77,20 @@ export default {
     },
     // 关闭新增设备页面
     closeAddDevice (deviceInfo) {
-      if (deviceInfo) { }
+      this.querylist()
       this.isShowAddDevice = false
     },
     // 选择手表
-    selectDevice (id, index) {
+    selectDevice (device, index) {
       let devices = document.getElementsByClassName('device_item')
       for (var i = 0; i < devices.length; i++) {
         devices[i].classList.remove('active')
       }
       devices[index].classList.add('active')
-      localStorage.setItem('wearerAppuserId', JSON.stringify(id))
+      localStorage.setItem('device', JSON.stringify(device))
     },
     isActive (id) {
-      return id === JSON.parse(localStorage.getItem('wearerAppuserId'))
+      return id === JSON.parse(localStorage.getItem('device')).wearerDeviceId
     }
   }
 }

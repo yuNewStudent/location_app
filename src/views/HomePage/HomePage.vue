@@ -37,10 +37,10 @@
                 <img src="@/assets/icon/home/计步IC.png" alt="">
               </span>
               <div class="desc">
-                <p class="time">更新时间：2019-05-14 19：40</p>
+                <p class="time">更新时间：{{currentStep.stepDate?currentStep.stepDate:'无'}}</p>
                 <p class="step">
-                  <span>3879步</span>
-                  <span>距离5.3KM</span>
+                  <span>{{currentStep.stepCount?currentStep.stepCount:'无'}}步</span>
+                  <!-- <span>距离5.3KM</span> -->
                 </p>
               </div>
             </div>
@@ -57,7 +57,7 @@
               <div class="desc">
                 <p class="time">更新时间：{{heart.length?heart[0].healthDate:'无'}}</p>
                 <p class="step">
-                  <span>{{heart.length?heart[0].healthUptodate:'无'}}</span>
+                  <span>{{heart.length?heart[0].healthUptodate:'无'}}BPM</span>
                 </p>
               </div>
             </div>
@@ -108,12 +108,14 @@
 import Slider from '@/components/scroll'
 import HeaderPage from '@/components/Header'
 import { mapMutations, mapGetters } from 'vuex'
+import { Toast } from 'mint-ui'
 export default {
   data () {
     return {
       head_title: '首页',
       heart: [],
-      blood: []
+      blood: [],
+      currentStep: {}
     }
   },
   components: {
@@ -122,12 +124,13 @@ export default {
   },
   created () {
     this.getHearthRate()
+    this.getStep()
   },
   computed: {
     ...mapGetters(['getHeart'])
   },
   methods: {
-    ...mapMutations(['setHeart', 'setBlood']),
+    ...mapMutations(['setHeart', 'setBlood', 'setStep']),
     // 获取心率and血压
     getHearthRate () {
       const data = {
@@ -138,7 +141,12 @@ export default {
         params: data
       }).then(res => {
         if (res.code === 200) {
-          console.log(res.date.healths)
+          // if (!res.date.healths.length) {
+          //   return Toast({
+          //     message: '无数据',
+          //     iconClass: 'icon icon-success'
+          //   })
+          // }
           res.date.healths.forEach((item, index) => {
             this.heart.push({
               healthDate: item.healthDate,
@@ -155,6 +163,24 @@ export default {
             this.setBlood(this.blood)
           })
           // console.log(this.heart, this.blood)
+        }
+      })
+    },
+    // 获取步数
+    getStep () {
+      const data = {
+        wearerDeviceId: localStorage.deviceId,
+        // date: this.moment(new Date()).format('YYYY-MM-DD')
+      }
+      this.$http.get(`${config.httpBaseUrl}/step/get`, {
+        params: data
+      }).then(res => {
+        if (res.code === 200) {
+          this.currentStep = {
+            stepDate: res.date.step.stepDate,
+            stepCount: res.date.step.stepCount
+          }
+          this.setStep(this.currentStep)
         }
       })
     }
