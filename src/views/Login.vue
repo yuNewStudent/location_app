@@ -62,20 +62,19 @@ export default {
     },
     handleLogin () {
       const data = {
-        appuserNumber: this.userInfo.name,
-        appuserPassword: this.userInfo.password
-      }
-      this.$http.post(`${config.httpBaseUrl}/appuser/login`, data).then(res => {
-        if (res.code === 200) {
-          Toast({
-            message: '登陆成功',
-            iconClass: 'icon icon-success'
-          })
-          this.$http.get(`${config.httpBaseUrl}/appuser/get`, {
-            params: {
-              number: this.userInfo.name
-            }
-          }).then(res => {
+          appuserNumber:this.userInfo.name,
+          appuserPassword:this.userInfo.password
+        }
+        this.$http.post(`${config.httpBaseUrl}/appuser/login`, data).then(res => {
+          if (res.code === 200) {
+            this.$router.push({
+              name: 'Home'
+            })
+            this.$http.get(`${config.httpBaseUrl}/appuser/getappuser`,{
+              params: {
+                  number: this.userInfo.name
+                }
+            }).then(res => {
             if (res.code === 200) {
               this.$cookie.set('user', JSON.stringify(res.date))
               this.$router.push({

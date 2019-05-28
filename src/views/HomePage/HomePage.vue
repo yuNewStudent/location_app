@@ -55,9 +55,9 @@
                 <img src="@/assets/icon/home/心率IC.png" alt="">
               </span>
               <div class="desc">
-                <p class="time">更新时间：{{heart[0].healthDate}}</p>
+                <p class="time">更新时间：{{heart.length?heart[0].healthDate:'无'}}</p>
                 <p class="step">
-                  <span>{{heart[0].healthUptodate}}</span>
+                  <span>{{heart.length?heart[0].healthUptodate:'无'}}</span>
                 </p>
               </div>
             </div>
@@ -89,10 +89,10 @@
                 <img src="@/assets/icon/home/血压IC.png" alt="">
               </span>
               <div class="desc">
-                <p class="time">更新时间：{{heart[0].healthDate}}</p>
+                <p class="time">更新时间：{{blood.length?blood[0].healthDate:'无'}}</p>
                 <p class="step">
-                  <span>高压{{blood[0].healthHighpressure}}</span>
-                  <span>低压{{blood[0].healthLowpressure}}</span>
+                  <span>高压{{blood.length?blood[0].healthHighpressure:'无'}}</span>
+                  <span>低压{{blood.length?blood[0].healthLowpressure:'无'}}</span>
                 </p>
               </div>
             </div>

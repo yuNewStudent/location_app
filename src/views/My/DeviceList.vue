@@ -15,8 +15,8 @@
         @touchstart='touchstart(item, index)'
         @touchend='touchend'>
         <div class="content_left">
-          <img src="@/assets/icon/my/log.jpg"/>
-          <span>Mothers wathc</span>
+          <img :src="item.wearerImage"/>
+          <span>{{item.wearerNickname}}</span>
         </div>
         <div class="content_right" @click="find">
           查找设备

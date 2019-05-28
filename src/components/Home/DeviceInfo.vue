@@ -74,7 +74,7 @@ export default {
   props: ['code'],
   data () {
     return {
-      deviceInfo: {
+      deviceInfo:{
         wearerHeight: '',
         wearerWeight: '',
         wearerImage: '',
@@ -118,7 +118,6 @@ export default {
     handlecomfirm () {
       this.$http.post(`${config.httpBaseUrl}/wearer/insert`, this.deviceInfo).then(res => {
         if (res.code === 200) {
-          console.log(this.deviceInfo)
           this.$emit('addDevice', this.deviceInfo)
           Toast({
             message: '信息添加成功',

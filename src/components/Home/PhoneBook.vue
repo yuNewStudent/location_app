@@ -15,8 +15,8 @@
           @touchend='touchend'>
           <div class="info">
             <div class="desc">
-              <p>{{item.name}}</p>
-              <p>{{item.phone}}</p>
+              <p>{{item.phonebookName}}</p>
+              <p>{{item.phonebookNnumber}}</p>
             </div>
           </div>
           <!-- <span class="del">删除</span> -->
@@ -49,23 +49,29 @@ export default {
       isShowAddPhoneBook: false,
       isShowEditorPhoneBook: false,
       time: 0,
+      appuserWearerId:'',
       contacts: [
-        {
-          name: '女儿',
-          phone: 123467800,
-          id: 0
-        },
-        {
-          name: '孙子',
-          phone: 23445888,
-          id: 1
-        },
-        {
-          name: '女婿',
-          phone: 908888,
-          id: 2
-        }
+        // {
+        //   name: '女儿',
+        //   phone: 123467800,
+        //   id: 0
+        // },
+        // {
+        //   name: '孙子',
+        //   phone: 23445888,
+        //   id: 1
+        // },
+        // {
+        //   name: '女婿',
+        //   phone: 908888,
+        //   id: 2
+        // }
       ],
+      data:{
+        id:"9512494667", 
+        keyWord:"PHB2",
+        phoneBook:[] 
+      },
       title: {
         add: '新增电话本',
         editor: '修改电话本'
@@ -81,7 +87,22 @@ export default {
     EditorContact,
     Toast
   },
+  created(){
+    this.Enquirydirectory();
+  },
   methods: {
+    //查询所有电话本
+    Enquirydirectory(){
+       this.$http.get(`${config.httpBaseUrl}/phonebook/getAll`,{
+              params: {
+                 wearerDeviceId:"9512494667",
+                }
+            }).then(res => {
+            if (res.code === 200) {
+                this.contacts=res.date.Phonebook;
+            }
+           });
+    },
     closePhoneBook () {
       this.$router.go(-1)
     },
@@ -100,7 +121,13 @@ export default {
             })
           }
         }
-        this.contacts.push(personInfo)
+        this.data.phoneBook.push(personInfo),
+        this.$http.post(`${config.httpBaseUrl}/Appcommand/command`,this.data).then(res => {
+        if (res.code === 200) {
+          this.Enquirydirectory();
+          }
+        })
+        // this.contacts.push(personInfo)
         Toast({
           message: '操作成功',
           iconClass: 'icon icon-success'
