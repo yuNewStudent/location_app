@@ -177,8 +177,8 @@ export default {
       }).then(res => {
         if (res.code === 200) {
           this.currentStep = {
-            stepDate: res.date.step.stepDate,
-            stepCount: res.date.step.stepCount
+            stepDate: res.date.step ? res.date.step.stepDate : '无',
+            stepCount: res.date.step ? res.date.step.stepCount : '无'
           }
           this.setStep(this.currentStep)
         }

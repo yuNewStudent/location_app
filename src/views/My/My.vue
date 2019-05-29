@@ -48,12 +48,12 @@ export default {
     }
   },
   created () {
-    var usernames = this.$cookie.get(('user')||'{}')
+    var usernames = localStorage.getItem(('user')||'{}')
     var userx = (JSON.parse(usernames)||'{}')
     if(userx === '{}'){
       this.username = ''
     }else{
-      this.username = userx.appuser.appuserNumber
+      this.username = userx.appuserNumber
     }
   }
 }

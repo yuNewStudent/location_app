@@ -43,13 +43,14 @@ export default {
     AddDevice
   },
   created () {
-    var usernames = this.$cookie.get(('user') || '{}') 
+    var usernames = localStorage.getItem(('user') || '{}') 
     var userx = (JSON.parse(usernames) || '{}')
-    this.appuserId = userx.appuser.appuserId
+    this.appuserId = userx.appuserId
     this.querylist()
   },
   computed: {
     headImg () {
+      console.log(JSON.parse(localStorage.getItem('user')).appuserImage)
       return JSON.parse(localStorage.getItem('user')).appuserImage || require('@/assets/icon/home/userImg.png')
     }
   },

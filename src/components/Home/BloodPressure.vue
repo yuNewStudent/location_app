@@ -16,8 +16,8 @@
         </p>
         <p class="text">当前血压</p>
         <div class="blood">
-          <div class="high">高压:<span>{{currentBlood.healthHighpressure || '无数据'}}</span></div>
-          <div class="low">低压<span>{{currentBlood.healthLowpressure || '无数据'}}</span></div>
+          <div class="high">高压:<span>{{currentBlood?currentBlood.healthHighpressure:'无数据'}}</span></div>
+          <div class="low">低压<span>{{currentBlood?currentBlood.healthLowpressure:'无数据'}}</span></div>
         </div>
         <p class="long_range">远程测量</p>
       </div>
@@ -35,7 +35,7 @@ import { Toast } from 'mint-ui'
 export default {
   data () {
     return {
-      currentBlood: {},
+      currentBlood: null,
       allBlood: [],
       lowPressures: [],
       highPressures: [],
@@ -66,15 +66,11 @@ export default {
       const today = new Date().getDay()
       if (type === 'lowPressures') {
         let lowPressures = Object.assign([], this.lowPressures)
-        const a = lowPressures.splice(0, 1)
-        lowPressures = lowPressures.concat(a)
-        return lowPressures
+        return lowPressures.reverse()
       }
       if (type === 'highPressures') {
         let highPressures = Object.assign([], this.highPressures)
-        const a = highPressures.splice(0, 1)
-        highPressures = highPressures.concat(a)
-        return highPressures
+        return highPressures.reverse()
       }
       if (type === 'week') {
         let week = ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
@@ -181,6 +177,12 @@ export default {
         params: data
       }).then(res => {
         if (res.code === 200) {
+          // if (!res.date.healths.length) {
+          //   return Toast({
+          //     message: '无数据',
+          //     iconClass: 'icon icon-success'
+          //   })
+          // }
           res.date.healths.forEach((item, index) => {
             if (item) {
               this.allBlood.push({

@@ -77,9 +77,9 @@ export default {
     }
   },
   created(){
-    var usernames=this.$cookie.get(('user')||'{}')
-    var userx=(JSON.parse(usernames)||'{}')
-    this.appuserId=userx.appuser.appuserId
+    var usernames = localStorage.getItem(('user') || '{}') 
+    var userx = (JSON.parse(usernames) || '{}')
+    this.appuserId = userx.appuserId
     this.querylist()
   },
   methods: {

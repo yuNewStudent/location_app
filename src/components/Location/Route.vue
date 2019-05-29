@@ -264,7 +264,7 @@ export default {
         date: this.pickerVisible.date,
         userId: 9512494668
       }
-      this.$http.get(`${config.httpBaseUrl}/appPosition/getAPPtracks`, {
+      this.$http.get(`${config.httpBaseUrl}/map/getAll`, {
         params: data
       }).then(res => {
         if (res.code === 200 && res.date.maplocations) {

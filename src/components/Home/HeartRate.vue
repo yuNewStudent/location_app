@@ -17,14 +17,14 @@
         <div class="current">
           <div class="current_wrapper">
             <p class="text">当前心率</p>
-            <p class="num">{{currentHeart.healthUptodate || '无'}}<span>bpm</span></p>
+            <p class="num">{{currentHeart?currentHeart.healthUptodate:'无'}}<span>bpm</span></p>
             <p class="active">远程测量</p>
           </div>
         </div>
         <p class="desc">
-          <span>最高:{{currentHeart.healthHeartrate || '无'}}bpm</span>
-          <span>平均:{{currentHeart.healthHeartrate?(JSON.parse(currentHeart.healthHeartrate)+JSON.parse(currentHeart.healthLowheartrate))/2:'无'}}bpm</span>
-          <span>最低:{{currentHeart.healthHeartrate || '无'}}bpm</span>
+          <span>最高:{{currentHeart?currentHeart.healthHeartrate:'无'}}bpm</span>
+          <span>平均:{{currentHeart?(JSON.parse(currentHeart.healthHeartrate)+JSON.parse(currentHeart.healthLowheartrate))/2:'无'}}bpm</span>
+          <span>最低:{{currentHeart?currentHeart.healthHeartrate:'无'}}bpm</span>
         </p>
       </div>
       <div class="all_day">
@@ -38,10 +38,11 @@
 <script>
 import { mapGetters } from 'vuex'
 import { Toast } from 'mint-ui'
+import { constants } from 'fs';
 export default {
   data () {
     return {
-      currentHeart: {},
+      currentHeart: null,
       allHeart: [],
       hearts: [],
       currentIndex: 0,
@@ -72,9 +73,9 @@ export default {
       const today = new Date().getDay()
       if (type === 'heart') {
         let hearts = Object.assign([], this.hearts)
-        const a = hearts.splice(0, 1)
-        hearts = hearts.concat(a)
-        return hearts
+        // const a = hearts.splice(0, 1)
+        // hearts = hearts.concat(a)
+        return hearts.reverse()
       }
       if (type === 'week') {
         let week = ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
@@ -159,8 +160,13 @@ export default {
       this.$http.get(`${config.httpBaseUrl}/health/getweek`, {
         params: data
       }).then(res => {
-        console.log(res)
         if (res.code === 200) {
+          if (!res.date.healths.length) {
+            return Toast({
+              message: '无数据',
+              iconClass: 'icon icon-success'
+            })
+          }
           res.date.healths.forEach((item, index) => {
             if (item) {
               this.allHeart.push({
@@ -178,7 +184,6 @@ export default {
               this.hearts.push('')
             }
           })
-          console.log(this.hearts)
           this.initChart()
         }
       })

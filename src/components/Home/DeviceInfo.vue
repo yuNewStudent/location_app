@@ -87,9 +87,9 @@ export default {
     }
   },
   created () {
-    var usernames = this.$cookie.get(('user') || '{}')
+    var usernames = localStorage.getItem(('user') || '{}')
     var userx = (JSON.parse(usernames) || '{}')
-    this.deviceInfo.wearerAppuserId = userx.appuser.appuserId
+    this.deviceInfo.wearerAppuserId = userx.appuserId
   },
   methods: {
     handleClose () {
@@ -114,15 +114,14 @@ export default {
       this.deviceInfo.wearerBirthday = this.moment(data).format('YYYY-MM-DD')
     },
     handlecomfirm () {
-      const wearerDeviceId = JSON.stringify(this.code).split('').filter((item, index) => {
+      let wearerDeviceId = this.code.split('').filter((item, index) => {
         return index !== 0 && index !== 3 && index !== 6 && index !== 10 && index !== 14
       }).join('')
-      console.log(wearerDeviceId)
       const data = {
-        wearerDeviceId: 9512494668,
+        wearerDeviceId,
         ...this.deviceInfo
       }
-      console.log(data)
+      return
       // 判断不能为空
       for (let k in data) {
         if (!data[k]) {

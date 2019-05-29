@@ -22,8 +22,7 @@ Vue.use(MintUI)
 var whiteList = ['Login', 'Register', 'ResetPassword']
 router.beforeEach((to, from, next) => {
   // 如果未登录， 只能跳转至登录页面或者注册页面
-  const loginUser = JSON.parse(VueCookie.get('user'))
-  console.log(to.name, loginUser, !loginUser && whiteList.indexOf(to.name) === -1)
+  const loginUser = JSON.parse(localStorage.getItem('user'))
   if (!loginUser && whiteList.indexOf(to.name) === -1) {
     return next({ name: 'Login' })
   }

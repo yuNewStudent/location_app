@@ -80,9 +80,10 @@ export default {
     ChangePassword
   },
   created(){
-    var usernames = this.$cookie.get(('user') || '{}')
+    var usernames = localStorage.getItem(('user') || '{}')
     var userx = (JSON.parse(usernames) || '{}')
-    this.appuserId = userx.appuser.appuserId
+    this.appuserId = userx.appuserId
+    console.log(userx, this.appuserId)
     this.getinformation()
   },
   methods: {
@@ -106,7 +107,6 @@ export default {
             appuserId: res.date.appuser.appuserId
           }
           localStorage.setItem('user', JSON.stringify(userInfo))
-          // this.$cookie.set('user', JSON.stringify(userInfo))
         }
       })
     },
@@ -119,9 +119,9 @@ export default {
         message: '退出登陆',
         iconClass: 'icon icon-success'
       })
-      this.$cookie.delete('user') 
-        _this.$router.push({
-          name: 'Login'
+      localStorage.removeItem('user') 
+      _this.$router.push({
+        name: 'Login'
       })
     },
     // 更改用户名
@@ -135,7 +135,7 @@ export default {
       }).then((val) => {
         this.$http.post(`${config.httpBaseUrl}/appuser/updatename`, {
           appuserName: val.value,
-          appuserId:this.appuserId
+          appuserId: this.appuserId
         }).then(res => {
           if (res.code === 200) {
             this.getinformation()

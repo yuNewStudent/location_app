@@ -72,11 +72,11 @@ export default {
             })
             this.$http.get(`${config.httpBaseUrl}/appuser/getappuser`,{
               params: {
-                  number: this.userInfo.name
-                }
+                number: this.userInfo.name
+              }
             }).then(res => {
             if (res.code === 200) {
-              this.$cookie.set('user', JSON.stringify(res.date))
+              localStorage.setItem('user', JSON.stringify(res.date.appuser))
               this.$router.push({
                 name: 'Home'
               })
