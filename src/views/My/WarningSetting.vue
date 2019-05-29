@@ -7,7 +7,7 @@
       <span class="title">报警设置</span>
       <span class="comfirm"></span>
     </div>
-    <div class="content">
+    <div class="content" v-if="show">
       <div class="content_l">
         <div class="content_left">
           <p>SOS报警</p>
@@ -18,13 +18,13 @@
             <mt-switch v-model="value"></mt-switch>
         </div>
       </div>
-      <div class="content_l" @click="lowbattery">
+      <div class="content_l">
         <div class="content_left">
             <p>低电量报警</p>
         </div>
         <div class="content_middle">
         </div>
-        <div class="content_right" @click="find">
+        <div class="content_right" @click="lowbattery">
           <mt-switch v-model="value1"></mt-switch>
         </div>
       </div>
@@ -39,7 +39,7 @@
         </div>
         <div class="content_middle">
         </div>
-        <div class="content_right" @click="find">
+        <div class="content_right" @click="Intelligent">
             <mt-switch v-model="value2"></mt-switch>
         </div>
       </div>
@@ -52,30 +52,118 @@ import { Switch, MessageBox } from 'mint-ui'
 export default {
   data () {
     return {
-      value: false,
-      value1: true,
-      value2: true
+      value:false,
+      value1:false,
+      value2:false,
+      appuserId:'',
+      show:false,
+      alarmswitchSosType:'',
+      alarmswitchElectricityType:0,
+      alarmswitchFenceType:0,
     }
   },
+  created () {
+    var usernames = localStorage.getItem(('user') || '{}') 
+    var userx = (JSON.parse(usernames) || '{}')
+    this.appuserId = userx.appuserId;
+    this.Queryall();
+  },
   methods: {
+    Queryall(){
+       this.$http.get(`${config.httpBaseUrl}/alarms/get`, {
+          params:{
+            appuserId:this.appuserId
+          }
+        }).then(res => {
+          if (res.code === 200) {
+            if(!res.date.alarmswitch){
+              this.alarmswitchSosType=0;
+              this.alarmswitchElectricityType=0;
+              this.alarmswitchFenceType=0;
+              this.value=false;
+              this.value1=false;
+              this.value2=false;
+            }else{
+              this.show=true;
+              if(res.date.alarmswitch.alarmswitchSosType!=0){
+                 this.value=true;
+              }else{
+                this.value=false;
+              }if(res.date.alarmswitch.alarmswitchElectricityType!=0){
+                  this.value1=true;
+              }else{
+                this.value1=false;
+              }if(res.date.alarmswitch.alarmswitchFenceType!=0){
+                this.value2=true;
+              }else{
+                this.value2=false;
+              }
+            }
+          }else{
+          }
+        })
+    },
     back () {
       this.$router.push({ name: 'MyPage'})
     },
     find () {
+      if(this.value!=false){
+        this.alarmswitchSosType=0;
+      }else{
+        this.alarmswitchSosType=1
+      }
+      this.$http.get(`${config.httpBaseUrl}/alarms/shutdown`, {
+           params:{
+             type:'sos',
+             appuserId:this.appuserId,
+             status:this.alarmswitchSosType,
+           }
+        }).then(res => {
+          if (res.code === 200) {
+            this.Queryall();
+          }else{
+          }
+        })
+    },
+    //智慧报警
+    Intelligent(){
+      if(this.value2!=false){
+        this.alarmswitchFenceType=0
+      }else{
+         this.alarmswitchFenceType=1
+      }
+      this.$http.get(`${config.httpBaseUrl}/alarms/shutdown`, {
+           params:{
+             type:'fence',
+             appuserId:this.appuserId,
+             status:this.alarmswitchFenceType,
+           }
+        }).then(res => {
+          if (res.code === 200) {
+            this.Queryall();
+          }else{
+          }
+        })
     },
     // 输入电量百分之比
     lowbattery(){
-      MessageBox.prompt('请输入低电量报警百分比', {
-        inputValidator: (val) => {
-          if (val === null) {
-            return true;// 初始化的值为null，不做处理的话，刚打开MessageBox就会校验出错，影响用户体验
+     if(this.value1!=false){
+       this.alarmswitchElectricityType=0;
+      }else{
+        this.alarmswitchElectricityType=1;
+      }
+      this.$http.get(`${config.httpBaseUrl}/alarms/shutdown`, {
+           params:{
+             type:'electricity',
+             appuserId:this.appuserId,
+             status:this.alarmswitchElectricityType,
+           }
+        }).then(res => {
+          if (res.code === 200) {
+            this.Queryall();
+          }else{
           }
-        }, inputErrorMessage: '输入不能为空'
-      }).then((val) => {
-        console.info(val.value)
-      }, () => {
-        console.info('cancel')
-      })
+        })
     }
   }
 }

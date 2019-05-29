@@ -1,6 +1,7 @@
 <template>
-  <div class="home_header">
-    <span class="headIcon">
+ <div>
+    <div class="home_header">
+    <span class="headIcon" @click='handleNext'>
       <img :src="headImg" alt>
     </span>
     <span class="title">{{title}}</span>
@@ -24,28 +25,40 @@
       </div>
     </div>
     <add-device v-if="isShowAddDevice" @closeAddDevice="closeAddDevice"></add-device>
-  </div>
+    </div>
+     <device-Ineditor
+      v-if='isShowDeviceInfo'
+      :code='code'
+      @addDevice='addDevice'
+      @closeDeviceInfo='closeDeviceInfo'></device-Ineditor>
+ </div>
 </template>
 
 <script>
 import AddDevice from "@/components/Home/AddDevice";
+import DeviceIneditor from '@/components/Home/DeviceIneditor'
+import { Toast } from 'mint-ui';
 export default {
   props: ["title"],
   data() {
     return {
       isShowDeviceManage: false,
       isShowAddDevice: false,
+      isShowDeviceInfo:false,
       appuserId:'',
-      devices: []
+      devices: [],
+      code: '',
     }
   },
   components: {
-    AddDevice
+    AddDevice,
+    DeviceIneditor,
+    
   },
   created () {
     var usernames = localStorage.getItem(('user') || '{}') 
     var userx = (JSON.parse(usernames) || '{}')
-    this.appuserId = userx.appuserId
+    this.appuserId = userx.appuserId;
     this.querylist()
   },
   computed: {
@@ -79,6 +92,32 @@ export default {
     closeAddDevice (deviceInfo) {
       this.querylist()
       this.isShowAddDevice = false
+    },
+    handleNext () {
+      if (!localStorage.getItem('device')) {
+        return Toast({
+          message: '建议先选择设备',
+          iconClass: 'icon icon-success'
+        })
+      }else{
+          this.code = JSON.parse(localStorage.getItem('device')).wearerDeviceId
+          this.isShowDeviceInfo = true;
+      }
+    //  if()
+      // if (!this.code) {
+      //   return Toast({
+      //     message: '注册码不能为空',
+      //     iconClass: 'icon icon-success'
+      //   })
+      // }
+    },
+    closeDeviceInfo () {
+      this.isShowDeviceInfo = false
+    },
+    addDevice (deviceInfo) {
+    console.log(deviceInfo)
+      this.isShowDeviceInfo = false
+      this.$emit('closeAddDevice', deviceInfo)
     },
     // 选择手表
     selectDevice (device, index) {

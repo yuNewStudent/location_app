@@ -67,6 +67,8 @@
 export default {
   data () {
     return {
+      wearerDeviceId:'',
+      appuserId:'',
       messages: [
         {
           title: 'SOS报警',
@@ -89,12 +91,35 @@ export default {
       ]
     }
   },
+  created(){
+    var usernames = localStorage.getItem(('user') || '{}') 
+    var userx = (JSON.parse(usernames) || '{}')
+    this.appuserId = userx.appuserId;
+    this.wearerDeviceId=userx.wearerDeviceId;
+    var device = localStorage.getItem(('device') || '{}') 
+    localStorage.getItem('device')
+    console.log(this.wearerDeviceId)
+    this.information()
+  },
   methods: {
+    information(){
+     this.$http
+        .get(`${config.httpBaseUrl}/Alarminformation/get`, {
+          params: {
+            appuserId: this.appuserId,
+            wearerDeviceId:this.wearerDeviceId,
+          }
+        })
+        .then(res => {
+          if (res.code === 200) {
+            this.devices = res.date.wearers
+          }
+        })
+    },
     back () {
       this.$router.push({ name: 'MyPage'})
     },
     handleChange (e) {
-      console.log(0)
     }
   }
 }
