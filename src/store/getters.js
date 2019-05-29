@@ -10,6 +10,12 @@ const getters = {
   },
   getDevicePosition (state) {
     return state.devicePosition
+  },
+  getCurrentDevicen (state) {
+    return state.currentDevice.wearerDeviceId
+  },
+  getUser (state) {
+    return state.user
   }
 }
 

@@ -6,33 +6,34 @@
       <img src='@/assets/icon/home/新增IC.png' class="add" @click='handleAddAlarm'/>
     </div>
     <div class="content">
-        <ul v-if='alarms.length'>
-          <li
-            class="alarm_item"
-            v-for='(item, index) in alarms'
-            :key='index'
-            @touchstart='touchstart($event, item, index)'
-            @touchend='touchend'
-            @touchmove='touchmove'>
-            <div class="info">
-              <p class="head">{{item.alarmlockDate}}</p>
-              <p class="desc">
-                <span>{{item.alarmclockRemarks|| '无'}}:</span>
-                <template v-if='item.date.length>1'>
-                  <span v-if='item.date[0]=="1"' class="time">周日</span>
-                  <span v-if='item.date[1]=="1"' class="time">周一</span>
-                  <span v-if='item.date[2]=="1"' class="time">周二</span>
-                  <span v-if='item.date[3]=="1"' class="time">周三</span>
-                  <span v-if='item.date[4]=="1"' class="time">周四</span>
-                  <span v-if='item.date[5]=="1"' class="time">周五</span>
-                  <span v-if='item.date[6]=="1"' class="time">周六</span>
-                </template>
-                <span v-else class="title">{{item.date[0]}}</span>
-              </p>
-            </div>
-            <mt-switch @change='changeStatus(item, index)' :value="item.alarmclockStatus"></mt-switch>
-          </li>
-        </ul>
+      <ul v-if='alarms.length'>
+        <li
+          class="alarm_item"
+          v-for='(item, index) in alarms'
+          :key='index'
+          @touchstart='touchstart($event, item, index)'
+          @touchend='touchend'
+          @touchmove='touchmove'>
+          <div class="info">
+            <p class="head">{{item.alarmlockDate}}</p>
+            <p class="desc">
+              <span>{{item.alarmclockRemarks|| '无'}}:</span>
+              <template v-if='item.date.length>1'>
+                <span v-if='item.date[0]=="1"' class="time">周日</span>
+                <span v-if='item.date[1]=="1"' class="time">周一</span>
+                <span v-if='item.date[2]=="1"' class="time">周二</span>
+                <span v-if='item.date[3]=="1"' class="time">周三</span>
+                <span v-if='item.date[4]=="1"' class="time">周四</span>
+                <span v-if='item.date[5]=="1"' class="time">周五</span>
+                <span v-if='item.date[6]=="1"' class="time">周六</span>
+              </template>
+              <span v-else class="title">{{item.date[0]}}</span>
+            </p>
+          </div>
+          <mt-switch @change='changeStatus(item, index)' :value="item.alarmclockStatus"></mt-switch>
+        </li>
+      </ul>
+      <!-- <div class='no_contact' v-else>还没有添加闹钟</div> -->
       <div class="action" ref='action'>
         <p class="editor" @click.stop='editorAlarm'>编辑</p>
         <p @click.stop='delAlarm'>删除</p>
@@ -250,7 +251,6 @@ export default {
       clearTimeout(this.time)
     },
     touchmove () {
-      console.log(1)
       clearTimeout(this.time)
     },
     // 展示操作窗口
@@ -334,6 +334,7 @@ export default {
         message: '操作成功',
         iconClass: 'icon icon-success'
       })
+      this.hideAction()
     },
     // 改变闹钟状态
     changeStatus (item, index) {
@@ -379,6 +380,12 @@ export default {
     top: 1.44rem;
     bottom: 0;
     width: 100vw;
+    .no_contact {
+      margin-top: 50px;
+      font-size: .4rem;
+      text-align: center;
+      color: red;
+    }
     .alarm_item {
       display: flex;
       padding: 0 .5rem;

@@ -10,6 +10,12 @@ const mutations = {
   },
   setDevicePosition (state, position) {
     state.devicePosition = position
+  },
+  setCurrentDevice (state, device) {
+    state.currentDevice = device
+  },
+  setUser (state, user) {
+    state.user = user
   }
 }
 
