@@ -68,9 +68,9 @@ export default {
         // }
       ],
       data:{
-        id:"9512494667", 
-        keyWord:"PHB2",
-        phoneBook:[] 
+        id: JSON.parse(localStorage.getItem('device')).wearerDeviceId, 
+        keyWord: 'PHB2',
+        phoneBook: [] 
       },
       title: {
         add: '新增电话本',
@@ -93,15 +93,15 @@ export default {
   methods: {
     //查询所有电话本
     Enquirydirectory(){
-       this.$http.get(`${config.httpBaseUrl}/phonebook/getAll`,{
-              params: {
-                 wearerDeviceId:"9512494667",
-                }
-            }).then(res => {
-            if (res.code === 200) {
-                this.contacts=res.date.Phonebook;
-            }
-           });
+      this.$http.get(`${config.httpBaseUrl}/phonebook/getAll`, {
+        params: {
+          wearerDeviceId: JSON.parse(localStorage.getItem('device')).wearerDeviceId
+        }
+      }).then(res => {
+        if (res.code === 200) {
+          this.contacts=res.date.Phonebook;
+        }
+      })
     },
     closePhoneBook () {
       this.$router.go(-1)
@@ -122,7 +122,7 @@ export default {
           }
         }
         this.data.phoneBook.push(personInfo),
-        this.$http.post(`${config.httpBaseUrl}/Appcommand/command`,this.data).then(res => {
+        this.$http.post(`${config.httpBaseUrl}/Appcommand/command`, this.data).then(res => {
         if (res.code === 200) {
           this.Enquirydirectory();
           }

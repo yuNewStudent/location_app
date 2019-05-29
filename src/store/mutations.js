@@ -7,6 +7,9 @@ const mutations = {
   },
   setStep (state, stepInfo) {
     state.step = stepInfo
+  },
+  setDevicePosition (state, position) {
+    state.devicePosition = position
   }
 }
 

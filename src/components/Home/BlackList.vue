@@ -114,9 +114,10 @@ export default {
   methods: {
      // 获取添加闹钟
     disturblist () {
+      const wearerDeviceId = JSON.parse(localStorage.getItem('device')).wearerDeviceId
       this.$http.get(`${config.httpBaseUrl}/nod/getAll`, {
         params: {
-          wearerDeviceId: localStorage.getItem('deviceId')
+          wearerDeviceId
         }
       }).then(res => {
         if (res.code === 200) {
@@ -140,7 +141,7 @@ export default {
         })
       }
       const data = {
-        id:9611812844,
+        id: JSON.parse(localStorage.getItem('device')).wearerDeviceId,
         keyWord: "SILENCETIME",
         currency1: this.newBlackList.start_time + '-' + this.newBlackList.end_time,
       }

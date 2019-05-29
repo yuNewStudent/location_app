@@ -6,7 +6,7 @@
       <img src='@/assets/icon/home/新增IC.png' class="add" @click='handleAddAlarm'/>
     </div>
     <div class="content">
-        <ul>
+        <ul v-if='alarms.length'>
           <li
             class="alarm_item"
             v-for='(item, index) in alarms'
@@ -153,7 +153,12 @@ export default {
     Slider
   },
   created () {
-    this.$http.get(`${config.httpBaseUrl}/alar/getAll?wearerDeviceId=9611812844`).then(res => {
+    const data = {
+      wearerDeviceId: JSON.parse(localStorage.getItem('device')).wearerDeviceId
+    }
+    this.$http.get(`${config.httpBaseUrl}/alar/getAll`, {
+      params: data
+    }).then(res => {
       if (res.code === 200) {
         res.date.alarmclock.forEach(item => {
           if (item.alarmclockStatus === 0) {
@@ -208,7 +213,7 @@ export default {
         const data = {
           alarmlockDate: this.alarmTime,
           alarmclockWeek: alarmclockWeek,
-          alarmclockWearerId: localStorage.getItem('deviceId'),
+          alarmclockWearerId: JSON.parse(localStorage.getItem('device')).wearerDeviceId,
           alarmclockRemarks: this.alarmName,
           alarmclockStatus: 1,
           key: 'REMIND'

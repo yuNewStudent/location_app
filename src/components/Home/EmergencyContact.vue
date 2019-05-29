@@ -75,7 +75,7 @@ export default {
     getEmergency () {
       this.$http.get(`${config.httpBaseUrl}/sos/getAll`,{
         params: {
-          wearerDeviceId: localStorage.getItem('deviceId')
+          wearerDeviceId: JSON.parse(localStorage.getItem('device')).wearerDeviceId
         }
       }).then(res => {
         if (res.code === 200) {

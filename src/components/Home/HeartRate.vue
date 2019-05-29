@@ -155,7 +155,7 @@ export default {
     // 获取一周心率
     getWeekHearthRate () {
       const data = {
-        wearerDeviceId: localStorage.deviceId
+        wearerDeviceId: JSON.parse(localStorage.getItem('device')).wearerDeviceId
       }
       this.$http.get(`${config.httpBaseUrl}/health/getweek`, {
         params: data

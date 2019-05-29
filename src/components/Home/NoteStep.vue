@@ -163,26 +163,26 @@ export default {
       }
     },
     // 获取一周脚步
-    getWeekStep () {
-      const data = {
-        wearerDeviceId: localStorage.deviceId,
-        // this.moment(new Date()).format('YYYY-MM-DD')
-      }
-      this.$http.get(`${config.httpBaseUrl}/step/get`, {
-        params: data
-      }).then(res => {
-        if (res.code === 200) {
-          res.date.healths.forEach((item, index) => {
-            if (item) {
-              this.allStep.push(item.step)
-            } else {
-              this.allStep.push('')
-            }
-          })
-          this.initChart()
-        }
-      })
-    }
+    // getWeekStep () {
+    //   const data = {
+    //     wearerDeviceId: JSON.parse(localStorage.getItem('device')).wearerDeviceId,
+    //     this.moment(new Date()).format('YYYY-MM-DD')
+    //   }
+    //   this.$http.get(`${config.httpBaseUrl}/step/get`, {
+    //     params: data
+    //   }).then(res => {
+    //     if (res.code === 200) {
+    //       res.date.healths.forEach((item, index) => {
+    //         if (item) {
+    //           this.allStep.push(item.step)
+    //         } else {
+    //           this.allStep.push('')
+    //         }
+    //       })
+    //       this.initChart()
+    //     }
+    //   })
+    // }
   }
 }
 </script>

@@ -50,7 +50,6 @@ export default {
   },
   computed: {
     headImg () {
-      console.log(JSON.parse(localStorage.getItem('user')).appuserImage)
       return JSON.parse(localStorage.getItem('user')).appuserImage || require('@/assets/icon/home/userImg.png')
     }
   },
@@ -91,6 +90,9 @@ export default {
       localStorage.setItem('device', JSON.stringify(device))
     },
     isActive (id) {
+      if (!localStorage.getItem('device')) {
+        return false
+      }
       return id === JSON.parse(localStorage.getItem('device')).wearerDeviceId
     }
   }

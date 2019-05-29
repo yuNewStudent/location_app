@@ -43,16 +43,6 @@
           <span>{{item.appuserNumber}}</span>
           <input name='sex' v-model='selectPer' :value="item.appuserId" type="radio">
         </p>
-        <!-- <p
-          class="per_item">
-          <span>wwwww</span>
-          <input name='sex' v-model='selectPer' :value="item.appuserId" type="radio">
-        </p>
-        <p
-          class="per_item">
-          <span>233333</span>
-          <input name='sex' v-model='selectPer' :value="item.appuserId" type="radio">
-        </p> -->
       </div>
     </message-page>
   </div>
@@ -167,7 +157,7 @@ export default {
       this.$http.get(`${config.httpBaseUrl}/appuser/delete`, {
         params: {
           wearerDeviceId: this.selectDevice.wearerDeviceId,
-          appuserId: this.selectPer
+          appuserId: this.appuserId
         }
       }).then(res => {
         console.log(res)
@@ -175,7 +165,7 @@ export default {
           message: '操作成功',
           iconClass: 'icon icon-success'
         })
-        this.devices.splice(this.selectPerson.index, 1)
+        this.devices.splice(this.selectDevice.index, 1)
       })
     },
     // 关闭权限设置

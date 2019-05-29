@@ -7,6 +7,9 @@ const getters = {
   },
   getStep (state) {
     return state.step
+  },
+  getDevicePosition (state) {
+    return state.devicePosition
   }
 }
 

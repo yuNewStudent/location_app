@@ -55,13 +55,12 @@ export default {
     }
   },
   methods: {
-    Modify(){
+    Modify () {
       if(this.userInfo.password==this.userInfo.repassword){
         const data = {
-          appuserNumber:this.userInfo.name,
-          appuserPassword:this.userInfo.password
+          appuserNumber: this.userInfo.name,
+          appuserPassword: this.userInfo.password
         }
-        console.log(data)
         this.$http.post(`${config.httpBaseUrl}/appuser/changePassword`, data).then(res => {
           if (res.code === 200) {
             this.$router.push({

@@ -130,11 +130,12 @@ export default {
             })
           }
         }
+        const wearerDeviceId = JSON.parse(localStorage.getItem('device')).wearerDeviceId
         const data = {
           startTime: this.pickerVisible.startTime.slice(0, 2),
           endTime: this.pickerVisible.endTime.slice(0, 2),
           date: this.pickerVisible.date,
-          userId: 9512494668
+          userId: wearerDeviceId
         }
         this.$http.get(`${config.httpBaseUrl}/map/getAll`, {
           params: data
@@ -156,7 +157,6 @@ export default {
           return clearInterval(this.timer)
         }
         var path = []
-        console.log(i)
         this.map.setZoomAndCenter(15, [this.routes[i].longitude, this.routes[i].latitude])
         this.translateGps(this.routes[i].longitude, this.routes[i].latitude).then(data => {
           path.push(new AMap.LngLat(data[0].lng, data[0].lat))
@@ -258,11 +258,12 @@ export default {
       }
       this.map && this.map.clearMap()
       this.polyline && this.map.remove(this.polyline)
+      const wearerDeviceId = JSON.parse(localStorage.getItem('device')).wearerDeviceId
       const data = {
         startTime: this.pickerVisible.startTime.slice(0, 2),
         endTime: this.pickerVisible.endTime.slice(0, 2),
         date: this.pickerVisible.date,
-        userId: 9512494668
+        userId: wearerDeviceId
       }
       this.$http.get(`${config.httpBaseUrl}/map/getAll`, {
         params: data

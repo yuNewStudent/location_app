@@ -202,8 +202,8 @@ export default {
           }
         }
         var date = {
-          appuserNumber:personInfo.appuserNumber,
-          appuserPassword:personInfo.appuserPassword
+          appuserNumber: personInfo.appuserNumber,
+          appuserPassword: personInfo.appuserPassword
         }
         this.$http.post(`${config.httpBaseUrl}/appuser/changePassword`, date).then(res => {
           if (res.code === 200) {
@@ -241,8 +241,8 @@ export default {
       }).then((val) => {
          this.$http
             .post(`${config.httpBaseUrl}/appuser/updatenumber`, {
-                appuserNumber: val.value,
-                appuserId:this.appuserId
+              appuserNumber: val.value,
+              appuserId: this.appuserId
             })
             .then(res => {
               if (res.code === 200) {

@@ -26,6 +26,7 @@ import AMap from 'AMap'
 import HeaderPage from '@/components/Header'
 import FencePage from '@/components/Location/Fence'
 import RoutePage from '@/components/Location/Route'
+import { mapGetters, mapMutations } from 'vuex'
 export default {
   data () {
     return {
@@ -42,15 +43,25 @@ export default {
     RoutePage
   },
   created () {
-    this.getDeviceInfo()
     this.timer = setInterval(() => {
       this.getDeviceInfo()
     }, 60000)
     this.$nextTick(() => {
       this.initMap()
+      // 在地图上定位设备
+      this.posDevice()
     })
   },
+  computed: {
+    ...mapGetters(['getDevicePosition'])
+  },
+  watch: {
+    getDevicePosition () {
+      this.posDevice()
+    }
+  },
   methods: {
+    ...mapMutations(['setDevicePosition']),
     // 初始化地图
     initMap () {
       this.map = new AMap.Map('container', {
@@ -83,34 +94,43 @@ export default {
     },
     // 信息窗体
     openInfo (lng, lat) {
-      this.getAddress(lng, lat).then(data => {
-        // 构建信息窗体中显示的内容
-        let info = `
-          <div style='font-size:.24rem; width: 5rem'>
-            当前位置：<span>${data}</span>
-          <div>`
-        let infoWindow = new AMap.InfoWindow({
-          // 使用默认信息窗体框样式，显示信息内容
-          content: info,
-          offset: new AMap.Pixel(5, -30)
-        })
-        infoWindow.open(this.map, this.map.getCenter())
+      // 构建信息窗体中显示的内容
+      let info = `
+        <div style='font-size:.24rem; width: 5rem'>
+          当前位置：<span>${this.getDevicePosition.address}</span>
+        <div>`
+      let infoWindow = new AMap.InfoWindow({
+        // 使用默认信息窗体框样式，显示信息内容
+        content: info,
+        offset: new AMap.Pixel(5, -30)
       })
+      infoWindow.open(this.map, this.map.getCenter())
     },
-    // 获取设备信息
+    // 在地图上定位设备
+    posDevice () {
+      const lng = this.getDevicePosition.lng
+      const lat = this.getDevicePosition.lat
+      this.map.setZoomAndCenter(1, [lng, lat])
+      this.drawMarker(lng, lat)
+      this.openInfo(lng, lat)
+    },
+    // 获取当前位置
     getDeviceInfo () {
+      const wearerDeviceId = JSON.parse(localStorage.getItem('device')).wearerDeviceId
       this.$http.get(`${config.httpBaseUrl}/map/getMapuser`, {
         params: {
-          userId: 9512494668
+          userId: wearerDeviceId
         }
       }).then(res => {
         if (res.code === 200) {
-          this.DeviceInfo = res.date.pos
           // 绘制当前人
-          this.translateGps(this.DeviceInfo.locationBean.longitude, this.DeviceInfo.locationBean.latitude).then(data => {
-            this.map.setZoomAndCenter(14, [data[0].lng, data[0].lat])
-            this.drawMarker(data[0].lng, data[0].lat)
-            this.openInfo(data[0].lng, data[0].lat)
+          this.translateGps(res.date.pos.locationBean.longitude, res.date.pos.locationBean.latitude).then(data => {
+            this.deviceInfo.lng = data[0].lng
+            this.deviceInfo.lat = data[0].lat
+            this.getAddress(data[0].lng, data[0].lat).then(data => {
+              this.deviceInfo.address = data
+              this.setDevicePosition(this.deviceInfo)
+            })
           })
         }
       })
@@ -120,11 +140,14 @@ export default {
       const lnglat = [lng, lat]
       return new Promise((resolve, reject) => {
         this.geocoder.getAddress(lnglat, (status, result) => {
+          console.log(status, result)
           if (status === 'complete' && result.regeocode) {
             // address = result.regeocode.formattedAddress
             resolve(result.regeocode.formattedAddress)
           } else {
-            alert(JSON.stringify(result))
+            this.deviceInfo.address = '无信息'
+            this.setDevicePosition(this.deviceInfo)
+            return
           }
         })
       })

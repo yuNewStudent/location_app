@@ -24,7 +24,7 @@
           </ul>
         </div>
         <div class="current_address">
-          <img src="@/assets/icon/home/定位IC.png" alt="">成都市武侯区桂溪街道基泰路112OCG国际中心
+          <img src="@/assets/icon/home/定位IC.png" alt="">{{deviceInfo.address || '请选择设备'}}
         </div>
         <ul class="information">
           <router-link tag='li' to='/homepage/notestep' class="information_item">
@@ -109,13 +109,20 @@ import Slider from '@/components/scroll'
 import HeaderPage from '@/components/Header'
 import { mapMutations, mapGetters } from 'vuex'
 import { Toast } from 'mint-ui'
+import AMap from 'AMap'
 export default {
   data () {
     return {
       head_title: '首页',
       heart: [],
       blood: [],
-      currentStep: {}
+      currentStep: {},
+      geocoder: null,
+      deviceInfo: {
+        address: '',
+        lng: '',
+        lat: ''
+      }
     }
   },
   components: {
@@ -123,18 +130,25 @@ export default {
     HeaderPage
   },
   created () {
+    AMap.plugin(['AMap.Geocoder'], () => {
+      this.geocoder = new AMap.Geocoder({
+        radius: 1000,
+        extensions: 'all'
+      })
+    })
     this.getHearthRate()
     this.getStep()
+    this.getDeviceInfo()
   },
   computed: {
     ...mapGetters(['getHeart'])
   },
   methods: {
-    ...mapMutations(['setHeart', 'setBlood', 'setStep']),
+    ...mapMutations(['setHeart', 'setBlood', 'setStep', 'setDevicePosition']),
     // 获取心率and血压
     getHearthRate () {
       const data = {
-        wearerDeviceId: localStorage.deviceId,
+        wearerDeviceId: JSON.parse(localStorage.getItem('device')).wearerDeviceId,
         date: this.moment(new Date()).format('YYYY-MM-DD')
       }
       this.$http.get(`${config.httpBaseUrl}/health/getAll`, {
@@ -169,7 +183,7 @@ export default {
     // 获取步数
     getStep () {
       const data = {
-        wearerDeviceId: localStorage.deviceId,
+        wearerDeviceId: JSON.parse(localStorage.getItem('device')).wearerDeviceId,
         // date: this.moment(new Date()).format('YYYY-MM-DD')
       }
       this.$http.get(`${config.httpBaseUrl}/step/get`, {
@@ -182,6 +196,55 @@ export default {
           }
           this.setStep(this.currentStep)
         }
+      })
+    },
+    // 获取当前位置
+    getDeviceInfo () {
+      const wearerDeviceId = JSON.parse(localStorage.getItem('device')).wearerDeviceId
+      this.$http.get(`${config.httpBaseUrl}/map/getMapuser`, {
+        params: {
+          userId: wearerDeviceId
+        }
+      }).then(res => {
+        if (res.code === 200) {
+          // 绘制当前人
+          this.translateGps(res.date.pos.locationBean.longitude, res.date.pos.locationBean.latitude).then(data => {
+            this.deviceInfo.lng = data[0].lng
+            this.deviceInfo.lat = data[0].lat
+            this.getAddress(data[0].lng, data[0].lat).then(data => {
+              this.deviceInfo.address = data
+              this.setDevicePosition(this.deviceInfo)
+            })
+          })
+        }
+      })
+    },
+    // 根据经纬度获取地址
+    getAddress (lng, lat) {
+      const lnglat = [lng, lat]
+      return new Promise((resolve, reject) => {
+        this.geocoder.getAddress(lnglat, (status, result) => {
+          console.log(status, result)
+          if (status === 'complete' && result.regeocode) {
+            // address = result.regeocode.formattedAddress
+            resolve(result.regeocode.formattedAddress)
+          } else {
+            this.deviceInfo.address = '无信息'
+            this.setDevicePosition(this.deviceInfo)
+            return
+          }
+        })
+      })
+    },
+    // gps转高德坐标
+    translateGps (lng, lat) {
+      const gps = [lng, lat]
+      return new Promise((resolve, reject) => {
+        AMap.convertFrom(gps, 'gps', (status, result) => {
+          if (result.info === 'ok') {
+            resolve(result.locations)
+          }
+        })
       })
     }
   }
