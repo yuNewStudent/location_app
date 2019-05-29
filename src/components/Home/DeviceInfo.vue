@@ -121,7 +121,6 @@ export default {
         wearerDeviceId,
         ...this.deviceInfo
       }
-      return
       // 判断不能为空
       for (let k in data) {
         if (!data[k]) {
