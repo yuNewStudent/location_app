@@ -230,6 +230,7 @@ export default {
         message: '删除成功',
         iconClass: 'icon icon-success'
       })
+      this.hideAction()
     }
   }
 }

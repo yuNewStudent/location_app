@@ -3,7 +3,7 @@
     <div class="home_header">我的</div>
     <div class="user">
       <p class="head_img">
-        <img src="@/assets/icon/home/userImg.png" alt="">
+        <img ref='headImg' :src="headImg" alt="">
       </p>
       <p class="user_name">{{username||"无"}}</p>
     </div>
@@ -41,19 +41,20 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 export default {
   data () {
     return {
-      username: ''
+      // username: ''
     }
   },
-  created () {
-    var usernames = localStorage.getItem(('user')||'{}')
-    var userx = (JSON.parse(usernames)||'{}')
-    if(userx === '{}'){
-      this.username = ''
-    }else{
-      this.username = userx.appuserNumber
+  computed: {
+    ...mapGetters(['getUser']),
+    headImg () {
+      return this.getUser.appuserImage || require('@/assets/icon/home/userImg.png')
+    },
+    username () {
+      return this.getUser.appuserNumber
     }
   }
 }

@@ -17,7 +17,7 @@
         <div class="canvas_wrapper"><canvas id="canvas"></canvas></div>
         <div class="desc">
           <p class="step_title">今日步数</p>
-          <p class="step_num">{{currentStep}}</p>
+          <p class="step_num">{{currentStep}}步</p>
         </div>
       </div>
       <div class="all_day">
@@ -43,7 +43,8 @@ export default {
     }
   },
   mounted () {
-    // this.getWeekStep()
+    this.currentStep = this.getStep.stepCount
+    this.getWeekStep()
     this.$nextTick(() => {
       this.drawChart()
     })
@@ -63,9 +64,7 @@ export default {
       const today = new Date().getDay()
       if (type === 'step') {
         let allStep = Object.assign([], this.allStep)
-        const a = allStep.splice(0, 1)
-        allStep = allStep.concat(a)
-        return allStep
+        return allStep.reverse()
       }
       if (type === 'week') {
         let week = ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
@@ -103,7 +102,7 @@ export default {
         },
         xAxis: {
           type: 'category',
-          data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
+          data: this.getChartDate('week')
         },
         yAxis: {
           type: 'value'
@@ -125,7 +124,7 @@ export default {
               }
             }
           },
-          data: [820, 932, 901, 934, 1290, 1330, 1320],
+          data: this.getChartDate('step'),
           type: 'bar',
           barWidth: 15
         }]
@@ -163,26 +162,26 @@ export default {
       }
     },
     // 获取一周脚步
-    // getWeekStep () {
-    //   const data = {
-    //     wearerDeviceId: JSON.parse(localStorage.getItem('device')).wearerDeviceId,
-    //     this.moment(new Date()).format('YYYY-MM-DD')
-    //   }
-    //   this.$http.get(`${config.httpBaseUrl}/step/get`, {
-    //     params: data
-    //   }).then(res => {
-    //     if (res.code === 200) {
-    //       res.date.healths.forEach((item, index) => {
-    //         if (item) {
-    //           this.allStep.push(item.step)
-    //         } else {
-    //           this.allStep.push('')
-    //         }
-    //       })
-    //       this.initChart()
-    //     }
-    //   })
-    // }
+    getWeekStep () {
+      const data = {
+        wearerDeviceId: JSON.parse(localStorage.getItem('device')).wearerDeviceId
+      }
+      this.$http.get(`${config.httpBaseUrl}/step/getweek`, {
+        params: data
+      }).then(res => {
+        if (res.code === 200) {
+          console.log(res.date.steps)
+          res.date.steps.forEach((item, index) => {
+            if (item) {
+              this.allStep.push(item.stepCount)
+            } else {
+              this.allStep.push('0')
+            }
+          })
+          this.initChart()
+        }
+      })
+    }
   }
 }
 </script>

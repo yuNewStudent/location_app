@@ -54,6 +54,7 @@
 <script>
 import { Actionsheet, Toast, MessageBox } from 'mint-ui'
 import ChangePassword from '@/components/my/changenumber'
+import { mapMutations } from 'vuex'
 export default {
   data () {
     return {
@@ -87,10 +88,11 @@ export default {
     this.getinformation()
   },
   methods: {
+    ...mapMutations(['setUser']),
     touchend () {
     },
     // 查询用户信息
-    getinformation(){
+    getinformation () {
       this.$http.get(`${config.httpBaseUrl}/appuser/get`, {
         params: {
           appuserId: this.appuserId
@@ -106,6 +108,7 @@ export default {
             appuserNumber: this.appuserNumber,
             appuserId: res.date.appuser.appuserId
           }
+          this.setUser(userInfo)
           localStorage.setItem('user', JSON.stringify(userInfo))
         }
       })
@@ -143,7 +146,6 @@ export default {
               message: '操作成功',
               iconClass: 'icon icon-success'
             })
-          }else{
           }
         })
       }, () => {
@@ -158,7 +160,6 @@ export default {
       var file = e.target.files[0]
       var reader = new FileReader()
       reader.onload = function (e) {
-        console.log(e.target.result)
         that.appuserImage  = e.target.result
         that.upload(that.appuserImage)
       }
@@ -169,18 +170,16 @@ export default {
         appuserImage: url,
         appuserId: this.appuserId
       }).then(res => {
-        console.log(res)
-        // if (res.code === 200) {
-        //   Toast({
-        //     message: '头像修改成功',
-        //     iconClass: 'icon icon-success'
-        //   })
-        //   this.getinformation()
-        // }
+        if (res.code === 200) {
+          Toast({
+            message: '头像修改成功',
+            iconClass: 'icon icon-success'
+          })
+          this.getinformation()
+        }
       })
     },
     AddContact (bol, personInfo) {
-      console.log(personInfo)
       this.isShowAddPhoneBook = false
       if (bol) {
         for (var k in personInfo) {

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <header-page :title='head_title'></header-page>
+    <header-page @changeDevice='changeDevice' :title='head_title'></header-page>
     <slider class="home_page">
       <div class="content">
         <div class="setting">
@@ -24,7 +24,7 @@
           </ul>
         </div>
         <div class="current_address">
-          <img src="@/assets/icon/home/定位IC.png" alt="">{{deviceInfo.address || '请选择设备'}}
+          <img src="@/assets/icon/home/定位IC.png" alt="">{{deviceInfo.address || '无信息'}}
         </div>
         <ul class="information">
           <router-link tag='li' to='/homepage/notestep' class="information_item">
@@ -39,7 +39,7 @@
               <div class="desc">
                 <p class="time">更新时间：{{currentStep.stepDate?currentStep.stepDate:'无'}}</p>
                 <p class="step">
-                  <span>{{currentStep.stepCount?currentStep.stepCount:'无'}}步</span>
+                  <span>{{currentStep.stepCount?currentStep.stepCount:'0'}}步</span>
                   <!-- <span>距离5.3KM</span> -->
                 </p>
               </div>
@@ -145,22 +145,19 @@ export default {
   },
   methods: {
     ...mapMutations(['setHeart', 'setBlood', 'setStep', 'setDevicePosition']),
+    getWearerDeviceId () {
+      return JSON.parse(localStorage.getItem('device')).wearerDeviceId
+    },
     // 获取心率and血压
     getHearthRate () {
       const data = {
-        wearerDeviceId: JSON.parse(localStorage.getItem('device')).wearerDeviceId,
+        wearerDeviceId: this.getWearerDeviceId(),
         date: this.moment(new Date()).format('YYYY-MM-DD')
       }
       this.$http.get(`${config.httpBaseUrl}/health/getAll`, {
         params: data
       }).then(res => {
         if (res.code === 200) {
-          // if (!res.date.healths.length) {
-          //   return Toast({
-          //     message: '无数据',
-          //     iconClass: 'icon icon-success'
-          //   })
-          // }
           res.date.healths.forEach((item, index) => {
             this.heart.push({
               healthDate: item.healthDate,
@@ -183,8 +180,8 @@ export default {
     // 获取步数
     getStep () {
       const data = {
-        wearerDeviceId: JSON.parse(localStorage.getItem('device')).wearerDeviceId,
-        // date: this.moment(new Date()).format('YYYY-MM-DD')
+        wearerDeviceId: this.getWearerDeviceId(),
+        date: this.moment(new Date()).format('YYYY-MM-DD')
       }
       this.$http.get(`${config.httpBaseUrl}/step/get`, {
         params: data
@@ -192,7 +189,7 @@ export default {
         if (res.code === 200) {
           this.currentStep = {
             stepDate: res.date.step ? res.date.step.stepDate : '无',
-            stepCount: res.date.step ? res.date.step.stepCount : '无'
+            stepCount: res.date.step ? res.date.step.stepCount : '0'
           }
           this.setStep(this.currentStep)
         }
@@ -200,7 +197,7 @@ export default {
     },
     // 获取当前位置
     getDeviceInfo () {
-      const wearerDeviceId = JSON.parse(localStorage.getItem('device')).wearerDeviceId
+      const wearerDeviceId = this.getWearerDeviceId()
       this.$http.get(`${config.httpBaseUrl}/map/getMapuser`, {
         params: {
           userId: wearerDeviceId
@@ -208,6 +205,15 @@ export default {
       }).then(res => {
         if (res.code === 200) {
           // 绘制当前人
+          if (!res.date.pos) {
+            this.deviceInfo = {
+              address: '无信息',
+              lng: '0.0',
+              lat: '0.0'
+            }
+            this.setDevicePosition(this.deviceInfo)
+            return
+          }
           this.translateGps(res.date.pos.locationBean.longitude, res.date.pos.locationBean.latitude).then(data => {
             this.deviceInfo.lng = data[0].lng
             this.deviceInfo.lat = data[0].lat
@@ -246,6 +252,12 @@ export default {
           }
         })
       })
+    },
+    // 改变了选中设备，重新获取数据
+    changeDevice () {
+      this.getHearthRate()
+      this.getStep()
+      this.getDeviceInfo()
     }
   }
 }

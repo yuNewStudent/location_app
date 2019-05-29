@@ -44,7 +44,8 @@ export default {
   },
   created () {
     this.timer = setInterval(() => {
-      this.getDeviceInfo()
+      const wearerDeviceId = JSON.parse(localStorage.getItem('device')).wearerDeviceId
+      this.getDeviceInfo(wearerDeviceId)
     }, 60000)
     this.$nextTick(() => {
       this.initMap()
@@ -53,11 +54,14 @@ export default {
     })
   },
   computed: {
-    ...mapGetters(['getDevicePosition'])
+    ...mapGetters(['getDevicePosition', 'getCurrentDevicen'])
   },
   watch: {
-    getDevicePosition () {
+    getDevicePosition (value) {
       this.posDevice()
+    },
+    getCurrentDevicen (value) {
+      this.getDeviceInfo(value)
     }
   },
   methods: {
@@ -115,8 +119,7 @@ export default {
       this.openInfo(lng, lat)
     },
     // 获取当前位置
-    getDeviceInfo () {
-      const wearerDeviceId = JSON.parse(localStorage.getItem('device')).wearerDeviceId
+    getDeviceInfo (wearerDeviceId) {
       this.$http.get(`${config.httpBaseUrl}/map/getMapuser`, {
         params: {
           userId: wearerDeviceId
@@ -124,12 +127,22 @@ export default {
       }).then(res => {
         if (res.code === 200) {
           // 绘制当前人
+          if (!res.date.pos) {
+            this.deviceInfo = {
+              address: '无信息',
+              lng: '0.0',
+              lat: '0.0'
+            }
+            this.setDevicePosition(this.deviceInfo)
+            return
+          }
           this.translateGps(res.date.pos.locationBean.longitude, res.date.pos.locationBean.latitude).then(data => {
             this.deviceInfo.lng = data[0].lng
             this.deviceInfo.lat = data[0].lat
             this.getAddress(data[0].lng, data[0].lat).then(data => {
               this.deviceInfo.address = data
               this.setDevicePosition(this.deviceInfo)
+              this.posDevice()
             })
           })
         }
@@ -140,9 +153,7 @@ export default {
       const lnglat = [lng, lat]
       return new Promise((resolve, reject) => {
         this.geocoder.getAddress(lnglat, (status, result) => {
-          console.log(status, result)
           if (status === 'complete' && result.regeocode) {
-            // address = result.regeocode.formattedAddress
             resolve(result.regeocode.formattedAddress)
           } else {
             this.deviceInfo.address = '无信息'

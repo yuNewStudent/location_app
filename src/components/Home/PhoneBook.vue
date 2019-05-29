@@ -6,7 +6,7 @@
       <img src='@/assets/icon/home/新增IC.png' class="add" @click='handleAddContact'/>
     </div>
     <div class="content">
-      <ul>
+      <ul v-if='contacts.length'>
         <li
           class="contact_item"
           v-for='(item, index) in contacts'
@@ -22,6 +22,7 @@
           <!-- <span class="del">删除</span> -->
         </li>
       </ul>
+      <div class='no_contact' v-else>还没有添加电话本</div>
       <div class="action" ref='action'>
         <p class="editor" @click.stop='showEditorContact'>编辑</p>
         <p @click.stop='delContact'>删除</p>
@@ -227,6 +228,12 @@ export default {
     bottom: 0;
     width: 100vw;
     overflow: auto;
+    .no_contact {
+      margin-top: 50px;
+      font-size: .4rem;
+      text-align: center;
+      color: red;
+    }
     .contact_item {
       padding: 0 10px;
       height: 1rem;

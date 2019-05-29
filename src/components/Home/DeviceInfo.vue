@@ -6,8 +6,9 @@
     </div>
     <div class="content">
       <p class="title">
-        <img class='headImg' :src="deviceInfo.wearerImage?deviceInfo.wearerImage:require('@/assets/icon/home/userImg.png')" alt="">
-       <input type="file" name="" style=" position: absolute;
+        <span v-if='!deviceInfo.wearerImage' class="">请上传头像</span>
+        <img v-else class='headImg' :src="deviceInfo.wearerImage" alt="">
+        <input type="file" name="" style=" position: absolute;
             top:55px;
             right: 0;
             width: 100%;
@@ -87,6 +88,7 @@ export default {
     }
   },
   created () {
+    console.log(this.code)
     var usernames = localStorage.getItem(('user') || '{}')
     var userx = (JSON.parse(usernames) || '{}')
     this.deviceInfo.wearerAppuserId = userx.appuserId
@@ -188,6 +190,7 @@ export default {
     .title {
       display: flex;
       justify-content: space-between;
+      height: 30px;
       .headImg {
         width: .7rem;
         height: .7rem;

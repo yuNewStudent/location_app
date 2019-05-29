@@ -27,6 +27,7 @@
 
 <script>
 import { Switch, Toast, DatetimePicker } from 'mint-ui'
+import { mapMutations } from 'vuex'
 export default {
   name: 'login',
   data () {
@@ -41,7 +42,8 @@ export default {
     }
   },
   methods: {
-     checkInputName(){ 
+    ...mapMutations(['setUser']),
+    checkInputName(){ 
       // 判断是全为汉字
       var regex = /^[\u4E00-\u9FA5]+$/
       var name = this.userInfo.name
@@ -76,6 +78,7 @@ export default {
               }
             }).then(res => {
             if (res.code === 200) {
+              this.setUser(res.date.appuser)
               localStorage.setItem('user', JSON.stringify(res.date.appuser))
               this.$router.push({
                 name: 'Home'

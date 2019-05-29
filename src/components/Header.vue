@@ -62,11 +62,13 @@ export default {
     this.querylist()
   },
   computed: {
+    ...mapGetters(['getUser']),
     headImg () {
-      return JSON.parse(localStorage.getItem('user')).appuserImage || require('@/assets/icon/home/userImg.png')
+      return this.getUser.appuserImage || require('@/assets/icon/home/userImg.png')
     }
   },
   methods: {
+    ...mapMutations(['setCurrentDevice']),
     querylist () {
       this.$http
         .get(`${config.httpBaseUrl}/wearer/getAll`, {
@@ -121,12 +123,15 @@ export default {
     },
     // 选择手表
     selectDevice (device, index) {
+      localStorage.setItem('device', JSON.stringify(device))
+      this.setCurrentDevice(device)
       let devices = document.getElementsByClassName('device_item')
       for (var i = 0; i < devices.length; i++) {
         devices[i].classList.remove('active')
       }
       devices[index].classList.add('active')
-      localStorage.setItem('device', JSON.stringify(device))
+      this.isShowDeviceManage = false
+      this.$emit('changeDevice')
     },
     isActive (id) {
       if (!localStorage.getItem('device')) {

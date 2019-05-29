@@ -2,6 +2,8 @@ const state = {
   heart: [],
   blood: [],
   step: {},
-  devicePosition: {}
+  devicePosition: {},
+  currentDevice: {},
+  user: {}
 }
 export default state
