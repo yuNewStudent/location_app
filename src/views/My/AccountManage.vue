@@ -84,7 +84,6 @@ export default {
     var usernames = localStorage.getItem(('user') || '{}')
     var userx = (JSON.parse(usernames) || '{}')
     this.appuserId = userx.appuserId
-    console.log(userx, this.appuserId)
     this.getinformation()
   },
   methods: {
@@ -122,7 +121,8 @@ export default {
         message: '退出登陆',
         iconClass: 'icon icon-success'
       })
-      localStorage.removeItem('user') 
+      localStorage.removeItem('user')
+      this.setUser({})
       _this.$router.push({
         name: 'Login'
       })

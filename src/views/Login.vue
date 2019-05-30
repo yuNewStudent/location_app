@@ -27,7 +27,7 @@
 
 <script>
 import { Switch, Toast, DatetimePicker } from 'mint-ui'
-import { mapMutations } from 'vuex'
+import { mapMutations, mapGetters } from 'vuex'
 export default {
   name: 'login',
   data () {
@@ -40,6 +40,9 @@ export default {
       },
       NameStatus:'',
     }
+  },
+  computed: {
+    // ...mapMutations(['setUser'])
   },
   methods: {
     ...mapMutations(['setUser']),

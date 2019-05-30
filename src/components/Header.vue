@@ -35,9 +35,10 @@
 </template>
 
 <script>
-import AddDevice from "@/components/Home/AddDevice";
+import AddDevice from "@/components/Home/AddDevice"
 import DeviceIneditor from '@/components/Home/DeviceIneditor'
-import { Toast } from 'mint-ui';
+import { Toast } from 'mint-ui'
+import { mapGetters, mapMutations } from 'vuex'
 export default {
   props: ["title"],
   data() {
