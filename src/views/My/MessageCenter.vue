@@ -40,7 +40,7 @@
       </li> -->
       <li
         v-for='(item, index) in messages'
-        :key='index'v-if='item.length>0'>
+        :key='index' v-if='show==false'>
         <div class="content_item" v-for='(item, index) in item'
         :key='index'>
           <div class="content_item_wrapper" @click="read(item)">
@@ -127,12 +127,17 @@ export default {
         })
         .then(res => {
           if (res.code === 200) {
-            this.messages=res.date.alarminformations;
+            if(res.date.alarminformations.length>0){
+               this.messages=res.date.alarminformations;
+               this.show=false;
+            }else{
+
+            }
           }
         })
     },
     read(item){
-      console.log(item)
+      console.log(1);
         this.$http
         .get(`${config.httpBaseUrl}/Alarminformation/havread`, {
           params: {
