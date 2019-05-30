@@ -18,7 +18,7 @@
           <div class="current_wrapper">
             <p class="text">当前心率</p>
             <p class="num">{{currentHeart?currentHeart.healthUptodate:'无'}}<span>bpm</span></p>
-            <p class="active">远程测量</p>
+            <!-- <p class="active">远程测量</p> -->
           </div>
         </div>
         <p class="desc">

@@ -114,7 +114,7 @@ export default {
     posDevice () {
       const lng = this.getDevicePosition.lng
       const lat = this.getDevicePosition.lat
-      this.map.setZoomAndCenter(1, [lng, lat])
+      this.map.setZoomAndCenter(15, [lng, lat])
       this.drawMarker(lng, lat)
       this.openInfo(lng, lat)
     },

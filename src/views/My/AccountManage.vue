@@ -45,7 +45,7 @@
        <div @click='handleLogin' class="exitlogin">退出登陆</div>
     </div>
     <change-password
-      v-if='isShowAddPhoneBook'
+      v-if='isShowChangePassword'
       @addContact='AddContact'
       :title='title.add'></change-password>
   </div>
@@ -71,7 +71,7 @@ export default {
         password:'',
       },
       appuserNumber:'',
-      isShowAddPhoneBook: false,
+      isShowChangePassword: false,
       title: {
         add: '修改密码'
       }
@@ -87,7 +87,7 @@ export default {
     this.getinformation()
   },
   methods: {
-    ...mapMutations(['setUser']),
+    ...mapMutations(['setUser', 'setCurrentDevice']),
     touchend () {
     },
     // 查询用户信息
@@ -117,12 +117,10 @@ export default {
     },
     handleLogin () {
       var _this = this
-      Toast({
-        message: '退出登陆',
-        iconClass: 'icon icon-success'
-      })
       localStorage.removeItem('user')
+      localStorage.removeItem('device')
       this.setUser({})
+      this.setCurrentDevice({})
       _this.$router.push({
         name: 'Login'
       })
@@ -136,10 +134,11 @@ export default {
           }
         }, inputErrorMessage: '输入不能为空'
       }).then((val) => {
-        this.$http.post(`${config.httpBaseUrl}/appuser/updatename`, {
+        const data = {
           appuserName: val.value,
           appuserId: this.appuserId
-        }).then(res => {
+        }
+        this.$http.post(`${config.httpBaseUrl}/appuser/updatename`, data).then(res => {
           if (res.code === 200) {
             this.getinformation()
             Toast({
@@ -152,9 +151,49 @@ export default {
         console.info('cancel')
       })
     },
+    // 修改密码
     passwordb () {
-      this.isShowAddPhoneBook = true
+      this.isShowChangePassword = true
     },
+    AddContact (bol, personInfo) {
+      this.isShowChangePassword = false
+      if (bol) {
+        for (var k in personInfo) {
+          if (!personInfo[k]) {
+            return Toast({
+              message: '人员信息不能为空',
+              iconClass: 'icon icon-error'
+            })
+          } else if (personInfo.appuserPassword != personInfo.confirmpassword){
+            return Toast({
+              message: '输入密码不一致',
+              iconClass: 'icon icon-error'
+            })
+          } else if (personInfo.appuserNumber != this.appuserNumber){
+            return Toast({
+              message: '不是原手机号码',
+              iconClass: 'icon icon-error'
+            })
+          }
+        }
+        var date = {
+          appuserNumber: personInfo.appuserNumber,
+          appuserPassword: personInfo.appuserPassword
+        }
+        this.$http.post(`${config.httpBaseUrl}/appuser/changePassword`, date).then(res => {
+          
+        console.log(res)
+          if (res.code === 200) {
+            Toast({
+              message: '密码修改成功,请重新登录',
+              iconClass: 'icon icon-success'
+            })
+            this.handleLogin()
+          }
+        })
+      } else {}
+    },
+    // 修改头像
     fileChange (e) {
       var that = this
       var file = e.target.files[0]
@@ -178,42 +217,6 @@ export default {
           this.getinformation()
         }
       })
-    },
-    AddContact (bol, personInfo) {
-      this.isShowAddPhoneBook = false
-      if (bol) {
-        for (var k in personInfo) {
-          if (!personInfo[k]) {
-            return Toast({
-              message: '人员信息不能为空',
-              iconClass: 'icon icon-error'
-            })
-          }else if(personInfo.appuserPassword!=personInfo.confirmpassword){
-            return Toast({
-              message: '输入密码不一致',
-              iconClass: 'icon icon-error'
-            })
-          }else if(personInfo.appuserNumber!=this.appuserNumber){
-            return Toast({
-              message: '不是原手机号码',
-              iconClass: 'icon icon-error'
-            })
-          }
-        }
-        var date = {
-          appuserNumber: personInfo.appuserNumber,
-          appuserPassword: personInfo.appuserPassword
-        }
-        this.$http.post(`${config.httpBaseUrl}/appuser/changePassword`, date).then(res => {
-          if (res.code === 200) {
-            this.getinformation()
-            Toast({
-              message: '操作成功',
-              iconClass: 'icon icon-success'
-            })
-          }
-        })
-      } else {}
     },
     // 整个方法没有被执行
     homeTel () {
@@ -251,7 +254,6 @@ export default {
               }
             });
       }, () => {
-        console.info('cancel')
       })
     }
   }

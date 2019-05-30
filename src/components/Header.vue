@@ -2,7 +2,7 @@
  <div>
     <div class="home_header">
     <span class="headIcon" @click='handleNext'>
-      <img :src="headImg" alt>
+      <img v-if='getDevice.wearerImage' :src="deviceImg" alt>
     </span>
     <span class="title">{{title}}</span>
     <div class="device" @click="handleShowDeviceManage">
@@ -63,9 +63,9 @@ export default {
     this.querylist()
   },
   computed: {
-    ...mapGetters(['getUser']),
-    headImg () {
-      return this.getUser.appuserImage || require('@/assets/icon/home/userImg.png')
+    ...mapGetters(['getUser', 'getDevice']),
+    deviceImg () {
+      return this.getDevice.wearerImage
     }
   },
   methods: {
@@ -102,23 +102,15 @@ export default {
           message: '建议先选择设备',
           iconClass: 'icon icon-success'
         })
-      }else{
-          this.code = JSON.parse(localStorage.getItem('device')).wearerDeviceId
-          this.isShowDeviceInfo = true;
+      } else {
+        this.code = JSON.parse(localStorage.getItem('device')).wearerDeviceId
+        this.isShowDeviceInfo = true
       }
-    //  if()
-      // if (!this.code) {
-      //   return Toast({
-      //     message: '注册码不能为空',
-      //     iconClass: 'icon icon-success'
-      //   })
-      // }
     },
     closeDeviceInfo () {
       this.isShowDeviceInfo = false
     },
     addDevice (deviceInfo) {
-    console.log(deviceInfo)
       this.isShowDeviceInfo = false
       this.$emit('closeAddDevice', deviceInfo)
     },
@@ -135,10 +127,10 @@ export default {
       this.$emit('changeDevice')
     },
     isActive (id) {
-      if (!localStorage.getItem('device')) {
+      if (this.getDevice === '{}') {
         return false
       }
-      return id === JSON.parse(localStorage.getItem('device')).wearerDeviceId
+      return id === this.getDevice.wearerDeviceId
     }
   }
 }

@@ -7,25 +7,25 @@
       <span class="title">报警设置</span>
       <span class="comfirm"></span>
     </div>
-    <div class="content" v-if="show">
+    <div class="content" v-if='show'>
       <div class="content_l">
         <div class="content_left">
           <p>SOS报警</p>
         </div>
         <div class="content_middle">
         </div>
-        <div class="content_right" @click="find">
-            <mt-switch v-model="value"></mt-switch>
+        <div class="content_right">
+          <mt-switch @change="changeSosStatus" v-model="alarmswitchSosType"></mt-switch>
         </div>
       </div>
       <div class="content_l">
         <div class="content_left">
-            <p>低电量报警</p>
+          <p>低电量报警</p>
         </div>
         <div class="content_middle">
         </div>
-        <div class="content_right" @click="lowbattery">
-          <mt-switch v-model="value1"></mt-switch>
+        <div class="content_right">
+          <mt-switch @change="lowbattery" v-model="alarmswitchElectricityType"></mt-switch>
         </div>
       </div>
       <div class="content_c">
@@ -39,8 +39,8 @@
         </div>
         <div class="content_middle">
         </div>
-        <div class="content_right" @click="Intelligent">
-            <mt-switch v-model="value2"></mt-switch>
+        <div class="content_right">
+          <mt-switch @change='Intelligent' v-model="alarmswitchFenceType"></mt-switch>
         </div>
       </div>
     </div>
@@ -48,123 +48,86 @@
 </template>
 
 <script>
-import { Switch, MessageBox } from 'mint-ui'
+import { Switch, MessageBox, Toast } from 'mint-ui'
 export default {
   data () {
     return {
-      value:false,
-      value1:false,
-      value2:false,
-      appuserId:'',
-      show:false,
-      alarmswitchSosType:'',
-      alarmswitchElectricityType:0,
-      alarmswitchFenceType:0,
+      show: false,
+      appuserId: '',
+      alarmswitchSosType: false,
+      alarmswitchElectricityType: false,
+      alarmswitchFenceType: false,
     }
   },
   created () {
     var usernames = localStorage.getItem(('user') || '{}') 
     var userx = (JSON.parse(usernames) || '{}')
-    this.appuserId = userx.appuserId;
-    this.Queryall();
+    this.appuserId = userx.appuserId
+    this.Queryall()
   },
   methods: {
     Queryall(){
-       this.$http.get(`${config.httpBaseUrl}/alarms/get`, {
-          params:{
-            appuserId:this.appuserId
+      this.$http.get(`${config.httpBaseUrl}/alarms/get`, {
+        params:{
+          appuserId: this.appuserId
+        }
+      }).then(res => {
+        if (res.code === 200) {
+          if (res.date.alarmswitch.alarmswitchSosType) {
+            this.alarmswitchSosType = true
+          } else {
+            this.alarmswitchSosType = false
           }
-        }).then(res => {
-          if (res.code === 200) {
-            if(!res.date.alarmswitch){
-              this.alarmswitchSosType=0;
-              this.alarmswitchElectricityType=0;
-              this.alarmswitchFenceType=0;
-              this.value=false;
-              this.value1=false;
-              this.value2=false;
-            }else{
-              this.show=true;
-              if(res.date.alarmswitch.alarmswitchSosType!=0){
-                 this.value=true;
-              }else{
-                this.value=false;
-              }if(res.date.alarmswitch.alarmswitchElectricityType!=0){
-                  this.value1=true;
-              }else{
-                this.value1=false;
-              }if(res.date.alarmswitch.alarmswitchFenceType!=0){
-                this.value2=true;
-              }else{
-                this.value2=false;
-              }
-            }
-          }else{
+          if(res.date.alarmswitch.alarmswitchElectricityType){
+            this.alarmswitchElectricityType = true
+          } else {
+            this.alarmswitchElectricityType = false
           }
-        })
+          if (res.date.alarmswitch.alarmswitchFenceType) {
+            this.alarmswitchFenceType = true
+          } else {
+            this.alarmswitchFenceType = false
+          }
+        }
+        this.show = true
+      })
     },
     back () {
       this.$router.push({ name: 'MyPage'})
     },
-    find () {
-      if(this.value!=false){
-        this.alarmswitchSosType=0;
-      }else{
-        this.alarmswitchSosType=1
-      }
-      this.$http.get(`${config.httpBaseUrl}/alarms/shutdown`, {
-           params:{
-             type:'sos',
-             appuserId:this.appuserId,
-             status:this.alarmswitchSosType,
-           }
-        }).then(res => {
-          if (res.code === 200) {
-            this.Queryall();
-          }else{
-          }
-        })
+    // SoS报警
+    changeSosStatus () {
+      this.changeStatus('sos', this.alarmswitchSosType)
     },
-    //智慧报警
-    Intelligent(){
-      if(this.value2!=false){
-        this.alarmswitchFenceType=0
-      }else{
-         this.alarmswitchFenceType=1
-      }
-      this.$http.get(`${config.httpBaseUrl}/alarms/shutdown`, {
-           params:{
-             type:'fence',
-             appuserId:this.appuserId,
-             status:this.alarmswitchFenceType,
-           }
-        }).then(res => {
-          if (res.code === 200) {
-            this.Queryall();
-          }else{
-          }
-        })
+    // 智能围栏报警
+    Intelligent () {
+      this.changeStatus('fence', this.alarmswitchFenceType)
     },
-    // 输入电量百分之比
-    lowbattery(){
-     if(this.value1!=false){
-       this.alarmswitchElectricityType=0;
-      }else{
-        this.alarmswitchElectricityType=1;
+    // 低电量报警
+    lowbattery () {
+      this.changeStatus('electricity', this.alarmswitchElectricityType)
+    },
+    changeStatus (type, status) {
+      if (status) {
+        status = 1
+      } else {
+        status = 0
       }
       this.$http.get(`${config.httpBaseUrl}/alarms/shutdown`, {
-           params:{
-             type:'electricity',
-             appuserId:this.appuserId,
-             status:this.alarmswitchElectricityType,
-           }
-        }).then(res => {
-          if (res.code === 200) {
-            this.Queryall();
-          }else{
-          }
-        })
-    }
+        params: {
+          type,
+          appuserId: this.appuserId,
+          status
+        }
+      }).then(res => {
+        if (res.code === 200) {
+          Toast({
+            message: '修改成功',
+            iconClass: 'icon icon-success'
+          })
+        }
+      })
+    },
   }
 }
 </script>

@@ -54,21 +54,6 @@ export default {
           name: 'MyPage'
         }
       ]
-      // sheetVisible: false,
-      // actions: [
-      //   {
-      //     name: '拍照中中选择',
-      //     method () {
-      //     }
-      //   },
-      //   {
-      //     name: '拍照',
-      //     method () {
-      //     }
-      //   }
-      // ],
-      // map: null,
-      // geocoder: null
     }
   },
   watch: {

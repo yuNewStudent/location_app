@@ -7,7 +7,7 @@
     <div class="content">
       <p class="title">
         <img class='headImg' :src="deviceInfo.wearerImage?deviceInfo.wearerImage:require('@/assets/icon/home/userImg.png')" alt="">
-       <input type="file" name="" style=" position: absolute;
+        <input type="file" name="" style=" position: absolute;
             top:55px;
             right: 0;
             width: 100%;
@@ -30,7 +30,7 @@
         <mt-datetime-picker
           @confirm="handleConfirm"
           v-model="deviceInfo.wearerBirthday"
-          :startDate="new Date('1900/1/1')"
+          :startDate="new Date('1910/1/1')"
           ref="picker"
           type="date"
           year-format="{value}-"
@@ -69,6 +69,7 @@
 
 <script>
 import { Toast } from 'mint-ui'
+import { mapMutations } from 'vuex'
 export default {
   name: 'add_device',
   props: ['code'],
@@ -88,19 +89,19 @@ export default {
   },
   created () {
     var usernames = localStorage.getItem(('user') || '{}')
-    var userx = (JSON.parse(usernames) || '{}');
-    var devices=localStorage.getItem('device');
-    var device=(JSON.parse(devices) || '{}')
-    this.deviceInfo.wearerAppuserId = userx.appuserId;
-    this.deviceInfo.wearerHeight = device.wearerHeight;
-    console.log(this.deviceInfo.wearerHeight)
-    this.deviceInfo.wearerWeight = device.wearerWeight;
-    this.deviceInfo.wearerImage = device.wearerImage;
-    this.deviceInfo.wearerAddress = device.wearerAddress;
-    this.deviceInfo.wearerBirthday = device.wearerBirthday;
-    this.deviceInfo.wearerNickname = device.wearerNickname;
+    var userx = (JSON.parse(usernames) || '{}')
+    var devices = localStorage.getItem('device')
+    var device = (JSON.parse(devices) || '{}')
+    this.deviceInfo.wearerAppuserId = userx.appuserId
+    this.deviceInfo.wearerHeight = device.wearerHeight
+    this.deviceInfo.wearerWeight = device.wearerWeight
+    this.deviceInfo.wearerImage = device.wearerImage
+    this.deviceInfo.wearerAddress = device.wearerAddress
+    this.deviceInfo.wearerBirthday = device.wearerBirthday
+    this.deviceInfo.wearerNickname = device.wearerNickname
   },
   methods: {
+    ...mapMutations(['setUser']),
     handleClose () {
       this.$emit('closeDeviceInfo')
     },
@@ -117,20 +118,31 @@ export default {
       }
       reader.readAsDataURL(file)
     },
+    // 获取用户信息
+    getinformation () {
+      this.$http.get(`${config.httpBaseUrl}/appuser/get`, {
+        params: {
+          appuserId: this.deviceInfo.wearerAppuserId
+        }
+      }).then(res => {
+        if (res.code === 200) {
+          this.setUser(res.date.appuser)
+          localStorage.setItem('user', JSON.stringify(res.date.appuser))
+        }
+      })
+    },
     //日期选择
     handleConfirm (data) {
       //获取的时间为时间戳，getdata是自己写的一个转换时间的方法
       this.deviceInfo.wearerBirthday = this.moment(data).format('YYYY-MM-DD')
     },
     handlecomfirm () {
-      let wearerDeviceId = this.code.split('').filter((item, index) => {
-        return index !== 0 && index !== 3 && index !== 6 && index !== 10 && index !== 14
-      }).join('')
       const data = {
-        wearerDeviceId,
+        wearerDeviceId: this.code,
         ...this.deviceInfo
       }
       // 判断不能为空
+      console.log(data)
       for (let k in data) {
         if (!data[k]) {
           return Toast({
@@ -146,6 +158,8 @@ export default {
             message: '信息修改成功',
             iconClass: 'icon icon-success'
           })
+          // 查询用户信息
+          this.getinformation()
         } else {
           Toast({
             message: '信息修改失败',

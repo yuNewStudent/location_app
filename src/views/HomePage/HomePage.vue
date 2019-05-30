@@ -146,7 +146,9 @@ export default {
   methods: {
     ...mapMutations(['setHeart', 'setBlood', 'setStep', 'setDevicePosition']),
     getWearerDeviceId () {
-      return JSON.parse(localStorage.getItem('device')).wearerDeviceId
+      if (!localStorage.getItem('device')) return
+      const wearerDeviceId = JSON.parse(localStorage.getItem('device')).wearerDeviceId
+      return wearerDeviceId
     },
     // 获取心率and血压
     getHearthRate () {
