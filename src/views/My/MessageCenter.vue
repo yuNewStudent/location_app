@@ -39,31 +39,39 @@
         <img class="isRead" src="@/assets/icon/my/2.png">
       </li> -->
       <li
-        class="content_item"
         v-for='(item, index) in messages'
-        :key='index' @click="read(item)">
-        <div class="content_item_wrapper">
-          <span class="content_d"></span>
-          <div class="desc">
-            <div class="ggggg">
-              <p class="title">{{item.alarminformationType}}报警</p>
-              <p class="time">{{item.alarminformationDate}}</p>
+        :key='index'v-if='item.length>0'>
+        <div class="content_item" v-for='(item, index) in item'
+        :key='index'>
+          <div class="content_item_wrapper" @click="read(item)">
+            <span class="content_d"></span>
+            <div class="desc">
+              <div class="ggggg">
+                <p class="title">{{item.alarminformationType}}报警</p>
+                <p class="time">{{item.alarminformationDate}}</p>
+              </div>
+              <p class="info" v-if="item.alarminformationType=='sos'">
+                {{item.alarminformationName}}进行了{{item.alarminformationType}}报警
+              </p>
+              <p class="info" v-if="item.alarminformationType=='fence'">
+                {{item.alarminformationName}}已经走出{{item.alarminformationType}}范围，请留意！
+              </p>
+              <p class="info" v-if="item.alarminformationType=='electricity'">
+                {{item.alarminformationName}}电量低于10%,请尽快充电！
+              </p>
             </div>
-            <p class="info" v-if="item.alarminformationType=='sos'">
-              {{item.alarminformationName}}进行了{{item.alarminformationType}}报警
-            </p>
-            <p class="info" v-if="item.alarminformationType=='fence'">
-              {{item.alarminformationName}}已经走出{{item.alarminformationType}}范围，请留意！
-            </p>
-             <p class="info" v-if="item.alarminformationType=='electricity'">
-              {{item.alarminformationName}}电量低于10%,请尽快充电！
-            </p>
           </div>
-        </div>
-        <span class="isRead">
+          <span class="isRead">
           <img v-if='item.isRead' src="@/assets/icon/my/2.png">
           <img @click='handleChange' v-else src="@/assets/icon/my/选择—高亮 拷贝 2.png">
-        </span>
+          </span>
+        </div>
+      </li>
+      <li v-else>
+        <div class="nolist">
+          <img src="@/assets/icon/my/wu.png">
+          <P>您关注的手表状态良好,还没有报警信息</P>
+        </div>
       </li>
     </ul>
   </div>
@@ -75,6 +83,7 @@ export default {
     return {
       wearerDeviceId:'',
       appuserId:'',
+      show:false,
       messages: [
         // {
         //   title: 'SOS报警',
@@ -119,16 +128,16 @@ export default {
         .then(res => {
           if (res.code === 200) {
             this.messages=res.date.alarminformations;
-            console.log(this.messages)
           }
         })
     },
     read(item){
+      console.log(item)
         this.$http
-        .get(`${config.httpBaseUrl}/Alarminformation/haavread`, {
+        .get(`${config.httpBaseUrl}/Alarminformation/havread`, {
           params: {
             appuserId: this.appuserId,
-            type:item.alarminformationType,
+            havreadAlarminfoId:item.alarminformationId,
             wearerDeviceId:this.wearerDeviceId,
           }
         })
@@ -231,6 +240,20 @@ export default {
         }
       }
     }
+     .nolist{
+         width:100%;
+          text-align:center;
+          vertical-align:middle;
+        img{
+          width:250px;
+          margin-top:25px;
+          height:250px;
+        }
+        p{
+         font-size: 14px;
+         color:#888888
+        }
+      }
   }
 }
 </style>
