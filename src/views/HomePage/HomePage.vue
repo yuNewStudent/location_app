@@ -24,7 +24,8 @@
           </ul>
         </div>
         <div class="current_address">
-          <img src="@/assets/icon/home/定位IC.png" alt="">{{deviceInfo.address || '无信息'}}
+          <img src="@/assets/icon/home/定位IC.png" alt="">
+          <span class="text">{{deviceInfo.address || '无信息'}}</span>
         </div>
         <ul class="information">
           <router-link tag='li' to='/homepage/notestep' class="information_item">
@@ -301,7 +302,7 @@ export default {
     .current_address {
       height: .9rem;
       background: white;
-      font-size: .26rem;
+      font-size: .24rem;
       margin: 0.16rem 0 0;
       display: flex;
       padding: 0 10px;
@@ -310,6 +311,9 @@ export default {
         width: .27rem;
         height: .35rem;
         margin-right: 5px;
+      }
+      .text {
+        line-height: .3rem;
       }
     }
     .information {

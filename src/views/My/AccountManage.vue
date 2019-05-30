@@ -181,8 +181,6 @@ export default {
           appuserPassword: personInfo.appuserPassword
         }
         this.$http.post(`${config.httpBaseUrl}/appuser/changePassword`, date).then(res => {
-          
-        console.log(res)
           if (res.code === 200) {
             Toast({
               message: '密码修改成功,请重新登录',

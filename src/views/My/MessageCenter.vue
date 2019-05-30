@@ -5,7 +5,7 @@
         <img src='@/assets/icon/home/箭头.png' @click='back'/>
       </span>
       <span class="title">消息中心</span>
-      <span class="comfirm">标记为已读</span>
+      <span class="comfirm"></span>
     </div>
     <ul class="content">
       <!-- <li class="content_item">
@@ -41,16 +41,22 @@
       <li
         class="content_item"
         v-for='(item, index) in messages'
-        :key='index'>
+        :key='index' @click="read(item)">
         <div class="content_item_wrapper">
           <span class="content_d"></span>
           <div class="desc">
             <div class="ggggg">
-              <p class="title">{{item.title}}</p>
-              <p class="time">{{item.time}}</p>
+              <p class="title">{{item.alarminformationType}}报警</p>
+              <p class="time">{{item.alarminformationDate}}</p>
             </div>
-            <p class="info">
-              {{item.name}} watch进行了{{item.time}}
+            <p class="info" v-if="item.alarminformationType=='sos'">
+              {{item.alarminformationName}}进行了{{item.alarminformationType}}报警
+            </p>
+            <p class="info" v-if="item.alarminformationType=='fence'">
+              {{item.alarminformationName}}已经走出{{item.alarminformationType}}范围，请留意！
+            </p>
+             <p class="info" v-if="item.alarminformationType=='electricity'">
+              {{item.alarminformationName}}电量低于10%,请尽快充电！
             </p>
           </div>
         </div>
@@ -69,41 +75,22 @@ export default {
     return {
       wearerDeviceId:'',
       appuserId:'',
-      messages: [
-        {
-          title: 'SOS报警',
-          time: '2019-04-01 09:36',
-          name: 'PaPa`s',
-          isRead: true
-        },
-        {
-          title: 'SOS报警',
-          time: '2019-04-01 09:36',
-          name: 'PaPa`s',
-          isRead: true
-        },
-        {
-          title: 'SOS报警',
-          time: '2019-04-01 09:36',
-          name: 'PaPa`s',
-          isRead: false
-        }
-      ]
+      messages: {}
     }
   },
   created(){
     var usernames = localStorage.getItem(('user') || '{}') 
     var userx = (JSON.parse(usernames) || '{}')
     this.appuserId = userx.appuserId;
-    this.wearerDeviceId=userx.wearerDeviceId;
-    var device = localStorage.getItem(('device') || '{}') 
-    localStorage.getItem('device')
-    console.log(this.wearerDeviceId)
+    var devices = localStorage.getItem(('device') || '{}');
+    var device=(JSON.parse(devices) || '{}')
+    var wearerDeviceId=device.wearerDeviceId;
+    this.wearerDeviceId=wearerDeviceId;
     this.information()
   },
   methods: {
     information(){
-     this.$http
+      this.$http
         .get(`${config.httpBaseUrl}/Alarminformation/get`, {
           params: {
             appuserId: this.appuserId,
@@ -112,10 +99,26 @@ export default {
         })
         .then(res => {
           if (res.code === 200) {
-            this.devices = res.date.wearers
+            this.messages = res.date.alarminformations
+            console.log(this.messages)
           }
         })
     },
+    read(item){
+        this.$http
+        .get(`${config.httpBaseUrl}/Alarminformation/haavread`, {
+          params: {
+            appuserId: this.appuserId,
+            type:item.alarminformationType,
+            wearerDeviceId:this.wearerDeviceId,
+          }
+        })
+        .then(res => {
+          if (res.code === 200) {
+           this.information();
+          }
+        })
+    }, 
     back () {
       this.$router.push({ name: 'MyPage'})
     },
