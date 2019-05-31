@@ -18,12 +18,12 @@
           <div class="current_wrapper">
             <p class="text">当前心率</p>
             <p class="num">{{currentHeart?currentHeart.healthUptodate:'无'}}<span>bpm</span></p>
-            <p class="active">远程测量</p>
+            <!-- <p class="active">远程测量</p> -->
           </div>
         </div>
         <p class="desc">
           <span>最高:{{currentHeart?currentHeart.healthHeartrate:'无'}}bpm</span>
-          <span>平均:{{currentHeart?(JSON.parse(currentHeart.healthHeartrate)+JSON.parse(currentHeart.healthLowheartrate))/2:'无'}}bpm</span>
+          <span>平均:{{currentHeart.healthHeartrate?(JSON.parse(currentHeart.healthHeartrate)+JSON.parse(currentHeart.healthLowheartrate))/2:'无'}}bpm</span>
           <span>最低:{{currentHeart?currentHeart.healthHeartrate:'无'}}bpm</span>
         </p>
       </div>
@@ -51,7 +51,7 @@ export default {
     }
   },
   created () {
-    this.currentHeart = this.getHeart[0]
+    this.currentHeart = this.getHeart.length ? this.getHeart[0] : {}
     this.getWeekHearthRate()
   },
   mounted () {
@@ -132,6 +132,7 @@ export default {
       }
       this.currentIndex += 1
       this.currentHeart = this.allHeart[this.currentIndex]
+      console.log(this.currentHeart)
       this.isNext = true
       if (this.currentIndex === 6) {
         this.isBack = false

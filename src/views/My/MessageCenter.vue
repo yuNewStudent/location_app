@@ -120,7 +120,7 @@ export default {
   },
   methods: {
     information(){
-     this.$http
+      this.$http
         .get(`${config.httpBaseUrl}/Alarminformation/get`, {
           params: {
             appuserId: this.appuserId,

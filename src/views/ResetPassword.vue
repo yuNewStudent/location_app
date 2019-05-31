@@ -79,9 +79,9 @@ export default {
         });     
       }else{
          Toast({
-              message: '两次输入密码不一致',
-              iconClass: 'icon icon-success'
-            })
+          message: '两次输入密码不一致',
+          iconClass: 'icon icon-success'
+        })
       }
     },
     changePasswordType () {

@@ -16,6 +16,9 @@ const getters = {
   },
   getUser (state) {
     return state.user
+  },
+  getDevice (state) {
+    return state.currentDevice
   }
 }
 
