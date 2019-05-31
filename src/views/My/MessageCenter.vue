@@ -7,7 +7,7 @@
       <span class="title">消息中心</span>
       <span class="comfirm"></span>
     </div>
-    <ul class="content">
+    <ul class="content" v-if='show==false'>
       <!-- <li class="content_item">
         <div class="content_item_wrapper">
           <span class="content_d"></span>
@@ -40,7 +40,7 @@
       </li> -->
       <li
         v-for='(item, index) in messages'
-        :key='index' v-if='show==false'>
+        :key='index'>
         <div class="content_item" v-for='(item, index) in item'
         :key='index'>
           <div class="content_item_wrapper" @click="read(item)">
@@ -67,7 +67,9 @@
           </span>
         </div>
       </li>
-      <li v-else>
+    </ul>
+    <ul class="content" v-else>
+      <li>
         <div class="nolist">
           <img src="@/assets/icon/my/wu.png">
           <P>您关注的手表状态良好,还没有报警信息</P>
@@ -127,11 +129,13 @@ export default {
         })
         .then(res => {
           if (res.code === 200) {
-            if(res.date.alarminformations.length>0){
+            console.log(res.date.alarminformations)
+            if(res.date.alarminformations='[]'){
                this.messages=res.date.alarminformations;
-               this.show=false;
+               this.show=true;
             }else{
-
+              this.messages=res.date.alarminformations;
+               this.show=false;
             }
           }
         })
