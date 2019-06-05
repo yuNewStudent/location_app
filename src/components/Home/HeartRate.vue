@@ -17,14 +17,14 @@
         <div class="current">
           <div class="current_wrapper">
             <p class="text">当前心率</p>
-            <p class="num">{{currentHeart?currentHeart.healthUptodate:'无'}}<span>bpm</span></p>
+            <p class="num">{{currentHeart?currentHeart.healthUptodate:''}}<span>bpm</span></p>
             <!-- <p class="active">远程测量</p> -->
           </div>
         </div>
         <p class="desc">
-          <span>最高:{{currentHeart?currentHeart.healthHeartrate:'无'}}bpm</span>
-          <span>平均:{{currentHeart.healthHeartrate?(JSON.parse(currentHeart.healthHeartrate)+JSON.parse(currentHeart.healthLowheartrate))/2:'无'}}bpm</span>
-          <span>最低:{{currentHeart?currentHeart.healthHeartrate:'无'}}bpm</span>
+          <span>最高:{{currentHeart?currentHeart.healthHeartrate:''}}bpm</span>
+          <span>平均:{{currentHeart.healthHeartrate?(JSON.parse(currentHeart.healthHeartrate)+JSON.parse(currentHeart.healthLowheartrate))/2:''}}bpm</span>
+          <span>最低:{{currentHeart?currentHeart.healthHeartrate:''}}bpm</span>
         </p>
       </div>
       <div class="all_day">
@@ -51,6 +51,7 @@ export default {
     }
   },
   created () {
+    console.log(this.getHeart[0])
     this.currentHeart = this.getHeart.length ? this.getHeart[0] : {}
     this.getWeekHearthRate()
   },
@@ -126,7 +127,7 @@ export default {
     handleBack () {
       if (this.currentIndex === 6) {
         return Toast({
-          message: '无数据',
+          message: '已更多无数据',
           iconClass: 'icon icon-success'
         })
       }
@@ -142,7 +143,7 @@ export default {
     handleNext () {
       if (this.currentIndex === 0) {
         return Toast({
-          message: '无数据',
+          message: '已更多无数据',
           iconClass: 'icon icon-success'
         })
       }

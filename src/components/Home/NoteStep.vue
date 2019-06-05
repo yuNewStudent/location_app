@@ -43,7 +43,6 @@ export default {
     }
   },
   mounted () {
-    this.currentStep = this.getStep.stepCount
     this.getWeekStep()
     this.$nextTick(() => {
       this.drawChart()
@@ -170,7 +169,6 @@ export default {
         params: data
       }).then(res => {
         if (res.code === 200) {
-          console.log(res.date.steps)
           res.date.steps.forEach((item, index) => {
             if (item) {
               this.allStep.push(item.stepCount)
@@ -178,6 +176,7 @@ export default {
               this.allStep.push('0')
             }
           })
+          this.currentStep = this.allStep[0]
           this.initChart()
         }
       })
@@ -258,16 +257,16 @@ export default {
       .desc {
         position: absolute;
         left: 50%;
-        top: 50%;
+        top: 45%;
         transform: translate(-50%, -25%);
+        text-align: center;
         .step_title {
-           font-size: .24rem;
-           color: #888888;
-           line-height: .4rem;
-           text-align: center;
+          font-size: .24rem;
+          color: #888888;
+          line-height: .4rem;
         }
         .step_num {
-          font-size: .56rem;
+          font-size: .4rem;
           color: #15BF86;
         }
       }

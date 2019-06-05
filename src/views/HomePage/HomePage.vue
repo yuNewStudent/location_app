@@ -13,13 +13,17 @@
               <img src="@/assets/icon/home/SOS联系人IC.png" alt="">
               <p>SOS号码</p>
             </router-link>
-            <router-link tag='li' to='/homepage/alarmseting' class="setting_item">
+            <!-- <router-link tag='li' to='/homepage/alarmseting' class="setting_item">
               <img src="@/assets/icon/home/闹钟IC.png" alt="">
               <p>闹钟设置</p>
-            </router-link>
-            <router-link tag='li' to='/homepage/blacklist' class="setting_item">
+            </router-link> -->
+            <!-- <router-link tag='li' to='/homepage/blacklist' class="setting_item">
               <img src="@/assets/icon/home/免打扰ic .png" alt="">
               <p>免打扰</p>
+            </router-link> -->
+            <router-link tag='li' to='/homepage/controlphone' class="setting_item">
+              <img src="@/assets/icon/home/短信设置IC.png" alt="">
+              <p>短信设置</p>
             </router-link>
           </ul>
         </div>
@@ -56,9 +60,9 @@
                 <img src="@/assets/icon/home/心率IC.png" alt="">
               </span>
               <div class="desc">
-                <p class="time">更新时间：{{heart.length?heart[0].healthDate:'无'}}</p>
+                <p class="time">更新时间：{{heart.length?heart[0].healthDate:'无数据'}}</p>
                 <p class="step">
-                  <span>{{heart.length?heart[0].healthUptodate:'无'}}BPM</span>
+                  <span>{{heart.length?heart[0].healthUptodate + 'bpm' :'无数据'}}</span>
                 </p>
               </div>
             </div>
@@ -90,10 +94,10 @@
                 <img src="@/assets/icon/home/血压IC.png" alt="">
               </span>
               <div class="desc">
-                <p class="time">更新时间：{{blood.length?blood[0].healthDate:'无'}}</p>
+                <p class="time">更新时间：{{blood.length?blood[0].healthDate:'无数据'}}</p>
                 <p class="step">
-                  <span>高压{{blood.length?blood[0].healthHighpressure:'无'}}</span>
-                  <span>低压{{blood.length?blood[0].healthLowpressure:'无'}}</span>
+                  <span>高压{{blood.length?blood[0].healthHighpressure:'无数据'}}</span>
+                  <span>低压{{blood.length?blood[0].healthLowpressure:'无数据'}}</span>
                 </p>
               </div>
             </div>
@@ -161,22 +165,25 @@ export default {
         params: data
       }).then(res => {
         if (res.code === 200) {
-          res.date.healths.forEach((item, index) => {
-            this.heart.push({
-              healthDate: item.healthDate,
-              healthHeartrate: item.healthHeartrate,
-              healthUptodate: item.healthUptodate,
-              healthLowheartrate: item.healthLowheartrate
-            })
-            this.setHeart(this.heart)
-            this.blood.push({
-              healthDate: item.healthDate,
-              healthHighpressure: item.healthHighpressure + 'mmHg',
-              healthLowpressure: item.healthLowpressure + 'mmHg'
-            })
-            this.setBlood(this.blood)
-          })
-          // console.log(this.heart, this.blood)
+          const healths = res.date.healths
+          if (!healths[0]) {
+            this.heart = []
+            this.blood = []
+          } else {
+            this.heart = [{
+              healthDate: healths[0].healthDate,
+              healthHeartrate: healths[0].healthHeartrate,
+              healthUptodate: healths[0].healthUptodate,
+              healthLowheartrate: healths[0].healthLowheartrate
+            }]
+            this.blood = [{
+              healthDate: healths[0].healthDate,
+              healthHighpressure: healths[0].healthHighpressure + 'mmHg',
+              healthLowpressure: healths[0].healthLowpressure + 'mmHg'
+            }]
+          }
+          this.setHeart(this.heart)
+          this.setBlood(this.blood)
         }
       })
     },
@@ -273,8 +280,8 @@ export default {
   bottom: 0;
   width: 100vw;
   overflow: hidden;
+  background: #f0f2f5;
   .content {
-    background: #f0f2f5;
     padding: 0.19rem 0.16rem 0;
     .setting {
       ul {
@@ -284,10 +291,13 @@ export default {
           display: flex;
           flex-direction: column;
           background: white;
-          width: 1.54rem;
+          flex: 1;
           align-items: center;
           box-sizing: border-box;
           padding: .2rem 0;
+          &:nth-child(2) {
+            margin: 0 20px;
+          }
           img {
             height: 0.9rem;
             width: 0.9rem;

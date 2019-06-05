@@ -26,6 +26,7 @@
 import DeviceInfo from '@/components/Home/DeviceInfo'
 import ScanPage from '@/components/Scan'
 import { Toast } from 'mint-ui'
+import { userInfo } from 'os';
 export default {
   name: 'add_device',
   data () {
@@ -50,7 +51,27 @@ export default {
           iconClass: 'icon icon-success'
         })
       }
-      this.isShowDeviceInfo = true
+      // 判断设备是否被绑定过
+      this.$http.get(`${config.httpBaseUrl}/wearer/Judge`, {
+        params: {
+          appuserId: JSON.parse(localStorage.getItem('user')).appuserId,
+          wearerDeviceId: this.code.split('').filter((item, index) => {
+            return index !== 0 && index !== 3 && index !== 6 && index !== 10 && index !== 14
+          }).join('')
+        }
+      }).then(res => {
+        if (res.code === 200) {
+          if (res.date.Permission === 1) {
+            this.isShowDeviceInfo = true
+          } else {
+            Toast({
+              message: '绑定成功',
+              iconClass: 'icon icon-success'
+            })
+            this.$emit('closeAddDevice')
+          }
+        } 
+      })
     },
     closeDeviceInfo () {
       this.isShowDeviceInfo = false
@@ -66,7 +87,6 @@ export default {
         this.code = codeUrl + ''
       }
     }
-    
   }
 }
 </script>

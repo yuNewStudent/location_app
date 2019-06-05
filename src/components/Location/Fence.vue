@@ -72,8 +72,7 @@ export default {
   mounted () {
     this.$nextTick(() => {
       this.initMap()
-      this.drawMarker([104.06406, 30.54311])
-      // this.openInfo()
+      this.getFence()
       const touchX = parseFloat(this.defaultRange * (this.$refs.progressBar.offsetWidth / 5000))
       // 设置按钮位置
       this.$refs.control.style.left = touchX - 3 + 'px'
@@ -92,7 +91,6 @@ export default {
         // 地图显示范围
         zoom: 15
       })
-      this.drawCircle(104.06406, 30.54311, this.defaultRange)
       this.map.on('click', (e) => {
         this.map.remove(this.circle)
         const location = [e.lnglat.lng, e.lnglat.lat]
@@ -101,7 +99,7 @@ export default {
         this.map.setZoomAndCenter(15, location)
         this.map.remove(this.marker)
         this.drawMarker(location)
-        this.drawCircle(e.lnglat.lng, e.lnglat.lat, this.defaultRange)
+        this.drawCircle([e.lnglat.lng, e.lnglat.lat], this.defaultRange)
       })
       AMap.plugin(['AMap.Geocoder'], () => {
         this.geocoder = new AMap.Geocoder({
@@ -120,10 +118,29 @@ export default {
           this.centerLngLat = [e.poi.location.lng, e.poi.location.lat]
           this.map.remove(this.circle)
           this.map.remove(this.marker)
-          this.drawCircle(e.poi.location.lng, e.poi.location.lat, this.defaultRange)
+          this.drawCircle([e.poi.location.lng, e.poi.location.lat], this.defaultRange)
           this.drawMarker([e.poi.location.lng, e.poi.location.lat])
         })
         // 无需再手动执行search方法，autoComplete会根据传入input对应的DOM动态触发search
+      })
+    },
+    // 查询电子围栏
+    getFence () {
+      this.$http.get(`${config.httpBaseUrl}/map/getFence`, {
+        params: {
+          wearerDeviceId: JSON.parse(localStorage.getItem('device')).wearerDeviceId
+        }
+      }).then(res => {
+        if (!res.date.fences) {
+          this.centerLngLat = [104.06406, 30.54311]
+        } else {
+          this.centerLngLat = [res.date.fences.fenceLongitude, res.date.fences.fenceLatitude]
+          this.defaultRange = res.date.fences.fenceRange * 1000
+        }
+        this.map.setZoomAndCenter(14, this.centerLngLat)
+        this.drawCircle(this.centerLngLat, this.defaultRange)
+        this.getCenterAddress(this.centerLngLat)
+        this.drawMarker(this.centerLngLat)
       })
     },
     // 根据经纬度获取地址
@@ -146,9 +163,9 @@ export default {
       this.map.add(this.marker)
     },
     // 绘制圆形范围
-    drawCircle (longitude, latitude, radius) {
+    drawCircle (lnglat, radius) {
       this.circle = new AMap.Circle({
-        center: [longitude, latitude],
+        center: lnglat,
         radius: radius, // 半径
         strokeOpacity: 0,
         fillOpacity: 0.3,
@@ -165,7 +182,7 @@ export default {
         this.map.setZoomAndCenter(15, location)
         this.map.remove(this.marker)
         this.drawMarker(location)
-        this.drawCircle(e.lnglat.lng, e.lnglat.lat, this.defaultRange)
+        this.drawCircle([e.lnglat.lng, e.lnglat.lat], this.defaultRange)
       })
       // 缩放至合适位置
       this.map.setFitView([this.circle])
@@ -194,12 +211,12 @@ export default {
         })
       }
       const wearerDeviceId = JSON.parse(localStorage.getItem('device')).wearerDeviceId
-      this.$http.get(`${config.httpBaseUrl}/appPosition/Appelectricfence`, {
+      this.$http.get(`${config.httpBaseUrl}/wearer/insertfence`, {
         params: {
-          userId: wearerDeviceId,
-          wem: this.defaultRange / 1000,
-          longitud: this.centerLngLat[0],
-          latind: this.centerLngLat[1]
+          wearerDeviceId: wearerDeviceId,
+          range: this.defaultRange / 1000,
+          longitude: this.centerLngLat[0],
+          latitude: this.centerLngLat[1]
         }
       }).then(res => {
         if (res.code === 200) {

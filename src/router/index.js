@@ -14,6 +14,7 @@ const FindDevice = () => import('@/views/My/FindDevice')
 const WarningSetting = () => import('@/views/My/WarningSetting')
 const MessageCenter = () => import('@/views/My/MessageCenter')
 
+const ControlPhone = () => import('@/components/Home/ControlPhone')
 const NoteStep = () => import('@/components/Home/NoteStep')
 const HeartRate = () => import('@/components/Home/HeartRate')
 const BloodPressure = () => import('@/components/Home/BloodPressure')
@@ -72,6 +73,11 @@ export default new Router({
               path: '/homepage/blacklist',
               name: 'BlackList',
               component: BlackList
+            },
+            {
+              path: '/homepage/controlphone',
+              name: 'ControlPhone',
+              component: ControlPhone
             }
           ]
         },

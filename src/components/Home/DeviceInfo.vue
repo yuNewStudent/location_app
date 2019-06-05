@@ -57,6 +57,11 @@
         <input v-model="deviceInfo.wearerWeight" type="text">
       </p>
       <p>
+        <img src="@/assets/icon/home/联系电话IC.png" alt="">
+        <span>联系电话</span>
+        <input v-model="deviceInfo.wearerNumber" type="text">
+      </p>
+      <p>
         <img src="@/assets/icon/home/家庭住址ic .png" alt="">
         <span>家庭住址</span>
         <input v-model="deviceInfo.wearerAddress" type="text">
@@ -83,7 +88,8 @@ export default {
         wearerGender: '',
         wearerBirthday: '',
         wearerNickname: '',
-        wearerAppuserId: ''
+        wearerAppuserId: '',
+        wearerNumber: ''
       }
     }
   },
@@ -124,14 +130,14 @@ export default {
         ...this.deviceInfo
       }
       // 判断不能为空
-      for (let k in data) {
-        if (!data[k]) {
-          return Toast({
-            message: '信息不能有空',
-            iconClass: 'icon icon-success'
-          })
-        }
-      }
+      // for (let k in data) {
+      //   if (!data[k]) {
+      //     return Toast({
+      //       message: '信息不能有空',
+      //       iconClass: 'icon icon-success'
+      //     })
+      //   }
+      // }
       this.$http.post(`${config.httpBaseUrl}/wearer/insert`, data).then(res => {
         if (res.code === 200) {
           this.$emit('addDevice', this.deviceInfo)

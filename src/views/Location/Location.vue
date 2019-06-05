@@ -8,7 +8,11 @@
         <div>
           <span class="fence" @click='isShowFencePage=!isShowFencePage'><img src="@/assets/icon/location/围栏.png" alt=""></span>
           <span class="route" @click='isShowRoutePage=!isShowRoutePage'><img src="@/assets/icon/location/轨迹.png" alt=""></span>
-          <!-- <span class="navigation"><img src="@/assets/icon/location/导航.png" alt=""></span> -->
+          <span class="navigation">
+            <a href="#" ref='link'>
+              <img src="@/assets/icon/location/call.png" alt="">
+            </a>
+          </span>
         </div>
       </div>
     </div>
@@ -34,7 +38,13 @@ export default {
       isShowFencePage: false,
       isShowRoutePage: false,
       map: null,
-      DeviceInfo: {}
+      marker: null,
+      deviceInfo: {
+        lng: null,
+        lat: null,
+        address: null
+      },
+      phone: '168-1686-16888'
     }
   },
   components: {
@@ -51,15 +61,16 @@ export default {
       this.initMap()
       // 在地图上定位设备
       this.posDevice()
+      
     })
   },
   computed: {
     ...mapGetters(['getDevicePosition', 'getCurrentDevicen'])
   },
   watch: {
-    getDevicePosition (value) {
-      this.posDevice()
-    },
+    // getDevicePosition (value) {
+    //   this.posDevice()
+    // },
     getCurrentDevicen (value) {
       this.getDeviceInfo(value)
     }
@@ -89,37 +100,40 @@ export default {
     },
     // 绘制icon
     drawMarker (longitude, latitude) {
-      let marker
-      marker = new AMap.Marker({
+      this.marker && this.map.remove(this.marker)
+      this.marker = new AMap.Marker({
         icon: require('@/assets/icon/location/定位IC.png'),
         position: [longitude, latitude]
       })
-      this.map.add(marker)
+      this.map.add(this.marker)
     },
     // 信息窗体
     openInfo (lng, lat) {
+      this.infoWindow && this.infoWindow.close()
       // 构建信息窗体中显示的内容
       let info = `
         <div style='font-size:.24rem; width: 5rem'>
           当前位置：<span>${this.getDevicePosition.address}</span>
         <div>`
-      let infoWindow = new AMap.InfoWindow({
+      this.infoWindow = new AMap.InfoWindow({
         // 使用默认信息窗体框样式，显示信息内容
         content: info,
         offset: new AMap.Pixel(5, -30)
       })
-      infoWindow.open(this.map, this.map.getCenter())
+      this.infoWindow.open(this.map, [lng, lat])
     },
     // 在地图上定位设备
     posDevice () {
       const lng = this.getDevicePosition.lng
       const lat = this.getDevicePosition.lat
+      this.$refs.link.href = `tel:${JSON.parse(localStorage.getItem('device')).wearerNumber}`
       this.map.setZoomAndCenter(15, [lng, lat])
       this.drawMarker(lng, lat)
       this.openInfo(lng, lat)
     },
     // 获取当前位置
     getDeviceInfo (wearerDeviceId) {
+      this.$refs.link.href = `tel:${JSON.parse(localStorage.getItem('device')).wearerNumber}`
       this.$http.get(`${config.httpBaseUrl}/map/getMapuser`, {
         params: {
           userId: wearerDeviceId
@@ -174,6 +188,11 @@ export default {
         })
       })
     }
+    // 打电话
+    // callPhone () {
+    //   console.log
+    //   console.log(this.$refs.link)
+    // }
   },
   destroyed () {
     clearInterval(this.timer)

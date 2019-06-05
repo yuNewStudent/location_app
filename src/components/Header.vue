@@ -59,8 +59,7 @@ export default {
   created () {
     var usernames = localStorage.getItem(('user') || '{}') 
     var userx = (JSON.parse(usernames) || '{}')
-    this.appuserId = userx.appuserId;
-    this.querylist()
+    this.appuserId = userx.appuserId
   },
   computed: {
     ...mapGetters(['getUser', 'getDevice']),
@@ -85,6 +84,7 @@ export default {
     },
     handleShowDeviceManage () {
       this.isShowDeviceManage = !this.isShowDeviceManage
+      this.querylist()
     },
     // 新增设备
     handleAddDevice () {

@@ -18,7 +18,7 @@
           <img :src="item.wearerImage"/>
           <span>{{item.wearerNickname}}</span>
         </div>
-        <div class="content_right" @click="find">
+        <div class="content_right" @click="find(item.wearerDeviceId)">
           查找设备
         </div>
       </div>
@@ -99,7 +99,25 @@ export default {
     touchend (e) {
       clearTimeout(this.time)
     },
-    find () {
+    find (id) {
+      const data = {
+        id,
+        keyWord: 'FIND'
+      }
+      this.$http.post(`${config.httpBaseUrl}/Appcommand/command`, data).then(res => {
+        if (res.code === 200) {
+          this.controlPhone = phone
+          Toast({
+            message: '操作成功',
+            iconClass: 'icon icon-success'
+          })
+        } else {
+          Toast({
+            message: '设备不再线',
+            iconClass: 'icon icon-success'
+          })
+        }
+      })
       MessageBox({
         title: '确认查找该设备吗？',
         message: '点击"确认"后，即向该该设备发送指令。',
@@ -160,11 +178,11 @@ export default {
           appuserId: this.appuserId
         }
       }).then(res => {
-        console.log(res)
         Toast({
-          message: '操作成功',
+          message: '解绑成功',
           iconClass: 'icon icon-success'
         })
+        this.hideAction()
         this.devices.splice(this.selectDevice.index, 1)
       })
     },

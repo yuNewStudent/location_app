@@ -43,7 +43,7 @@
 <script>
 import AddContact from '@/components/Home/AddContact'
 import EditorContact from '@/components/Home/AddContact'
-import { Toast } from 'mint-ui'
+import { Toast, Indicator } from 'mint-ui'
 export default {
   data () {
     return {
@@ -56,22 +56,11 @@ export default {
         //   name: '女儿',
         //   phone: 123467800,
         //   id: 0
-        // },
-        // {
-        //   name: '孙子',
-        //   phone: 23445888,
-        //   id: 1
-        // },
-        // {
-        //   name: '女婿',
-        //   phone: 908888,
-        //   id: 2
         // }
       ],
       data:{
         id: JSON.parse(localStorage.getItem('device')).wearerDeviceId, 
-        keyWord: 'PHB2',
-        phoneBook: [] 
+        keyWord: 'PHB'
       },
       title: {
         add: '新增电话本',
@@ -114,6 +103,12 @@ export default {
     AddContact (bol, personInfo) {
       this.isShowAddPhoneBook = false
       if (bol) {
+        if (personInfo.name.length > 2) {
+          return Toast({
+            message: '昵称不能超过两位',
+            iconClass: 'icon icon-error'
+          })
+        }
         for (var k in personInfo) {
           if (!personInfo[k]) {
             return Toast({
@@ -122,16 +117,30 @@ export default {
             })
           }
         }
-        this.data.phoneBook.push(personInfo),
-        this.$http.post(`${config.httpBaseUrl}/Appcommand/command`, this.data).then(res => {
-        if (res.code === 200) {
-          this.Enquirydirectory();
-          }
+        Indicator.open({
+          text: '正在添加中...',
+          spinnerType: 'fading-circle'
         })
-        // this.contacts.push(personInfo)
-        Toast({
-          message: '操作成功',
-          iconClass: 'icon icon-success'
+        const books = [
+          personInfo,
+          {name: '', phone: ''},
+          {name: '', phone: ''},
+          {name: '', phone: ''},
+          {name: '', phone: ''}
+        ]
+        const data = {
+          ...this.data,
+          phoneBook: books
+        }
+        this.$http.post(`${config.httpBaseUrl}/Appcommand/command`, data).then(res => {
+          Indicator.close()
+          if (res.code === 200) {
+            Toast({
+              message: '添加成功',
+              iconClass: 'icon icon-success'
+            })
+            this.Enquirydirectory()
+          }
         })
       }
     },
@@ -272,6 +281,7 @@ export default {
       font-size: .26rem;
       text-align: center;
       position: absolute;
+      background: white;
       // top: 90px;
       display: none;
       right: 70px;

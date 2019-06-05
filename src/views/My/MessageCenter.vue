@@ -7,43 +7,13 @@
       <span class="title">消息中心</span>
       <span class="comfirm"></span>
     </div>
-    <ul class="content">
-      <!-- <li class="content_item">
-        <div class="content_item_wrapper">
-          <span class="content_d"></span>
-          <div class="desc">
-            <div class="ggggg">
-              <p class="title">SOS报警</p>
-              <p class="time">2019-04-01 09:36</p>
-            </div>
-            <p class="info">
-              PaPa`s watch进行了SOS报警
-            </p>
-          </div>
-        </div>
-        <img class="isRead" src="@/assets/icon/my/2.png">
-      </li>
-      <li class="content_item">
-        <div class="content_item_wrapper">
-          <span class="content_d"></span>
-          <div class="desc">
-            <div class="ggggg">
-              <p class="title">SOS报警</p>
-              <p class="time">2019-04-01 09:36</p>
-            </div>
-            <p class="info">
-              PaPa`s watch进行了SOS报警
-            </p>
-          </div>
-        </div>
-        <img class="isRead" src="@/assets/icon/my/2.png">
-      </li> -->
+    <ul class="content" v-if='messages.length'>
       <li
         v-for='(item, index) in messages'
-        :key='index' v-if='show==false'>
+        :key='index'>
         <div class="content_item" v-for='(item, index) in item'
         :key='index'>
-          <div class="content_item_wrapper" @click="read(item)">
+          <div class="content_item_wrapper">
             <span class="content_d"></span>
             <div class="desc">
               <div class="ggggg">
@@ -61,19 +31,19 @@
               </p>
             </div>
           </div>
-          <span class="isRead">
+          <span class="isRead" @click="read(item)">
           <img v-if='item.isRead' src="@/assets/icon/my/2.png">
           <img @click='handleChange' v-else src="@/assets/icon/my/选择—高亮 拷贝 2.png">
           </span>
         </div>
       </li>
-      <li v-else>
-        <div class="nolist">
-          <img src="@/assets/icon/my/wu.png">
-          <P>您关注的手表状态良好,还没有报警信息</P>
-        </div>
-      </li>
     </ul>
+    <div v-else>
+      <div class="nolist">
+        <img src="@/assets/icon/my/wu.png">
+        <P>您关注的手表状态良好,还没有报警信息</P>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -83,37 +53,17 @@ export default {
     return {
       wearerDeviceId:'',
       appuserId:'',
-      show:false,
-      messages: [
-        // {
-        //   title: 'SOS报警',
-        //   time: '2019-04-01 09:36',
-        //   name: 'PaPa`s',
-        //   isRead: true
-        // },
-        // {
-        //   title: 'SOS报警',
-        //   time: '2019-04-01 09:36',
-        //   name: 'PaPa`s',
-        //   isRead: true
-        // },
-        // {
-        //   title: 'SOS报警',
-        //   time: '2019-04-01 09:36',
-        //   name: 'PaPa`s',
-        //   isRead: false
-        // }
-      ]
+      messages: []
     }
   },
   created(){
     var usernames = localStorage.getItem(('user') || '{}') 
     var userx = (JSON.parse(usernames) || '{}')
-    this.appuserId = userx.appuserId;
-    var devices = localStorage.getItem(('device') || '{}');
+    this.appuserId = userx.appuserId
+    var devices = localStorage.getItem(('device') || '{}')
     var device=(JSON.parse(devices) || '{}')
-    var wearerDeviceId=device.wearerDeviceId;
-    this.wearerDeviceId=wearerDeviceId;
+    var wearerDeviceId=device.wearerDeviceId
+    this.wearerDeviceId=wearerDeviceId
     this.information()
   },
   methods: {
@@ -122,35 +72,31 @@ export default {
         .get(`${config.httpBaseUrl}/Alarminformation/get`, {
           params: {
             appuserId: this.appuserId,
-            wearerDeviceId:this.wearerDeviceId,
+            wearerDeviceId: this.wearerDeviceId,
           }
         })
         .then(res => {
           if (res.code === 200) {
             if(res.date.alarminformations.length>0){
-               this.messages=res.date.alarminformations;
-               this.show=false;
-            }else{
-
+              this.messages=res.date.alarminformations
+            } else {
             }
           }
         })
     },
-    read(item){
-      console.log(1);
-        this.$http
-        .get(`${config.httpBaseUrl}/Alarminformation/havread`, {
-          params: {
-            appuserId: this.appuserId,
-            havreadAlarminfoId:item.alarminformationId,
-            wearerDeviceId:this.wearerDeviceId,
-          }
-        })
-        .then(res => {
-          if (res.code === 200) {
-           this.information();
-          }
-        })
+    read (item) {
+      this.$http.get(`${config.httpBaseUrl}/Alarminformation/havread`, {
+        params: {
+          appuserId: this.appuserId,
+          havreadAlarminfoId: item.alarminformationId,
+          wearerDeviceId: this.wearerDeviceId,
+        }
+      })
+      .then(res => {
+        if (res.code === 200) {
+          this.information()
+        }
+      })
     }, 
     back () {
       this.$router.push({ name: 'MyPage'})
@@ -197,6 +143,10 @@ export default {
   }
   .content {
     width: 100%;
+    position: fixed;
+    top: 1.44rem;
+    bottom: 0;
+    overflow: auto;
     .content_item {
       width: 100%;
       background-color: #ffffff;
@@ -245,20 +195,24 @@ export default {
         }
       }
     }
-     .nolist{
-         width:100%;
-          text-align:center;
-          vertical-align:middle;
-        img{
-          width:250px;
-          margin-top:25px;
-          height:250px;
-        }
-        p{
-         font-size: 14px;
-         color:#888888
-        }
-      }
   }
+    .nolist{
+      width: 100vw;
+      position: absolute;
+      top: .96rem;
+      bottom: 0;
+      text-align: center;
+      background: white;
+      img {
+        margin-top: 50px;
+        width: 5.5rem;
+        height: 6.05rem;
+        border-radius: 50%;
+      }
+      p {
+        font-size: 14px;
+        color:#888888
+      }
+    }
 }
 </style>

@@ -15,7 +15,7 @@
         <div class="content_middle">
         </div>
         <div class="content_right">
-          <mt-switch @change="changeSosStatus" v-model="alarmswitchSosType"></mt-switch>
+          <mt-switch :disabled='permission===2' @change="changeSosStatus" v-model="sos"></mt-switch>
         </div>
       </div>
       <div class="content_l">
@@ -25,7 +25,7 @@
         <div class="content_middle">
         </div>
         <div class="content_right">
-          <mt-switch @change="lowbattery" v-model="alarmswitchElectricityType"></mt-switch>
+          <mt-switch :disabled='permission===2' @change="lowbattery" v-model="electricity"></mt-switch>
         </div>
       </div>
       <div class="content_c">
@@ -40,30 +40,52 @@
         <div class="content_middle">
         </div>
         <div class="content_right">
-          <mt-switch @change='Intelligent' v-model="alarmswitchFenceType"></mt-switch>
+          <mt-switch :disabled='permission===2' @change='Intelligent' v-model="fence"></mt-switch>
         </div>
       </div>
     </div>
+    <change-control
+      v-if='isShowEditorControl'
+      :title='title.add'
+      @addControl='addControl'></change-control>
   </div>
 </template>
 
 <script>
-import { Switch, MessageBox, Toast } from 'mint-ui'
+import ChangeControl from '@/components/Home/ChangeControl'
+import { Switch, Indicator, MessageBox, Toast } from 'mint-ui'
 export default {
   data () {
     return {
       show: false,
       appuserId: '',
-      alarmswitchSosType: false,
-      alarmswitchElectricityType: false,
-      alarmswitchFenceType: false,
+      sos: false,
+      electricity: false,
+      fence: false,
+      permission: null,
+      isShowEditorControl: false,
+      title: {
+        add: '新增中控号码',
+        editor: '修改中控号码'
+      }
     }
+  },
+  components: {
+    ChangeControl
   },
   created () {
     var usernames = localStorage.getItem(('user') || '{}') 
     var userx = (JSON.parse(usernames) || '{}')
     this.appuserId = userx.appuserId
     this.Queryall()
+    this.permission = JSON.parse(localStorage.getItem('device')).appuserPermission
+    if (this.permission === 2) {
+      Toast({
+        message: '你没有权限设置',
+        iconClass: 'icon icon-success'
+      })
+      return
+    }
   },
   methods: {
     Queryall(){
@@ -72,21 +94,21 @@ export default {
           appuserId: this.appuserId
         }
       }).then(res => {
-        if (res.code === 200) {
+        if (res.code === 200 && res.date.alarmswitch) {
           if (res.date.alarmswitch.alarmswitchSosType) {
-            this.alarmswitchSosType = true
+            this.sos = true
           } else {
-            this.alarmswitchSosType = false
+            this.sos = false
           }
           if(res.date.alarmswitch.alarmswitchElectricityType){
-            this.alarmswitchElectricityType = true
+            this.electricity = true
           } else {
-            this.alarmswitchElectricityType = false
+            this.electricity = false
           }
           if (res.date.alarmswitch.alarmswitchFenceType) {
-            this.alarmswitchFenceType = true
+            this.fence = true
           } else {
-            this.alarmswitchFenceType = false
+            this.fence = false
           }
         }
         this.show = true
@@ -97,17 +119,25 @@ export default {
     },
     // SoS报警
     changeSosStatus () {
-      this.changeStatus('sos', this.alarmswitchSosType)
+      this.changeStatus('sos', this.sos)
     },
     // 智能围栏报警
     Intelligent () {
-      this.changeStatus('fence', this.alarmswitchFenceType)
+      this.changeStatus('fence', this.fence)
     },
     // 低电量报警
     lowbattery () {
-      this.changeStatus('electricity', this.alarmswitchElectricityType)
+      this.changeStatus('electricity', this.electricity)
     },
     changeStatus (type, status) {
+      const werarerCenternumber = JSON.parse(localStorage.getItem('device')).werarerCenternumber
+      if (!werarerCenternumber) {
+        MessageBox.confirm('你还没有设置中控号码,是否现在设置？').then(action => {
+          this.isShowEditorControl = true
+        }).catch(() => {
+        })
+        return
+      }
       if (status) {
         status = 1
       } else {
@@ -127,6 +157,38 @@ export default {
           })
         }
       })
+    },
+    addControl (bol, phone) {
+      this.isShowEditorControl = false
+      if (bol) {
+        Indicator.open({
+          text: '修改中...',
+          spinnerType: 'fading-circle'
+        })
+        const data = {
+          id: JSON.parse(localStorage.getItem('device')).wearerDeviceId,
+          keyWord: 'CENTER',
+          currency1: phone
+        }
+        this.$http.post(`${config.httpBaseUrl}/Appcommand/command`, data).then(res => {
+          if (res.code === 200) {
+            Indicator.close()
+            // 添加至locastorage
+            let device = JSON.parse(localStorage.getItem('device'))
+            device.werarerCenternumber = phone
+            localStorage.setItem('device', JSON.stringify(device))
+            Toast({
+              message: '操作成功',
+              iconClass: 'icon icon-success'
+            })
+          } else {
+            Toast({
+              message: '设备不再线',
+              iconClass: 'icon icon-success'
+            })
+          }
+        })
+      }
     },
   }
 }

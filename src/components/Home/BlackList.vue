@@ -92,12 +92,6 @@ export default {
         //   end_time: '10:13',
         //   open: false,
         //   id: 1
-        // },
-        // {
-        //   start_time: '5:20',
-        //   end_time: '12:13',
-        //   open: false,
-        //   id: 1
         // }
       ],
       editor: false
@@ -146,15 +140,20 @@ export default {
         currency1: this.newBlackList.start_time + '-' + this.newBlackList.end_time,
       }
       this.$http.post(`${config.httpBaseUrl}/Appcommand/command`, data).then(res => {
+        console.log(res)
         if (res.code === 200) {
           this.disturblist()
           Toast({
             message: '新增成功',
             iconClass: 'icon icon-success'
           })
-          }
+        } else {
+          Toast({
+            message: '设备配置指令错误',
+            iconClass: 'icon icon-success'
+          })
+        }
       })
-      this.blackList.push(this.newBlackList)
     },
     edoitorBlackList (bol) {
       this.isShowEditorBlackList = false

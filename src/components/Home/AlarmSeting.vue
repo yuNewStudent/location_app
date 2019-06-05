@@ -154,32 +154,37 @@ export default {
     Slider
   },
   created () {
-    const data = {
-      wearerDeviceId: JSON.parse(localStorage.getItem('device')).wearerDeviceId
-    }
-    this.$http.get(`${config.httpBaseUrl}/alar/getAll`, {
-      params: data
-    }).then(res => {
-      if (res.code === 200) {
-        res.date.alarmclock.forEach(item => {
-          if (item.alarmclockStatus === 0) {
-            item.alarmclockStatus = false
-          } else {
-            item.alarmclockStatus = true
-          }
-          if (item.alarmclockWeek == 1) {
-            item.date = ['不重复']
-          } else if (item.alarmclockWeek == 2) {
-            item.date = ['每天']
-          } else {
-            item.date = item.alarmclockWeek.split('')
-          }
-          this.alarms.push(item)
-        })
-      }
-    })
+    this.getAlarms()
   },
   methods: {
+    // 获取闹钟
+    getAlarms () {
+      const data = {
+        wearerDeviceId: JSON.parse(localStorage.getItem('device')).wearerDeviceId
+      }
+      this.$http.get(`${config.httpBaseUrl}/alar/getAll`, {
+        params: data
+      }).then(res => {
+        if (res.code === 200) {
+          this.alarms = []
+          res.date.alarmclock.forEach(item => {
+            if (item.alarmclockStatus === 0) {
+              item.alarmclockStatus = false
+            } else {
+              item.alarmclockStatus = true
+            }
+            if (item.alarmclockWeek == 1) {
+              item.date = ['不重复']
+            } else if (item.alarmclockWeek == 2) {
+              item.date = ['每天']
+            } else {
+              item.date = item.alarmclockWeek.split('')
+            }
+            this.alarms.push(item)
+          })
+        }
+      })
+    },
     closeAlarmSeting () {
       this.$router.go(-1)
     },
@@ -221,11 +226,12 @@ export default {
         }
         this.$http.post(`${config.httpBaseUrl}/alar/insert`, data).then(res => {
           if (res.code === 200) {
-            this.alarms.push(data)
+            this.getAlarms()
             Toast({
               message: '操作成功',
               iconClass: 'icon icon-success'
             })
+          } else {
           }
         })
       }
@@ -405,9 +411,6 @@ export default {
           margin-top: 10px;
           font-size: .24rem;
           color: #B9B9B9;
-          .title {
-          }
-          .time {}
         }
       }
     }
@@ -420,6 +423,7 @@ export default {
       position: absolute;
       display: none;
       right: 100px;
+      background: white;
       p {
         line-height: .65rem;
         &.editor {

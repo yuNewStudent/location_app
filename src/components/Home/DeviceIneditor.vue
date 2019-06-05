@@ -56,6 +56,11 @@
         <input v-model="deviceInfo.wearerWeight" type="text">
       </p>
       <p>
+        <img src="@/assets/icon/home/联系电话IC.png" alt="">
+        <span>联系电话</span>
+        <input v-model="deviceInfo.wearerNumber" type="text">
+      </p>
+      <p>
         <img src="@/assets/icon/home/家庭住址ic .png" alt="">
         <span>家庭住址</span>
         <input v-model="deviceInfo.wearerAddress" type="text">
@@ -75,30 +80,12 @@ export default {
   props: ['code'],
   data () {
     return {
-      deviceInfo: {
-        wearerHeight: '',
-        wearerWeight: '',
-        wearerImage: '',
-        wearerAddress: '',
-        wearerGender: '',
-        wearerBirthday: '',
-        wearerNickname: '',
-        wearerAppuserId: ''
-      }
+      deviceInfo: {}
     }
   },
   created () {
-    var usernames = localStorage.getItem(('user') || '{}')
-    var userx = (JSON.parse(usernames) || '{}')
-    var devices = localStorage.getItem('device')
-    var device = (JSON.parse(devices) || '{}')
-    this.deviceInfo.wearerAppuserId = userx.appuserId
-    this.deviceInfo.wearerHeight = device.wearerHeight
-    this.deviceInfo.wearerWeight = device.wearerWeight
-    this.deviceInfo.wearerImage = device.wearerImage
-    this.deviceInfo.wearerAddress = device.wearerAddress
-    this.deviceInfo.wearerBirthday = device.wearerBirthday
-    this.deviceInfo.wearerNickname = device.wearerNickname
+    this.deviceInfo = JSON.parse(localStorage.getItem('device'))
+    delete this.deviceInfo.werarerCenternumber
   },
   methods: {
     ...mapMutations(['setUser']),
@@ -118,33 +105,29 @@ export default {
       }
       reader.readAsDataURL(file)
     },
-    // 获取用户信息
-    getinformation () {
-      this.$http.get(`${config.httpBaseUrl}/appuser/get`, {
-        params: {
-          appuserId: this.deviceInfo.wearerAppuserId
-        }
-      }).then(res => {
-        if (res.code === 200) {
-          this.setUser(res.date.appuser)
-          localStorage.setItem('user', JSON.stringify(res.date.appuser))
-        }
-      })
-    },
     //日期选择
     handleConfirm (data) {
       //获取的时间为时间戳，getdata是自己写的一个转换时间的方法
       this.deviceInfo.wearerBirthday = this.moment(data).format('YYYY-MM-DD')
     },
     handlecomfirm () {
+      const permission = JSON.parse(localStorage.getItem('device')).appuserPermission
+      console.log(permission)
+      if (permission === 2) {
+        Toast({
+          message: '你没有权限修改',
+          iconClass: 'icon icon-success'
+        })
+        return
+      }
       const data = {
         wearerDeviceId: this.code,
         ...this.deviceInfo
       }
-      // 判断不能为空
       console.log(data)
+      // 判断不能为空
       for (let k in data) {
-        if (!data[k]) {
+        if (data[k] === '') {
           return Toast({
             message: '信息不能有空',
             iconClass: 'icon icon-success'
@@ -159,7 +142,7 @@ export default {
             iconClass: 'icon icon-success'
           })
           // 查询用户信息
-          this.getinformation()
+          localStorage.setItem('device', JSON.stringify(data))
         } else {
           Toast({
             message: '信息修改失败',

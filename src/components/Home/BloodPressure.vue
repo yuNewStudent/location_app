@@ -102,7 +102,7 @@ export default {
                 // 开启显示
                 show: true,
                 // 在上方显示
-                position: 'top',
+                position: 'bottom',
                 // 数值样式
                 textStyle: {
                   fontSize: 12,
@@ -122,7 +122,7 @@ export default {
                 // 开启显示
                 show: true,
                 // 在上方显示
-                position: 'bottom',
+                position: 'top',
                 // 数值样式
                 textStyle: {
                   color: '#E19C35',
@@ -142,7 +142,7 @@ export default {
     handleBack () {
       if (this.currentIndex === 6) {
         return Toast({
-          message: '无数据',
+          message: '已更多无数据',
           iconClass: 'icon icon-success'
         })
       }
@@ -157,7 +157,7 @@ export default {
     handleNext () {
       if (this.currentIndex === 0) {
         return Toast({
-          message: '无数据',
+          message: '已更多无数据',
           iconClass: 'icon icon-success'
         })
       }
@@ -193,8 +193,8 @@ export default {
               this.highPressures.push(item.healthHighpressure)
             } else {
               this.allBlood.push({
-                healthHighpressure: '',
-                healthLowpressure: ''
+                healthHighpressure: '无数据',
+                healthLowpressure: '无数据'
               })
               this.lowPressures.push('')
               this.highPressures.push('')

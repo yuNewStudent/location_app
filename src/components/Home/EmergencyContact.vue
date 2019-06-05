@@ -16,7 +16,7 @@
           :class="{editor:type!=='编辑'}">
           <p>
             <span>号码{{index+1}}:</span>
-            <input v-model="item.sosName" type="text" :disabled='type=="编辑"'>
+            <input v-model="item.sosName" placeholder="请输入昵称" type="text" :disabled='type=="编辑"'>
           </p>
           <p>
             <span></span>
@@ -29,28 +29,12 @@
 </template>
 
 <script>
-import { Toast } from 'mint-ui'
+import { Toast, Indicator } from 'mint-ui'
 export default {
   data () {
     return {
       type: '编辑',
-      contacts: [
-        // {
-        //   sosName: '',
-        //   sosNumber: '',
-        //   sosWearerID: ''
-        // },
-        // {
-        //   sosName: '',
-        //   sosNumber: '',
-        //   sosWearerID: ''
-        // },
-        // {
-        //   sosName: '',
-        //   sosNumber: '',
-        //   sosWearerID: ''
-        // }
-      ]
+      contacts: []
     }
   },
   components: {
@@ -79,20 +63,49 @@ export default {
         }
       }).then(res => {
         if (res.code === 200) {
-          res.date.soss.forEach((item, index) => {
-            if (index > 2) return
-            delete item.sosId
-            this.contacts.push(item)
-          })
+          if (!res.date.soss.length) {
+            this.contacts = [
+              {
+                sosName: '',
+                sosNumber: ''
+              },
+              {
+                sosName: '',
+                sosNumber: ''
+              },
+              {
+                sosName: '',
+                sosNumber: ''
+              }
+            ]
+            return
+          }
+          for (let i = 0; i < 3; i++) {
+            if (res.date.soss[i]) {
+              delete res.date.soss[i].sosId
+              this.contacts.push(res.date.soss[i])
+            } else {
+              this.contacts.push({
+                sosName: '',
+                sosNumber: '',
+                sosWearerID: JSON.parse(localStorage.getItem('device')).wearerDeviceId
+              })
+            }
+          }
         }
       })
     },
     // 设置SOS
     saveEmergency () {
       let data = []
+      Indicator.open({
+        text: '修改中...',
+        spinnerType: 'fading-circle'
+      })
       this.contacts.forEach(item => {
         // 单个sos不能有空
         if ((item.sosName && item.sosNumber) || (!item.sosName && !item.sosNumber)) {
+          item.sosWearerID = JSON.parse(localStorage.getItem('device')).wearerDeviceId
           data.push({
             ...item
           })
@@ -104,9 +117,15 @@ export default {
         }
       })
       this.$http.post(`${config.httpBaseUrl}/sos/insert`, data).then(res => {
+        Indicator.close()
         if (res.code === 200) {
           Toast({
             message: '操作成功',
+            iconClass: 'icon icon-success'
+          })
+        } else {
+          Toast({
+            message: '设备配置指令错误',
             iconClass: 'icon icon-success'
           })
         }

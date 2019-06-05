@@ -134,10 +134,13 @@ export default {
     margin: 0 auto;
     font-size: .26rem;
     .head_img {
+      background: white;
       display: inline-block;
-      margin-top: 50px;
+      margin-top: 40px;
       width: 1.4rem;
       height: 1.4rem;
+      padding: 5px;
+      border-radius: 50%;
       img {
         border-radius: 50%;
         width: 100%;
