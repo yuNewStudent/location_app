@@ -13,10 +13,10 @@
               <img src="@/assets/icon/home/SOS联系人IC.png" alt="">
               <p>SOS号码</p>
             </router-link>
-            <!-- <router-link tag='li' to='/homepage/alarmseting' class="setting_item">
+            <router-link tag='li' to='/homepage/alarmseting' class="setting_item">
               <img src="@/assets/icon/home/闹钟IC.png" alt="">
               <p>闹钟设置</p>
-            </router-link> -->
+            </router-link>
             <!-- <router-link tag='li' to='/homepage/blacklist' class="setting_item">
               <img src="@/assets/icon/home/免打扰ic .png" alt="">
               <p>免打扰</p>
@@ -295,8 +295,9 @@ export default {
           align-items: center;
           box-sizing: border-box;
           padding: .2rem 0;
-          &:nth-child(2) {
-            margin: 0 20px;
+          margin-left: 10px;
+          &:nth-child(1) {
+            margin-left: 0;
           }
           img {
             height: 0.9rem;

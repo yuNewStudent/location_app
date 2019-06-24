@@ -18,10 +18,12 @@
     </div>
     <fence-page
       v-if='isShowFencePage'
-      @closeFence='isShowFencePage=!isShowFencePage'></fence-page>
-      <route-page
-        v-if='isShowRoutePage'
-        @closeRoute='isShowRoutePage=!isShowRoutePage'></route-page>
+      @closeFence='isShowFencePage=!isShowFencePage'
+      :deviceInfo='getDevicePosition'></fence-page>
+    <route-page
+      v-if='isShowRoutePage'
+      @closeRoute='isShowRoutePage=!isShowRoutePage'
+      :deviceInfo='getDevicePosition'></route-page>
   </div>
 </template>
 

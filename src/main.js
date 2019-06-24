@@ -16,6 +16,7 @@ import './assets/js/appback.js'
 Vue.config.productionTip = false
 Vue.prototype.moment = Moment
 Vue.prototype.$http = Axios
+Axios.defaults.baseURL = config.httpBaseUrl
 Vue.use(MintUI)
 
 // 路由拦截

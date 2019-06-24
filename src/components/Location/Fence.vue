@@ -52,6 +52,7 @@ import AMap from 'AMap'
 import MessageBox from '@/components/MessageBox'
 import { Toast } from 'mint-ui'
 export default {
+  props: ['deviceInfo'],
   data () {
     return {
       map: null,
@@ -87,7 +88,7 @@ export default {
         // 调整窗口大小
         resizeEnable: true,
         // 设置中心点
-        center: [104.06406, 30.54311],
+        center: [this.deviceInfo.lng, this.deviceInfo.lat],
         // 地图显示范围
         zoom: 15
       })
@@ -131,11 +132,11 @@ export default {
           wearerDeviceId: JSON.parse(localStorage.getItem('device')).wearerDeviceId
         }
       }).then(res => {
-        if (!res.date.fences) {
+        if (!res.date.fence) {
           this.centerLngLat = [104.06406, 30.54311]
         } else {
-          this.centerLngLat = [res.date.fences.fenceLongitude, res.date.fences.fenceLatitude]
-          this.defaultRange = res.date.fences.fenceRange * 1000
+          this.centerLngLat = [res.date.fence.fenceLongitude, res.date.fence.fenceLatitude]
+          this.defaultRange = res.date.fence.fenceRange * 1000
         }
         this.map.setZoomAndCenter(14, this.centerLngLat)
         this.drawCircle(this.centerLngLat, this.defaultRange)

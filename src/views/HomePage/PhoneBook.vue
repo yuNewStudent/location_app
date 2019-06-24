@@ -24,7 +24,7 @@
       </ul>
       <div class='no_contact' v-else>还没有添加电话本</div>
       <div class="action" ref='action'>
-        <p class="editor" @click.stop='showEditorContact'>编辑</p>
+        <!-- <p class="editor" @click.stop='showEditorContact'>编辑</p> -->
         <p @click.stop='delContact'>删除</p>
       </div>
     </div>
@@ -32,11 +32,11 @@
       v-if='isShowAddPhoneBook'
       @addContact='AddContact'
       :title='title.add'></add-contact>
-    <editor-contact
+    <!-- <editor-contact
       v-if='isShowEditorPhoneBook'
       :title='title.editor'
       :selectPerson='selectPerson.person'
-      @editorContact='editorContact'></editor-contact>
+      @editorContact='editorContact'></editor-contact> -->
   </div>
 </template>
 
@@ -48,7 +48,7 @@ export default {
   data () {
     return {
       isShowAddPhoneBook: false,
-      isShowEditorPhoneBook: false,
+      // isShowEditorPhoneBook: false,
       time: 0,
       appuserWearerId:'',
       contacts: [
@@ -58,10 +58,6 @@ export default {
         //   id: 0
         // }
       ],
-      data:{
-        id: JSON.parse(localStorage.getItem('device')).wearerDeviceId, 
-        keyWord: 'PHB'
-      },
       title: {
         add: '新增电话本',
         editor: '修改电话本'
@@ -78,12 +74,12 @@ export default {
     Toast
   },
   created(){
-    this.Enquirydirectory();
+    this.getPhoneBoohs()
   },
   methods: {
     //查询所有电话本
-    Enquirydirectory(){
-      this.$http.get(`${config.httpBaseUrl}/phonebook/getAll`, {
+    getPhoneBoohs(){
+      this.$http.get(`/phonebook/getAll`, {
         params: {
           wearerDeviceId: JSON.parse(localStorage.getItem('device')).wearerDeviceId
         }
@@ -103,43 +99,20 @@ export default {
     AddContact (bol, personInfo) {
       this.isShowAddPhoneBook = false
       if (bol) {
-        if (personInfo.name.length > 2) {
-          return Toast({
-            message: '昵称不能超过两位',
-            iconClass: 'icon icon-error'
-          })
-        }
-        for (var k in personInfo) {
-          if (!personInfo[k]) {
-            return Toast({
-              message: '人员信息不能为空',
-              iconClass: 'icon icon-error'
-            })
-          }
-        }
-        Indicator.open({
-          text: '正在添加中...',
-          spinnerType: 'fading-circle'
-        })
-        const books = [
-          personInfo,
-          {name: '', phone: ''},
-          {name: '', phone: ''},
-          {name: '', phone: ''},
-          {name: '', phone: ''}
-        ]
-        const data = {
-          ...this.data,
-          phoneBook: books
-        }
-        this.$http.post(`${config.httpBaseUrl}/Appcommand/command`, data).then(res => {
+        const data = this.setParams(personInfo)
+        this.$http.post(`/Appcommand/command`, data).then(res => {
           Indicator.close()
           if (res.code === 200) {
             Toast({
               message: '添加成功',
               iconClass: 'icon icon-success'
             })
-            this.Enquirydirectory()
+            this.getPhoneBoohs()
+          } else {
+            Toast({
+              message: '设置电话本失败',
+              iconClass: 'icon icon-success'
+            })
           }
         })
       }
@@ -167,35 +140,99 @@ export default {
       this.$refs.action.style.display = 'none'
     },
     // 修改联系人
-    showEditorContact () {
-      this.isShowEditorPhoneBook = true
-    },
-    editorContact (bol, personInfo) {
-      this.isShowEditorPhoneBook = false
-      if (bol) {
-        for (var k in personInfo) {
-          if (!personInfo[k]) {
-            return Toast({
-              message: '人员信息不能为空',
-              iconClass: 'icon icon-error'
-            })
-          }
-        }
-      }
-      this.contacts.splice(this.selectPerson.index, 1, personInfo)
-      Toast({
-        message: '操作成功',
-        iconClass: 'icon icon-success'
-      })
-    },
+    // showEditorContact () {
+    //   this.isShowEditorPhoneBook = true
+    // },
+    // editorContact (bol, personInfo) {
+    //   this.isShowEditorPhoneBook = false
+    //   if (bol) {
+    //     for (var k in personInfo) {
+    //       if (!personInfo[k]) {
+    //         return Toast({
+    //           message: '人员信息不能为空',
+    //           iconClass: 'icon icon-error'
+    //         })
+    //       }
+    //     }
+    //   }
+    //   this.contacts.splice(this.selectPerson.index, 1, personInfo)
+    //   Toast({
+    //     message: '操作成功',
+    //     iconClass: 'icon icon-success'
+    //   })
+    // },
     // 删除联系人
     delContact () {
-      this.contacts.splice(this.selectPerson.index, 1)
+      console.log(this.selectPerson)
+      const data = {
+        id: JSON.parse(localStorage.getItem('device')).wearerDeviceId, 
+        keyWord: 'DPHBX',
+        currency1: this.selectPerson.person.phonebookNumbering
+      }
       this.hideAction()
-      Toast({
-        message: '操作成功',
-        iconClass: 'icon icon-success'
+      Indicator.open({
+        text: '正在删除...',
+        spinnerType: 'fading-circle'
       })
+      this.$http.post(`/Appcommand/command`, data).then(res => {
+        Indicator.close()
+        if (res.code === 200) {
+          this.contacts.splice(this.selectPerson.index, 1)
+          Toast({
+            message: '操作成功',
+            iconClass: 'icon icon-success'
+          })
+        } else {
+          Toast({
+            message: '删除失败',
+            iconClass: 'icon icon-success'
+          })
+        }
+      })
+    },
+    // 处理参数
+    setParams (personInfo) {
+      if (personInfo.name.length > 4) {
+        return Toast({
+          message: '昵称不能超过四位',
+          iconClass: 'icon icon-error'
+        })
+      }
+      if (personInfo.phone.length !== 11) {
+        return Toast({
+          message: '请输入正确的电话号码',
+          iconClass: 'icon icon-error'
+        })
+      }
+      for (var k in personInfo) {
+        if (!personInfo[k]) {
+          return Toast({
+            message: '人员信息不能为空',
+            iconClass: 'icon icon-error'
+          })
+        }
+      }
+      Indicator.open({
+        text: '正在添加中...',
+        spinnerType: 'fading-circle'
+      })
+      const currency3 = []
+      if (this.contacts.length) {
+        this.contacts.forEach(item => {
+          currency3.push(item.phonebookNumbering)
+        })
+      }
+      const books = {
+        id: JSON.parse(localStorage.getItem('device')).wearerDeviceId, 
+        keyWord: 'PHBX',
+        currency1: personInfo.name,
+        currency2: personInfo.phone,
+        currency3: currency3.join()
+      }
+      return {
+        ...this.data,
+        ...books
+      }
     }
   }
 }
@@ -276,7 +313,7 @@ export default {
     }
     .action {
       width: 1.6rem;
-      height: 1.3rem;
+      height: .65rem;
       box-shadow: 0px 1px 4px 0px rgba(109,109,109,0.5);
       font-size: .26rem;
       text-align: center;

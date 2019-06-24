@@ -171,8 +171,8 @@ export default {
           currency1: phone
         }
         this.$http.post(`${config.httpBaseUrl}/Appcommand/command`, data).then(res => {
+          Indicator.close()
           if (res.code === 200) {
-            Indicator.close()
             // 添加至locastorage
             let device = JSON.parse(localStorage.getItem('device'))
             device.werarerCenternumber = phone

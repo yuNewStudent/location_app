@@ -14,15 +14,15 @@ const FindDevice = () => import('@/views/My/FindDevice')
 const WarningSetting = () => import('@/views/My/WarningSetting')
 const MessageCenter = () => import('@/views/My/MessageCenter')
 
-const ControlPhone = () => import('@/components/Home/ControlPhone')
 const NoteStep = () => import('@/components/Home/NoteStep')
 const HeartRate = () => import('@/components/Home/HeartRate')
 const BloodPressure = () => import('@/components/Home/BloodPressure')
 
-const PhoneBook = () => import('@/components/Home/PhoneBook')
-const EmergencyContact = () => import('@/components/Home/EmergencyContact')
-const AlarmSeting = () => import('@/components/Home/AlarmSeting')
-const BlackList = () => import('@/components/Home/BlackList')
+const PhoneBook = () => import('@/views/HomePage/PhoneBook')
+const EmergencyContact = () => import('@/views/HomePage/EmergencyContact')
+const AlarmSeting = () => import('@/views/HomePage/AlarmSeting')
+const BlackList = () => import('@/views/HomePage/BlackList')
+const ControlPhone = () => import('@/views/HomePage/ControlPhone')
 
 Vue.use(Router)
 

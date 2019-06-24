@@ -16,7 +16,6 @@
         <img @click='changeType' class="eye" :src="img" alt="">
       </p>
       <p class="info">
-        <span>自动登陆</span>
         <span @click='goRePassword'>忘记密码？</span>
       </p>
       <div @click='handleLogin' class="login_btn">登录</div>
@@ -26,7 +25,7 @@
 </template>
 
 <script>
-import { Switch, Toast, DatetimePicker } from 'mint-ui'
+import { Switch, Toast, DatetimePicker, Indicator } from 'mint-ui'
 import { mapMutations, mapGetters } from 'vuex'
 export default {
   name: 'login',
@@ -67,19 +66,34 @@ export default {
     },
     handleLogin () {
       const data = {
-          appuserNumber: this.userInfo.name,
-          appuserPassword: this.userInfo.password
-        }
-        this.$http.post(`${config.httpBaseUrl}/appuser/login`, data).then(res => {
-          if (res.code === 200) {
-            this.$router.push({
-              name: 'Home'
-            })
-            this.$http.get(`${config.httpBaseUrl}/appuser/getappuser`,{
-              params: {
-                number: this.userInfo.name
-              }
-            }).then(res => {
+        appuserNumber: this.userInfo.name,
+        appuserPassword: this.userInfo.password
+      }
+      if (!this.userInfo.name || !this.userInfo.password) {
+        return Toast({
+          message: '登陆信息不能为空',
+          iconClass: 'icon icon-success'
+        })
+      }
+      Indicator.open('登陆中...')
+      let timer = setTimeout(() => {
+        Indicator.close()
+        Toast({
+          message: '服务器出错',
+          iconClass: 'icon icon-error'
+        })
+      }, 5000)
+      this.$http.post(`${config.httpBaseUrl}/appuser/login`, data).then(res => {
+        clearTimeout(timer)
+        Indicator.close()
+        if (res.code === 200) {
+          this.$router.push({
+            name: 'Home'
+          })
+          this.$http.get(`${config.httpBaseUrl}/appuser/getappuser`, {
+            params: {
+              number: this.userInfo.name
+            }}).then(res => {
             if (res.code === 200) {
               this.setUser(res.date.appuser)
               localStorage.setItem('user', JSON.stringify(res.date.appuser))
@@ -191,8 +205,6 @@ export default {
     .info {
       color: #FFFFFF;
       font-size: .24rem;
-      display: flex;
-      justify-content: space-between;
       margin: 10px 0;
     }
     .login_btn {

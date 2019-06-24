@@ -8,10 +8,10 @@
         <img class="head_img" src="@/assets/icon/home/userImg.png" alt="">
         <img class="select_img" src="@/assets/icon/home/箭头 拷贝.png" alt="">
       </p> -->
-      <p class="name">
+      <!-- <p class="name">
         <label for="">手机号码</label>
-        <input type="text" v-model='personInfo.appuserNumber'>
-      </p>
+        <input disabled type="text" v-model='personInfo.appuserNumber'>
+      </p> -->
       <p class="phone">
         <label for="">密码</label>
         <input :type="type" v-model='personInfo.appuserPassword'>
@@ -36,9 +36,9 @@ export default {
       img: require('@/assets/icon/login/eye—open.png'),
       // title: '新增电话本'
       personInfo: {
-        appuserNumber: '',
+        appuserNumber: JSON.parse(localStorage.getItem('user')).appuserName,
         appuserPassword: '',
-        confirmpassword:'',
+        confirmpassword: '',
       }
     }
   },

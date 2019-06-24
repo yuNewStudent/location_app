@@ -59,6 +59,7 @@
 import AMap from 'AMap'
 import { DatetimePicker, Toast } from 'mint-ui'
 export default {
+  props: ['deviceInfo'],
   data () {
     return {
       map: null,
@@ -88,7 +89,7 @@ export default {
         // 调整窗口大小
         resizeEnable: true,
         // 设置中心点
-        center: [104.0574050, 30.540512],
+        center: [this.deviceInfo.lng, this.deviceInfo.lat],
         // 地图显示范围
         zoom: 14
       })
@@ -268,7 +269,7 @@ export default {
       this.$http.get(`${config.httpBaseUrl}/map/getAll`, {
         params: data
       }).then(res => {
-        if (res.code === 200 && res.date.maplocations) {
+        if (res.code === 200 && res.date.maplocations.length) {
           this.routes = res.date.maplocations
           this.drawStartMark()
           this.drawLine()

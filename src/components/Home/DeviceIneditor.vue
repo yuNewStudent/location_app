@@ -6,7 +6,7 @@
     </div>
     <div class="content">
       <p class="title">
-        <img class='headImg' :src="deviceInfo.wearerImage?deviceInfo.wearerImage:require('@/assets/icon/home/userImg.png')" alt="">
+        <img class='headImg' :src="deviceInfo.wearerImage" alt="">
         <input type="file" name="" style=" position: absolute;
             top:55px;
             right: 0;

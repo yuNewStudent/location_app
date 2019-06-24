@@ -15,17 +15,29 @@
         :key='index'>
           <div class="content_item_wrapper">
             <span class="content_d"></span>
-            <div class="desc">
+            <div class="desc" v-if="item.alarminformationType=='sos'">
               <div class="ggggg">
-                <p class="title">{{item.alarminformationType}}报警</p>
+                <p class="title">sos报警</p>
                 <p class="time">{{item.alarminformationDate}}</p>
               </div>
-              <p class="info" v-if="item.alarminformationType=='sos'">
-                {{item.alarminformationName}}进行了{{item.alarminformationType}}报警
+              <p class="info">
+                {{item.alarminformationName}}进行了sos报警
               </p>
+            </div>
+            <div class="desc" v-if="item.alarminformationType=='fence'">
+              <div class="ggggg">
+                <p class="title">电子围栏报警</p>
+                <p class="time">{{item.alarminformationDate}}</p>
+              </div>
               <p class="info" v-if="item.alarminformationType=='fence'">
-                {{item.alarminformationName}}已经走出{{item.alarminformationType}}范围，请留意！
+                {{item.alarminformationName}}已经走出电子围栏范围，请留意！
               </p>
+            </div>
+            <div class="desc" v-if="item.alarminformationType=='electricity'">
+              <div class="ggggg">
+                <p class="title">低电量报警</p>
+                <p class="time">{{item.alarminformationDate}}</p>
+              </div>
               <p class="info" v-if="item.alarminformationType=='electricity'">
                 {{item.alarminformationName}}电量低于10%,请尽快充电！
               </p>
@@ -173,6 +185,7 @@ export default {
             .title {
               float: left;
               font-size: .30rem;
+              margin-right: 5px;
             }
             .time {
               float: right;

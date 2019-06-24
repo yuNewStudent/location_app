@@ -257,7 +257,7 @@ export default {
       .desc {
         position: absolute;
         left: 50%;
-        top: 45%;
+        top: 53%;
         transform: translate(-50%, -25%);
         text-align: center;
         .step_title {
@@ -271,12 +271,10 @@ export default {
         }
       }
       .canvas_wrapper {
-        width: 300px;
-        margin: 0 auto;
         height: 150px;
         #canvas {
-          width: 300px;
-          height: 150px;
+          width: 100%;
+          height: 145px;
         }
       }
     }

@@ -19,7 +19,7 @@
           <div class="high">高压:<span>{{currentBlood?currentBlood.healthHighpressure:'无数据'}}</span></div>
           <div class="low">低压<span>{{currentBlood?currentBlood.healthLowpressure:'无数据'}}</span></div>
         </div>
-        <p class="long_range">远程测量</p>
+        <!-- <p class="long_range">远程测量</p> -->
       </div>
       <div class="all_day">
         <div class="title">本周血压</div>
@@ -247,7 +247,7 @@ export default {
     .one_day {
       padding: .36rem;
       background: white;
-      height: 4rem;
+      height: 3rem;
       box-sizing: border-box;
       .title {
         display: flex;
@@ -311,7 +311,7 @@ export default {
     }
     .all_day {
       position: fixed;
-      top: 5.54rem;
+      top: 4.54rem;
       bottom: 0;
       width: 100vw;
       background: white;

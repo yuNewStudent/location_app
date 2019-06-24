@@ -2,7 +2,7 @@
  <div>
     <div class="home_header">
     <span class="headIcon" @click='handleNext'>
-      <img v-if='getDevice.wearerImage' :src="deviceImg" alt>
+      <img :src="deviceImg" alt>
     </span>
     <span class="title">{{title}}</span>
     <div class="device" @click="handleShowDeviceManage">
@@ -64,7 +64,7 @@ export default {
   computed: {
     ...mapGetters(['getUser', 'getDevice']),
     deviceImg () {
-      return this.getDevice.wearerImage
+      return this.getDevice.wearerImage || require('@/assets/icon/home/userImg.png')
     }
   },
   methods: {
@@ -112,6 +112,7 @@ export default {
     },
     addDevice (deviceInfo) {
       this.isShowDeviceInfo = false
+      this.setCurrentDevice(deviceInfo)
       this.$emit('closeAddDevice', deviceInfo)
     },
     // 选择手表
@@ -148,7 +149,10 @@ export default {
   align-items: center;
   padding: 0 0.36rem;
   .headIcon {
+    background: white;
+    border-radius: 50%;
     width: 0.64rem;
+    height: 0.64rem;
     img {
       width: 0.64rem;
       height: 0.64rem;
