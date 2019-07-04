@@ -18,7 +18,7 @@
             <p class="head">{{item.alarmlockDate}}</p>
             <p class="desc">
               <span>{{item.alarmclockRemarks|| '闹钟'}}:</span>
-              <template v-if='item.date.length===7'>
+              <template v-if='item.alarmclockWeek==="3"'>
                 <span v-if='item.date[0]=="1"' class="time">周日</span>
                 <span v-if='item.date[1]=="1"' class="time">周一</span>
                 <span v-if='item.date[2]=="1"' class="time">周二</span>
@@ -128,9 +128,9 @@ export default {
         index: '',
         alarm: {}
       }
-      if (this.alarms.length >= 3) {
+      if (this.alarms.length >= 1) {
         return Toast({
-          message: '闹钟个数最多三个\n请直接修改现有闹钟',
+          message: '闹钟个数最多1个\n请直接修改现有闹钟',
           iconClass: 'icon icon-success'
         })
       }
@@ -218,7 +218,6 @@ export default {
         })
       }, 4000)
       this.$http.post(`${config.httpBaseUrl}/Appcommand/command`, data).then(res => {
-        console.log(res)
         clearTimeout(timer)
         Indicator.close()
         if (res.code === 200) {
@@ -226,7 +225,6 @@ export default {
             message: '修改成功',
             iconClass: 'icon icon-success'
           })
-          this.alarms.push(data)
         } else {
           Toast({
             message: '修改失败',

@@ -43,7 +43,7 @@
               </p>
             </div>
           </div>
-          <span class="isRead" @click="read(item)">
+          <span class="isRead" @click="read(item, index)">
           <img v-if='item.isRead' src="@/assets/icon/my/2.png">
           <img @click='handleChange' v-else src="@/assets/icon/my/选择—高亮 拷贝 2.png">
           </span>
@@ -79,7 +79,7 @@ export default {
     this.information()
   },
   methods: {
-    information(){
+    information () {
       this.$http
         .get(`${config.httpBaseUrl}/Alarminformation/get`, {
           params: {
@@ -90,13 +90,13 @@ export default {
         .then(res => {
           if (res.code === 200) {
             if(res.date.alarminformations.length>0){
-              this.messages=res.date.alarminformations
+              this.messages = res.date.alarminformations
             } else {
             }
           }
         })
     },
-    read (item) {
+    read (item, index) {
       this.$http.get(`${config.httpBaseUrl}/Alarminformation/havread`, {
         params: {
           appuserId: this.appuserId,
@@ -106,6 +106,7 @@ export default {
       })
       .then(res => {
         if (res.code === 200) {
+          this.messages.splice(index, 1)
           this.information()
         }
       })

@@ -43,6 +43,16 @@
           <mt-switch :disabled='permission===2' @change='Intelligent' v-model="fence"></mt-switch>
         </div>
       </div>
+      <div class="content_l">
+        <div class="content_left">
+          <p>计步开关</p>
+        </div>
+        <div class="content_middle">
+        </div>
+        <div class="content_right">
+          <mt-switch :disabled='permission===2' @change='changeStepStatus' v-model="step"></mt-switch>
+        </div>
+      </div>
     </div>
     <change-control
       v-if='isShowEditorControl'
@@ -61,6 +71,7 @@ export default {
       appuserId: '',
       sos: false,
       electricity: false,
+      step: JSON.parse(localStorage.getItem('device')).wearerStepswitch ? true : false,
       fence: false,
       permission: null,
       isShowEditorControl: false,
@@ -190,6 +201,41 @@ export default {
         })
       }
     },
+    // 修改计步开关
+    changeStepStatus (value) {
+      let device = JSON.parse(localStorage.getItem('device'))
+      let currency1
+      if (value) {
+        device.wearerStepswitch = 0
+        currency1 = '00:00-00:00'
+      } else {
+        device.wearerStepswitch = 1
+        currency1 = '00:00-23:59'
+      }
+      localStorage.setItem('device', JSON.stringify(device))
+      const data = {
+        keyWord: 'WALKTIME',
+        id: JSON.parse(localStorage.getItem('device')).wearerDeviceId,
+        currency1,
+        currency2: '00:00-00:00',
+        currency3: '00:00-00:00'
+      }
+      Indicator.open('修改中...')
+      this.$http.post(`/Appcommand/command`, data).then(res => {
+        Indicator.close()
+        if (res.code === 200) {
+          Toast({
+            message: '修改成功',
+            iconClass: 'icon icon-success'
+          })
+        } else {
+          Toast({
+            message: '修改失败',
+            iconClass: 'icon icon-success'
+          })
+        }
+      })
+    }
   }
 }
 </script>

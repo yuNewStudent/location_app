@@ -78,7 +78,7 @@ export default {
       ctx.beginPath()
       ctx.lineWidth = 7
       ctx.strokeStyle = '#CCCCCC'
-      ctx.arc(150, 75, 55, 0, 1 * Math.PI)
+      ctx.arc(150, 75, 60, 0, 1 * Math.PI)
       ctx.stroke()
     },
     drawChart () {
@@ -89,7 +89,7 @@ export default {
       ctx.lineCap = 'round'
       ctx.lineWidth = 7
       ctx.strokeStyle = '#5FD3AC'
-      ctx.arc(150, 75, 55, 1 * Math.PI, 2 * Math.PI)
+      ctx.arc(150, 75, 60, 1 * Math.PI, 2 * Math.PI)
       ctx.stroke()
     },
     initChart () {
@@ -272,9 +272,14 @@ export default {
       }
       .canvas_wrapper {
         height: 150px;
+        position: relative;
         #canvas {
-          width: 100%;
-          height: 145px;
+          position: absolute;
+          left: 50%;
+          top: 50%;
+          transform: translate(-50%, -50%);
+          width: 300px;
+          height: 150px;
         }
       }
     }

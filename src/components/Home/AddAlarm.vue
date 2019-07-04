@@ -74,8 +74,9 @@ export default {
     if (this.editorAlarm) {
       this.alarmTime = this.editorAlarm.alarm.alarmlockDate
       this.editorAlarm.alarm.date.forEach((item, index) => {
+      console.log(item)
         if (item === '1') {
-          this.date[index] = true
+          this.date[index].active = true
         }
       })
     }

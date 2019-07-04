@@ -97,7 +97,6 @@ export default {
       this.isShowAddPhoneBook = true
     },
     AddContact (bol, personInfo) {
-      this.isShowAddPhoneBook = false
       if (bol) {
         const data = this.setParams(personInfo)
         this.$http.post(`/Appcommand/command`, data).then(res => {
@@ -108,6 +107,7 @@ export default {
               iconClass: 'icon icon-success'
             })
             this.getPhoneBoohs()
+            this.isShowAddPhoneBook = false
           } else {
             Toast({
               message: '设置电话本失败',
@@ -163,7 +163,6 @@ export default {
     // },
     // 删除联系人
     delContact () {
-      console.log(this.selectPerson)
       const data = {
         id: JSON.parse(localStorage.getItem('device')).wearerDeviceId, 
         keyWord: 'DPHBX',

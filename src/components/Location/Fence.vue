@@ -74,11 +74,6 @@ export default {
     this.$nextTick(() => {
       this.initMap()
       this.getFence()
-      const touchX = parseFloat(this.defaultRange * (this.$refs.progressBar.offsetWidth / 5000))
-      // 设置按钮位置
-      this.$refs.control.style.left = touchX - 3 + 'px'
-      // 设置active宽度
-      this.$refs.active.style.width = touchX + 'px'
     })
   },
   methods: {
@@ -137,6 +132,11 @@ export default {
         } else {
           this.centerLngLat = [res.date.fence.fenceLongitude, res.date.fence.fenceLatitude]
           this.defaultRange = res.date.fence.fenceRange * 1000
+          const touchX = parseFloat(this.defaultRange * (this.$refs.progressBar.offsetWidth / 5000))
+          // 设置按钮位置
+          this.$refs.control.style.left = touchX - 3 + 'px'
+          // 设置active宽度
+          this.$refs.active.style.width = touchX + 'px'
         }
         this.map.setZoomAndCenter(14, this.centerLngLat)
         this.drawCircle(this.centerLngLat, this.defaultRange)

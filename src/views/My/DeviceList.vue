@@ -163,11 +163,15 @@ export default {
     changePermission () {
       this.$http.get(`${config.httpBaseUrl}/appuser/updatePermission`, {
         params: {
-          appuserId: this.selectPer
+          wearerDeviceId: this.selectDevice.wearerDeviceId,
+          appuserId: this.selectPer, // 需转让的接受id
+          appId: this.appuserId // 转让人的id
         }
       }).then(res => {
-        console.log(res)
-        this.deleDevice()
+        Toast({
+          message: '操作成功',
+          iconClass: 'icon icon-success'
+        })
       })
     },
     // 删除手表
