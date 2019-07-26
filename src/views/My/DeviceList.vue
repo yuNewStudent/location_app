@@ -29,6 +29,12 @@
         <P>若设备处于联网状态，则提示指令发送成功，设备端接收到指令后，即作出响铃提示。
 若设备处于关机或未联网状态，则无法向设备端发送相关指令。</P>
       </div>
+      <div class="login" v-if='!loging'>
+        <input type="text" v-model='account' placeholder="请输入账号">
+        <input type="text" v-model='password' placeholder="请输入密码">
+        <button @click='handleLogin'>登录</button>
+      </div>
+      <webrtc-view v-else :account='account' :password='password'></webrtc-view>
     </div>
     <message-page
       :title='title'
@@ -51,6 +57,7 @@
 <script>
 import { MessageBox, Toast } from 'mint-ui'
 import MessagePage from '@/components/MessageBox'
+import WebrtcView from '@/components/webrtc'
 export default {
   data () {
     return {
@@ -63,7 +70,10 @@ export default {
       },
       users: [],
       isShowChangePermission: false,
-      selectPer: ''
+      selectPer: '',
+      account: '',
+      password: '',
+      loging: false
     }
   },
   created(){
@@ -209,9 +219,17 @@ export default {
       if (!this.$refs.action) { return }
       this.$refs.action.style.display = 'none'
     },
+    // 登录网易云信
+    handleLogin () {
+      if (!this.account || !this.password) {
+        return Toast('登录信息不能为空')
+      }
+      this.loging = true
+    }
   },
   components: {
-    MessagePage
+    MessagePage,
+    WebrtcView
   }
 }
 </script>
@@ -322,6 +340,17 @@ export default {
       font-size: .2rem;
       color: rgba(185, 185, 185, 1);
       line-height: .4rem;
+    }
+  }
+  .login {
+    width: 70vw;
+    margin: .3rem auto;
+    font-size: .28rem;
+    input {
+      width: 100%;
+      margin: .1rem 0;
+      padding: .1rem .2rem;
+      border-radius: 5px;
     }
   }
   .change_permission {

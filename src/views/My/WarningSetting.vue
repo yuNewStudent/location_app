@@ -71,7 +71,7 @@ export default {
       appuserId: '',
       sos: false,
       electricity: false,
-      step: JSON.parse(localStorage.getItem('device')).wearerStepswitch ? true : false,
+      step: localStorage.getItem('device') && JSON.parse(localStorage.getItem('device')).wearerStepswitch ? true : false,
       fence: false,
       permission: null,
       isShowEditorControl: false,
@@ -89,7 +89,7 @@ export default {
     var userx = (JSON.parse(usernames) || '{}')
     this.appuserId = userx.appuserId
     this.Queryall()
-    this.permission = JSON.parse(localStorage.getItem('device')).appuserPermission
+    this.permission = JSON.parse(localStorage.getItem('device')) && JSON.parse(localStorage.getItem('device')).appuserPermission
     if (this.permission === 2) {
       Toast({
         message: '你没有权限设置',
@@ -106,6 +106,7 @@ export default {
         }
       }).then(res => {
         if (res.code === 200 && res.date.alarmswitch) {
+          this.show = true
           if (res.date.alarmswitch.alarmswitchSosType) {
             this.sos = true
           } else {
@@ -122,7 +123,6 @@ export default {
             this.fence = false
           }
         }
-        this.show = true
       })
     },
     back () {
