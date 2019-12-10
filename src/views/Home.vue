@@ -6,12 +6,15 @@
     </div>
     <div class="nav">
       <ul>
-        <li
-          v-for='(item, index) in navs'
-          :key='index'
-          @click='handleRoute(item.name, index)'>
-          <img v-if='index==active' :src="actives[index].icon" alt="">
-          <img v-else :src="item.icon" alt="">
+        <li v-for='(item, index) in navs'
+            :key='index'
+            @click='handleRoute(item.name, index)'>
+          <img v-if='index==active'
+               :src="actives[index].icon"
+               alt="">
+          <img v-else
+               :src="item.icon"
+               alt="">
           <span>{{item.title}}</span>
         </li>
       </ul>
@@ -109,13 +112,13 @@ export default {
 .home {
   .bglayer {
     width: 100vw;
-    height: .48rem;
-    background: #15BF86;
+    height: 0.48rem;
+    background: #15bf86;
   }
   .contanier {
     position: fixed;
     width: 100vw;
-    top: .48rem;
+    top: 0.48rem;
     bottom: 1rem;
     z-index: 6;
   }
@@ -129,18 +132,18 @@ export default {
       display: flex;
       justify-content: space-around;
       padding: 5px;
-      border-top: 1px solid #DFDFDF;
+      border-top: 1px solid #dfdfdf;
       height: 1rem;
       box-sizing: border-box;
       li {
         display: flex;
         flex-direction: column;
-        font-size: .2rem;
+        font-size: 0.2rem;
         align-items: center;
         flex: 1;
         img {
-          width: .44rem;
-          height: .46rem;
+          width: 0.44rem;
+          height: 0.46rem;
           margin-bottom: 5px;
         }
       }

@@ -2,20 +2,23 @@
   <div class="message_center">
     <div class="home_header">
       <span class="back">
-        <img src='@/assets/icon/home/箭头.png' @click='back'/>
+        <img src='@/assets/icon/home/箭头.png'
+             @click='back' />
       </span>
       <span class="title">消息中心</span>
       <span class="comfirm"></span>
     </div>
-    <ul class="content" v-if='messages.length'>
-      <li
-        v-for='(item, index) in messages'
-        :key='index'>
-        <div class="content_item" v-for='(item, index) in item'
-        :key='index'>
+    <ul class="content"
+        v-if='messages.length'>
+      <li v-for='(item, index) in messages'
+          :key='index'>
+        <div class="content_item"
+             v-for='(item, index) in item'
+             :key='index'>
           <div class="content_item_wrapper">
             <span class="content_d"></span>
-            <div class="desc" v-if="item.alarminformationType=='sos'">
+            <div class="desc"
+                 v-if="item.alarminformationType=='sos'">
               <div class="ggggg">
                 <p class="title">sos报警</p>
                 <p class="time">{{item.alarminformationDate}}</p>
@@ -24,28 +27,36 @@
                 {{item.alarminformationName}}进行了sos报警
               </p>
             </div>
-            <div class="desc" v-if="item.alarminformationType=='fence'">
+            <div class="desc"
+                 v-if="item.alarminformationType=='fence'">
               <div class="ggggg">
                 <p class="title">电子围栏报警</p>
                 <p class="time">{{item.alarminformationDate}}</p>
               </div>
-              <p class="info" v-if="item.alarminformationType=='fence'">
+              <p class="info"
+                 v-if="item.alarminformationType=='fence'">
                 {{item.alarminformationName}}已经走出电子围栏范围，请留意！
               </p>
             </div>
-            <div class="desc" v-if="item.alarminformationType=='electricity'">
+            <div class="desc"
+                 v-if="item.alarminformationType=='electricity'">
               <div class="ggggg">
                 <p class="title">低电量报警</p>
                 <p class="time">{{item.alarminformationDate}}</p>
               </div>
-              <p class="info" v-if="item.alarminformationType=='electricity'">
+              <p class="info"
+                 v-if="item.alarminformationType=='electricity'">
                 {{item.alarminformationName}}电量低于10%,请尽快充电！
               </p>
             </div>
           </div>
-          <span class="isRead" @click="read(item, index)">
-          <img v-if='item.isRead' src="@/assets/icon/my/2.png">
-          <img @click='handleChange' v-else src="@/assets/icon/my/选择—高亮 拷贝 2.png">
+          <span class="isRead"
+                @click="read(item, index)">
+            <img v-if='item.isRead'
+                 src="@/assets/icon/my/2.png">
+            <img @click='handleChange'
+                 v-else
+                 src="@/assets/icon/my/选择—高亮 拷贝 2.png">
           </span>
         </div>
       </li>
@@ -63,19 +74,19 @@
 export default {
   data () {
     return {
-      wearerDeviceId:'',
-      appuserId:'',
+      wearerDeviceId: '',
+      appuserId: '',
       messages: []
     }
   },
-  created(){
-    var usernames = localStorage.getItem(('user') || '{}') 
+  created () {
+    var usernames = localStorage.getItem(('user') || '{}')
     var userx = (JSON.parse(usernames) || '{}')
     this.appuserId = userx.appuserId
     var devices = localStorage.getItem(('device') || '{}')
-    var device=(JSON.parse(devices) || '{}')
-    var wearerDeviceId=device.wearerDeviceId
-    this.wearerDeviceId=wearerDeviceId
+    var device = (JSON.parse(devices) || '{}')
+    var wearerDeviceId = device.wearerDeviceId
+    this.wearerDeviceId = wearerDeviceId
     this.information()
   },
   methods: {
@@ -89,7 +100,7 @@ export default {
         })
         .then(res => {
           if (res.code === 200) {
-            if(res.date.alarminformations.length>0){
+            if (res.date.alarminformations.length > 0) {
               this.messages = res.date.alarminformations
             } else {
             }
@@ -104,15 +115,15 @@ export default {
           wearerDeviceId: this.wearerDeviceId,
         }
       })
-      .then(res => {
-        if (res.code === 200) {
-          this.messages.splice(index, 1)
-          this.information()
-        }
-      })
-    }, 
+        .then(res => {
+          if (res.code === 200) {
+            this.messages.splice(index, 1)
+            this.information()
+          }
+        })
+    },
     back () {
-      this.$router.push({ name: 'MyPage'})
+      this.$router.push({ name: 'MyPage' })
     },
     handleChange (e) {
     }
@@ -124,24 +135,24 @@ export default {
 .message_center {
   width: 100vw;
   position: fixed;
-  top: .48rem;
+  top: 0.48rem;
   bottom: 0;
-  background: rgb(239,239,239);
+  background: rgb(239, 239, 239);
   .home_header {
-    background: #15BF86;
+    background: #15bf86;
     color: white;
     box-sizing: border-box;
     height: 0.96rem;
     padding: 0 0.26rem;
-    font-size: .36rem;
+    font-size: 0.36rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
     .back {
       width: 90px;
       img {
-        width: .18rem;
-        height: .25rem;
+        width: 0.18rem;
+        height: 0.25rem;
       }
     }
     .title {
@@ -151,7 +162,7 @@ export default {
     .comfirm {
       width: 90px;
       text-align: right;
-      font-size: .28rem;
+      font-size: 0.28rem;
     }
   }
   .content {
@@ -163,7 +174,7 @@ export default {
     .content_item {
       width: 100%;
       background-color: #ffffff;
-      box-shadow:0px 1px 4px 0px rgba(40,50,47,0.2);
+      box-shadow: 0px 1px 4px 0px rgba(40, 50, 47, 0.2);
       margin-bottom: 10px;
       display: flex;
       justify-content: space-between;
@@ -173,30 +184,30 @@ export default {
       .content_item_wrapper {
         display: flex;
         align-items: center;
-        .content_d{
+        .content_d {
           width: 10px;
           height: 10px;
-          background:rgba(246,51,51,1);
+          background: rgba(246, 51, 51, 1);
           border-radius: 50%;
         }
         .desc {
           margin-left: 5px;
           .ggggg {
-            line-height: .5rem;
+            line-height: 0.5rem;
             .title {
               float: left;
-              font-size: .30rem;
+              font-size: 0.3rem;
               margin-right: 5px;
             }
             .time {
               float: right;
-              font-size: .1rem;
+              font-size: 0.1rem;
               color: #b9b9b9;
             }
           }
           .info {
-            line-height: .5rem;
-            font-size: .15rem;
+            line-height: 0.5rem;
+            font-size: 0.15rem;
           }
         }
       }
@@ -204,29 +215,29 @@ export default {
         img {
           position: relative;
           top: -10px;
-          width: .3rem;
-          height: .3rem;
+          width: 0.3rem;
+          height: 0.3rem;
         }
       }
     }
   }
-    .nolist{
-      width: 100vw;
-      position: absolute;
-      top: .96rem;
-      bottom: 0;
-      text-align: center;
-      background: white;
-      img {
-        margin-top: 50px;
-        width: 5.5rem;
-        height: 6.05rem;
-        border-radius: 50%;
-      }
-      p {
-        font-size: 14px;
-        color:#888888
-      }
+  .nolist {
+    width: 100vw;
+    position: absolute;
+    top: 0.96rem;
+    bottom: 0;
+    text-align: center;
+    background: white;
+    img {
+      margin-top: 50px;
+      width: 5.5rem;
+      height: 6.05rem;
+      border-radius: 50%;
     }
+    p {
+      font-size: 14px;
+      color: #888888;
+    }
+  }
 }
 </style>

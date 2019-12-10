@@ -1,18 +1,22 @@
 <template>
-  <div class="phone_book" @click='hideAction'>
+  <div class="phone_book"
+       @click='hideAction'>
     <div class="home_header">
-      <img src='@/assets/icon/home/箭头.png' class="back" @click='closePhoneBook'/>
+      <img src='@/assets/icon/home/箭头.png'
+           class="back"
+           @click='closePhoneBook' />
       <span class="title">电话本</span>
-      <img src='@/assets/icon/home/新增IC.png' class="add" @click='handleAddContact'/>
+      <img src='@/assets/icon/home/新增IC.png'
+           class="add"
+           @click='handleAddContact' />
     </div>
     <div class="content">
       <ul v-if='contacts.length'>
-        <li
-          class="contact_item"
-          v-for='(item, index) in contacts'
-          :key='index'
-          @touchstart='touchstart(item, index)'
-          @touchend='touchend'>
+        <li class="contact_item"
+            v-for='(item, index) in contacts'
+            :key='index'
+            @touchstart='touchstart(item, index)'
+            @touchend='touchend'>
           <div class="info">
             <div class="desc">
               <p>{{item.phonebookName}}</p>
@@ -22,16 +26,17 @@
           <!-- <span class="del">删除</span> -->
         </li>
       </ul>
-      <div class='no_contact' v-else>还没有添加电话本</div>
-      <div class="action" ref='action'>
+      <div class='no_contact'
+           v-else>还没有添加电话本</div>
+      <div class="action"
+           ref='action'>
         <!-- <p class="editor" @click.stop='showEditorContact'>编辑</p> -->
         <p @click.stop='delContact'>删除</p>
       </div>
     </div>
-    <add-contact
-      v-if='isShowAddPhoneBook'
-      @addContact='AddContact'
-      :title='title.add'></add-contact>
+    <add-contact v-if='isShowAddPhoneBook'
+                 @addContact='AddContact'
+                 :title='title.add'></add-contact>
     <!-- <editor-contact
       v-if='isShowEditorPhoneBook'
       :title='title.editor'
@@ -50,7 +55,7 @@ export default {
       isShowAddPhoneBook: false,
       // isShowEditorPhoneBook: false,
       time: 0,
-      appuserWearerId:'',
+      appuserWearerId: '',
       contacts: [
         // {
         //   name: '女儿',
@@ -73,19 +78,19 @@ export default {
     EditorContact,
     Toast
   },
-  created(){
+  created () {
     this.getPhoneBoohs()
   },
   methods: {
-    //查询所有电话本
-    getPhoneBoohs(){
+    // 查询所有电话本
+    getPhoneBoohs () {
       this.$http.get(`/phonebook/getAll`, {
         params: {
           wearerDeviceId: JSON.parse(localStorage.getItem('device')).wearerDeviceId
         }
       }).then(res => {
         if (res.code === 200) {
-          this.contacts=res.date.Phonebook;
+          this.contacts = res.date.Phonebook
         }
       })
     },
@@ -115,6 +120,8 @@ export default {
             })
           }
         })
+      } else {
+        this.isShowAddPhoneBook = false
       }
     },
     // 长按事件
@@ -128,7 +135,7 @@ export default {
       clearTimeout(this.time)
     },
     // 展示操作窗口
-    showAction(item, index) {
+    showAction (item, index) {
       this.selectPerson.person = item
       this.selectPerson.index = index
       this.$refs.action.style.display = 'block'
@@ -164,7 +171,7 @@ export default {
     // 删除联系人
     delContact () {
       const data = {
-        id: JSON.parse(localStorage.getItem('device')).wearerDeviceId, 
+        id: JSON.parse(localStorage.getItem('device')).wearerDeviceId,
         keyWord: 'DPHBX',
         currency1: this.selectPerson.person.phonebookNumbering
       }
@@ -222,7 +229,7 @@ export default {
         })
       }
       const books = {
-        id: JSON.parse(localStorage.getItem('device')).wearerDeviceId, 
+        id: JSON.parse(localStorage.getItem('device')).wearerDeviceId,
         keyWord: 'PHBX',
         currency1: personInfo.name,
         currency2: personInfo.phone,
@@ -240,27 +247,27 @@ export default {
 <style lang="scss" scoped>
 .phone_book {
   position: fixed;
-  top: .48rem;
+  top: 0.48rem;
   bottom: 0;
   background: #f0f2f5;
   z-index: 3;
   width: 100vw;
   .home_header {
-    background: #15BF86;
+    background: #15bf86;
     color: white;
     box-sizing: border-box;
     height: 0.96rem;
     padding: 0 0.26rem;
-    font-size: .36rem;
+    font-size: 0.36rem;
     display: flex;
     align-items: center;
     .back {
-      width: .18rem;
-      height: .25rem;
+      width: 0.18rem;
+      height: 0.25rem;
     }
     .add {
-      width: .24rem;
-      height: .24rem;
+      width: 0.24rem;
+      height: 0.24rem;
     }
     .title {
       text-align: center;
@@ -275,7 +282,7 @@ export default {
     overflow: auto;
     .no_contact {
       margin-top: 50px;
-      font-size: .4rem;
+      font-size: 0.4rem;
       text-align: center;
       color: red;
     }
@@ -289,7 +296,7 @@ export default {
       background: white;
       margin-bottom: 5px;
       .info {
-        font-size: .26rem;
+        font-size: 0.26rem;
         display: flex;
         flex-direction: column;
         .desc {
@@ -299,22 +306,26 @@ export default {
         }
       }
       .del {
-        font-size: .24rem;
+        font-size: 0.24rem;
         width: 1.04rem;
-        height: .44rem;
+        height: 0.44rem;
         text-align: center;
-        line-height: .44rem;
+        line-height: 0.44rem;
         color: white;
-        background: linear-gradient(-90deg,rgba(51,221,164,1), rgba(21,191,134,1));
-        box-shadow: 0px 1px 4px 0px rgba(5,60,41,0.5);
-        border-radius: .22rem;
+        background: linear-gradient(
+          -90deg,
+          rgba(51, 221, 164, 1),
+          rgba(21, 191, 134, 1)
+        );
+        box-shadow: 0px 1px 4px 0px rgba(5, 60, 41, 0.5);
+        border-radius: 0.22rem;
       }
     }
     .action {
       width: 1.6rem;
-      height: .65rem;
-      box-shadow: 0px 1px 4px 0px rgba(109,109,109,0.5);
-      font-size: .26rem;
+      height: 0.65rem;
+      box-shadow: 0px 1px 4px 0px rgba(109, 109, 109, 0.5);
+      font-size: 0.26rem;
       text-align: center;
       position: absolute;
       background: white;
@@ -322,9 +333,9 @@ export default {
       display: none;
       right: 70px;
       p {
-        line-height: .65rem;
+        line-height: 0.65rem;
         &.editor {
-          background: #D4F4EA;
+          background: #d4f4ea;
         }
       }
     }

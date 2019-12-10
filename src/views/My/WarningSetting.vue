@@ -2,12 +2,14 @@
   <div class="warning_setting">
     <div class="home_header">
       <span class="back">
-        <img src='@/assets/icon/home/箭头.png' @click='back'/>
+        <img src='@/assets/icon/home/箭头.png'
+             @click='back' />
       </span>
       <span class="title">报警设置</span>
       <span class="comfirm"></span>
     </div>
-    <div class="content" v-if='show'>
+    <div class="content"
+         v-if='show'>
       <div class="content_l">
         <div class="content_left">
           <p>SOS报警</p>
@@ -15,7 +17,9 @@
         <div class="content_middle">
         </div>
         <div class="content_right">
-          <mt-switch :disabled='permission===2' @change="changeSosStatus" v-model="sos"></mt-switch>
+          <mt-switch :disabled='permission===2'
+                     @change="changeSosStatus"
+                     v-model="sos"></mt-switch>
         </div>
       </div>
       <div class="content_l">
@@ -25,7 +29,9 @@
         <div class="content_middle">
         </div>
         <div class="content_right">
-          <mt-switch :disabled='permission===2' @change="lowbattery" v-model="electricity"></mt-switch>
+          <mt-switch :disabled='permission===2'
+                     @change="lowbattery"
+                     v-model="electricity"></mt-switch>
         </div>
       </div>
       <div class="content_c">
@@ -40,7 +46,9 @@
         <div class="content_middle">
         </div>
         <div class="content_right">
-          <mt-switch :disabled='permission===2' @change='Intelligent' v-model="fence"></mt-switch>
+          <mt-switch :disabled='permission===2'
+                     @change='Intelligent'
+                     v-model="fence"></mt-switch>
         </div>
       </div>
       <div class="content_l">
@@ -50,14 +58,15 @@
         <div class="content_middle">
         </div>
         <div class="content_right">
-          <mt-switch :disabled='permission===2' @change='changeStepStatus' v-model="step"></mt-switch>
+          <mt-switch :disabled='permission===2'
+                     @change='changeStepStatus'
+                     v-model="step"></mt-switch>
         </div>
       </div>
     </div>
-    <change-control
-      v-if='isShowEditorControl'
-      :title='title.add'
-      @addControl='addControl'></change-control>
+    <change-control v-if='isShowEditorControl'
+                    :title='title.add'
+                    @addControl='addControl'></change-control>
   </div>
 </template>
 
@@ -85,7 +94,7 @@ export default {
     ChangeControl
   },
   created () {
-    var usernames = localStorage.getItem(('user') || '{}') 
+    var usernames = localStorage.getItem(('user') || '{}')
     var userx = (JSON.parse(usernames) || '{}')
     this.appuserId = userx.appuserId
     this.Queryall()
@@ -99,20 +108,20 @@ export default {
     }
   },
   methods: {
-    Queryall(){
+    Queryall () {
       this.$http.get(`${config.httpBaseUrl}/alarms/get`, {
-        params:{
+        params: {
           appuserId: this.appuserId
         }
       }).then(res => {
-        if (res.code === 200 && res.date.alarmswitch) {
+        if (res.code === 200) {
           this.show = true
           if (res.date.alarmswitch.alarmswitchSosType) {
             this.sos = true
           } else {
             this.sos = false
           }
-          if(res.date.alarmswitch.alarmswitchElectricityType){
+          if (res.date.alarmswitch.alarmswitchElectricityType) {
             this.electricity = true
           } else {
             this.electricity = false
@@ -126,7 +135,7 @@ export default {
       })
     },
     back () {
-      this.$router.push({ name: 'MyPage'})
+      this.$router.push({ name: 'MyPage' })
     },
     // SoS报警
     changeSosStatus () {
@@ -244,24 +253,24 @@ export default {
 .warning_setting {
   width: 100vw;
   position: fixed;
-  top: .48rem;
+  top: 0.48rem;
   bottom: 0;
-  background: rgb(239,239,239);
+  background: rgb(239, 239, 239);
   .home_header {
-    background: #15BF86;
+    background: #15bf86;
     color: white;
     box-sizing: border-box;
     height: 0.96rem;
     padding: 0 0.26rem;
-    font-size: .36rem;
+    font-size: 0.36rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
     .back {
       width: 60px;
       img {
-        width: .18rem;
-        height: .25rem;
+        width: 0.18rem;
+        height: 0.25rem;
       }
     }
     .title {
@@ -271,61 +280,61 @@ export default {
     .comfirm {
       width: 60px;
       text-align: right;
-      font-size: .28rem;
+      font-size: 0.28rem;
     }
   }
   .content {
     width: 100%;
   }
-  .content_k{
+  .content_k {
     width: 100%;
-    background: rgb(239,239,239);
-    height: .10rem;
+    background: rgb(239, 239, 239);
+    height: 0.1rem;
   }
-  .content_l{
+  .content_l {
     width: 100%;
-    display:flex;
+    display: flex;
     background-color: #ffffff;
     box-shadow: 0px 15px 10px -20px #888888;
     margin-bottom: 10px;
   }
-  .content_left{
+  .content_left {
     width: 30%;
-    font-size: .20rem;
-    margin: .25rem .0rem;
-    line-height: .25rem;
+    font-size: 0.2rem;
+    margin: 0.25rem 0rem;
+    line-height: 0.25rem;
   }
-  .content_left p{
-    margin-top: .1rem;
-    margin-left: .2rem;
-    line-height: .25rem;
+  .content_left p {
+    margin-top: 0.1rem;
+    margin-left: 0.2rem;
+    line-height: 0.25rem;
   }
-.content_middle{
-  width:50%;
-  margin: .25rem .0rem;
-  font-size: .20rem;
-}
-.content_middle span{
-  line-height: .25rem;
-  font-size: .20rem;
-}
-.content_right{
-  width:20%;
-  margin: .25rem .0rem;
-  font-size: .20rem;
-  text-align: right;
-  float: right;
-}
-.content_t{
-  color: #000;
-}
-.content_c{
-  padding: 0 8px 8px;
-}
-.content_c p {
-  font-size: .2rem;
-  line-height: .4rem;
-  color: rgba(185, 185, 185, 1);
+  .content_middle {
+    width: 50%;
+    margin: 0.25rem 0rem;
+    font-size: 0.2rem;
+  }
+  .content_middle span {
+    line-height: 0.25rem;
+    font-size: 0.2rem;
+  }
+  .content_right {
+    width: 20%;
+    margin: 0.25rem 0rem;
+    font-size: 0.2rem;
+    text-align: right;
+    float: right;
+  }
+  .content_t {
+    color: #000;
+  }
+  .content_c {
+    padding: 0 8px 8px;
+  }
+  .content_c p {
+    font-size: 0.2rem;
+    line-height: 0.4rem;
+    color: rgba(185, 185, 185, 1);
   }
 }
 </style>
