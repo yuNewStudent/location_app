@@ -23,6 +23,7 @@ const EmergencyContact = () => import('@/views/HomePage/EmergencyContact')
 const AlarmSeting = () => import('@/views/HomePage/AlarmSeting')
 const BlackList = () => import('@/views/HomePage/BlackList')
 const ControlPhone = () => import('@/views/HomePage/ControlPhone')
+const temperature = () => import('@/views/My/temperature')
 
 Vue.use(Router)
 
@@ -110,8 +111,13 @@ export default new Router({
               path: '/my/messagecenter',
               name: 'MessageCenter',
               component: MessageCenter
-            }
-          ]
+            },
+          ],
+        },
+        {
+          path: '/temperature',
+          name: 'temperature',
+          component:temperature
         },
         {
           path: '/locationpage',
@@ -134,6 +140,6 @@ export default new Router({
       path: '/restpassword',
       name: 'ResetPassword',
       component: ResetPassword
-    }
+    },
   ]
 })

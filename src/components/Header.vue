@@ -78,6 +78,7 @@ export default {
         })
         .then(res => {
           if (res.code === 200) {
+            console.log(res)
             this.devices = res.date.wearers
           }
         })
